@@ -689,7 +689,7 @@ class OpenCTIApiClient:
                 query,
                 {"input": { "name": file_name }},
             )
-            return queryResult['id']
+            return queryResult['data']['draftWorkspaceAdd']['id']
         else:
             self.app_logger.error("[upload] Missing parameter: file_name")
             return None
