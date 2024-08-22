@@ -231,9 +231,7 @@ class Opinion:
         else:
             data = {"opinion": opinion}
         data = canonicalize(data, utf8=False)
-        id = str(
-            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
-                       data))
+        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
         return "opinion--" + id
 
     @staticmethod
@@ -273,15 +271,18 @@ class Opinion:
         if get_all:
             first = 100
 
-        self.opencti.app_logger.info("Listing Opinions with filters",
-                                     {"filters": json.dumps(filters)})
-        query = ("""
+        self.opencti.app_logger.info(
+            "Listing Opinions with filters", {"filters": json.dumps(filters)}
+        )
+        query = (
+            """
             query Opinions($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: OpinionsOrdering, $orderMode: OrderingMode) {
                 opinions(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                     edges {
                         node {
-                            """ + (custom_attributes if custom_attributes
-                                   is not None else self.properties) + """
+                            """
+            + (custom_attributes if custom_attributes is not None else self.properties)
+            + """
                         }
                     }
                     pageInfo {
@@ -293,7 +294,8 @@ class Opinion:
                     }
                 }
             }
-        """)
+        """
+        )
         result = self.opencti.query(
             query,
             {
@@ -311,8 +313,7 @@ class Opinion:
             final_data = final_data + data
             while result["data"]["opinions"]["pageInfo"]["hasNextPage"]:
                 after = result["data"]["opinions"]["pageInfo"]["endCursor"]
-                self.opencti.app_logger.info("Listing Opinions",
-                                             {"after": after})
+                self.opencti.app_logger.info("Listing Opinions", {"after": after})
                 result = self.opencti.query(
                     query,
                     {
@@ -324,13 +325,13 @@ class Opinion:
                         "orderMode": order_mode,
                     },
                 )
-                data = self.opencti.process_multiple(
-                    result["data"]["opinions"])
+                data = self.opencti.process_multiple(result["data"]["opinions"])
                 final_data = final_data + data
             return final_data
         else:
-            return self.opencti.process_multiple(result["data"]["opinions"],
-                                                 with_pagination)
+            return self.opencti.process_multiple(
+                result["data"]["opinions"], with_pagination
+            )
 
     """
         Read a Opinion object
@@ -351,17 +352,23 @@ class Opinion:
         custom_attributes = kwargs.get("customAttributes", None)
         if id is not None:
             self.opencti.app_logger.info("Reading Opinion", {"id": id})
-            query = ("""
+            query = (
+                """
                 query Opinion($id: String!) {
                     opinion(id: $id) {
-                        """ + (custom_attributes if custom_attributes
-                               is not None else self.properties) + """
+                        """
+                + (
+                    custom_attributes
+                    if custom_attributes is not None
+                    else self.properties
+                )
+                + """
                     }
                 }
-            """)
+            """
+            )
             result = self.opencti.query(query, {"id": id})
-            return self.opencti.process_multiple_fields(
-                result["data"]["opinion"])
+            return self.opencti.process_multiple_fields(result["data"]["opinion"])
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -383,15 +390,14 @@ class Opinion:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None)
+            "stixObjectOrStixRelationshipId", None
+        )
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Checking StixObjectOrStixRelationship in Opinion",
                 {
-                    "id":
-                    id,
-                    "stixObjectOrStixRelationshipId":
-                    stix_object_or_stix_relationship_id,
+                    "id": id,
+                    "stixObjectOrStixRelationshipId": stix_object_or_stix_relationship_id,
                 },
             )
             query = """
@@ -402,17 +408,15 @@ class Opinion:
             result = self.opencti.query(
                 query,
                 {
-                    "id":
-                    id,
-                    "stixObjectOrStixRelationshipId":
-                    stix_object_or_stix_relationship_id,
+                    "id": id,
+                    "stixObjectOrStixRelationshipId": stix_object_or_stix_relationship_id,
                 },
             )
-            return result["data"][
-                "opinionContainsStixObjectOrStixRelationship"]
+            return result["data"]["opinionContainsStixObjectOrStixRelationship"]
         else:
             self.opencti.app_logger.error(
-                "[opencti_opinion] Missing parameters: id or entity_id")
+                "[opencti_opinion] Missing parameters: id or entity_id"
+            )
 
     """
         Create a Opinion object
@@ -446,8 +450,7 @@ class Opinion:
         update = kwargs.get("update", False)
 
         if opinion is not None:
-            self.opencti.app_logger.info("Creating Opinion",
-                                         {"opinion": opinion})
+            self.opencti.app_logger.info("Creating Opinion", {"opinion": opinion})
             query = """
                 mutation OpinionAdd($input: OpinionAddInput!) {
                     opinionAdd(input: $input) {
@@ -482,11 +485,11 @@ class Opinion:
                     }
                 },
             )
-            return self.opencti.process_multiple_fields(
-                result["data"]["opinionAdd"])
+            return self.opencti.process_multiple_fields(result["data"]["opinionAdd"])
         else:
             self.opencti.app_logger.error(
-                "[opencti_opinion] Missing parameters: content")
+                "[opencti_opinion] Missing parameters: content"
+            )
 
     """
         Add a Stix-Entity object to Opinion object (object_refs)
@@ -504,21 +507,19 @@ class Opinion:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None)
+            "stixObjectOrStixRelationshipId", None
+        )
         if id is not None and stix_object_or_stix_relationship_id is not None:
             if self.contains_stix_object_or_stix_relationship(
-                    id=id,
-                    stixObjectOrStixRelationshipId=
-                    stix_object_or_stix_relationship_id,
+                id=id,
+                stixObjectOrStixRelationshipId=stix_object_or_stix_relationship_id,
             ):
                 return True
             self.opencti.app_logger.info(
                 "Adding StixObjectOrStixRelationship to Opinion",
                 {
-                    "id":
-                    id,
-                    "stixObjectOrStixRelationshipId":
-                    stix_object_or_stix_relationship_id,
+                    "id": id,
+                    "stixObjectOrStixRelationshipId": stix_object_or_stix_relationship_id,
                 },
             )
             query = """
@@ -563,15 +564,14 @@ class Opinion:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None)
+            "stixObjectOrStixRelationshipId", None
+        )
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Removing StixObjectOrStixRelationship to Opinion",
                 {
-                    "id":
-                    id,
-                    "stixObjectOrStixRelationshipId":
-                    stix_object_or_stix_relationship_id,
+                    "id": id,
+                    "stixObjectOrStixRelationshipId": stix_object_or_stix_relationship_id,
                 },
             )
             query = """
@@ -594,7 +594,8 @@ class Opinion:
             return True
         else:
             self.opencti.app_logger.error(
-                "[opencti_opinion] Missing parameters: id and entity_id")
+                "[opencti_opinion] Missing parameters: id and entity_id"
+            )
             return False
 
     """
@@ -616,50 +617,60 @@ class Opinion:
         if stix_object is not None:
             # Search in extensions
             if "x_opencti_stix_ids" not in stix_object:
-                stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "stix_ids", stix_object))
+                stix_object[
+                    "x_opencti_stix_ids"
+                ] = self.opencti.get_attribute_in_extension("stix_ids", stix_object)
             if "x_opencti_granted_refs" not in stix_object:
-                stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "granted_refs", stix_object))
+                stix_object[
+                    "x_opencti_granted_refs"
+                ] = self.opencti.get_attribute_in_extension("granted_refs", stix_object)
 
             return self.create(
                 stix_id=stix_object["id"],
-                createdBy=(extras["created_by_id"]
-                           if "created_by_id" in extras else None),
-                objectMarking=(extras["object_marking_ids"]
-                               if "object_marking_ids" in extras else None),
-                objectLabel=(extras["object_label_ids"]
-                             if "object_label_ids" in extras else None),
+                createdBy=(
+                    extras["created_by_id"] if "created_by_id" in extras else None
+                ),
+                objectMarking=(
+                    extras["object_marking_ids"]
+                    if "object_marking_ids" in extras
+                    else None
+                ),
+                objectLabel=(
+                    extras["object_label_ids"] if "object_label_ids" in extras else None
+                ),
                 objects=extras["object_ids"] if "object_ids" in extras else [],
-                externalReferences=(extras["external_references_ids"]
-                                    if "external_references_ids" in extras else
-                                    None),
-                revoked=stix_object["revoked"]
-                if "revoked" in stix_object else None,
-                confidence=(stix_object["confidence"]
-                            if "confidence" in stix_object else None),
+                externalReferences=(
+                    extras["external_references_ids"]
+                    if "external_references_ids" in extras
+                    else None
+                ),
+                revoked=stix_object["revoked"] if "revoked" in stix_object else None,
+                confidence=(
+                    stix_object["confidence"] if "confidence" in stix_object else None
+                ),
                 lang=stix_object["lang"] if "lang" in stix_object else None,
-                created=stix_object["created"]
-                if "created" in stix_object else None,
-                modified=stix_object["modified"]
-                if "modified" in stix_object else None,
-                explanation=(self.opencti.stix2.convert_markdown(
-                    stix_object["explanation"])
-                             if "explanation" in stix_object else None),
-                authors=stix_object["authors"]
-                if "authors" in stix_object else None,
-                x_opencti_stix_ids=(stix_object["x_opencti_stix_ids"]
-                                    if "x_opencti_stix_ids" in stix_object else
-                                    None),
-                opinion=stix_object["opinion"]
-                if "opinion" in stix_object else None,
-                objectOrganization=(stix_object["x_opencti_granted_refs"]
-                                    if "x_opencti_granted_refs" in stix_object
-                                    else None),
+                created=stix_object["created"] if "created" in stix_object else None,
+                modified=stix_object["modified"] if "modified" in stix_object else None,
+                explanation=(
+                    self.opencti.stix2.convert_markdown(stix_object["explanation"])
+                    if "explanation" in stix_object
+                    else None
+                ),
+                authors=stix_object["authors"] if "authors" in stix_object else None,
+                x_opencti_stix_ids=(
+                    stix_object["x_opencti_stix_ids"]
+                    if "x_opencti_stix_ids" in stix_object
+                    else None
+                ),
+                opinion=stix_object["opinion"] if "opinion" in stix_object else None,
+                objectOrganization=(
+                    stix_object["x_opencti_granted_refs"]
+                    if "x_opencti_granted_refs" in stix_object
+                    else None
+                ),
                 update=update,
             )
         else:
             self.opencti.app_logger.error(
-                "[opencti_opinion] Missing parameters: stixObject")
+                "[opencti_opinion] Missing parameters: stixObject"
+            )

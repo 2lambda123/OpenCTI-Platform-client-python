@@ -423,9 +423,7 @@ class Feedback:
         name = name.lower().strip()
         data = {"name": name}
         data = canonicalize(data, utf8=False)
-        id = str(
-            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
-                       data))
+        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
         return "feedback--" + id
 
     @staticmethod
@@ -466,18 +464,22 @@ class Feedback:
         if get_all:
             first = 500
 
-        self.opencti.app_logger.info("Listing Feedbacks with filters",
-                                     {"filters": json.dumps(filters)})
+        self.opencti.app_logger.info(
+            "Listing Feedbacks with filters", {"filters": json.dumps(filters)}
+        )
         query = (
             """
                 query Feedbacks($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: FeedbacksOrdering, $orderMode: OrderingMode) {
                     feedbacks(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                         edges {
                             node {
-                                """ +
-            (custom_attributes if custom_attributes is not None else
-             (self.properties_with_files if with_files else self.properties)) +
-            """
+                                """
+            + (
+                custom_attributes
+                if custom_attributes is not None
+                else (self.properties_with_files if with_files else self.properties)
+            )
+            + """
                         }
                     }
                     pageInfo {
@@ -489,7 +491,8 @@ class Feedback:
                     }
                 }
             }
-        """)
+        """
+        )
         result = self.opencti.query(
             query,
             {
@@ -507,8 +510,7 @@ class Feedback:
             final_data = final_data + data
             while result["data"]["feedbacks"]["pageInfo"]["hasNextPage"]:
                 after = result["date"]["feedbacks"]["pageInfo"]["endCursor"]
-                self.opencti.app_logger.info("Listing Feedbacks",
-                                             {"after": after})
+                self.opencti.app_logger.info("Listing Feedbacks", {"after": after})
                 result = self.opencti.query(
                     query,
                     {
@@ -520,13 +522,13 @@ class Feedback:
                         "orderMode": order_mode,
                     },
                 )
-                data = self.opencti.process_multiple(
-                    result["data"]["feedbacks"])
+                data = self.opencti.process_multiple(result["data"]["feedbacks"])
                 final_data = final_data + data
             return final_data
         else:
-            return self.opencti.process_multiple(result["data"]["feedbacks"],
-                                                 with_pagination)
+            return self.opencti.process_multiple(
+                result["data"]["feedbacks"], with_pagination
+            )
 
     """
         Read a Feedback object
@@ -548,19 +550,23 @@ class Feedback:
         with_files = kwargs.get("withFiles", False)
         if id is not None:
             self.opencti.app_logger.info("Reading Feedback", {"id": id})
-            query = ("""
+            query = (
+                """
                     query Feedback($id: String!) {
                         feedback(id: $id) {
-                            """ +
-                     (custom_attributes if custom_attributes is not None else
-                      (self.properties_with_files
-                       if with_files else self.properties)) + """
+                            """
+                + (
+                    custom_attributes
+                    if custom_attributes is not None
+                    else (self.properties_with_files if with_files else self.properties)
+                )
+                + """
                     }
                 }
-            """)
+            """
+            )
             result = self.opencti.query(query, {"id": id})
-            return self.opencti.process_multiple_fields(
-                result["data"]["feedback"])
+            return self.opencti.process_multiple_fields(result["data"]["feedback"])
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -590,23 +596,15 @@ class Feedback:
         custom_attributes = kwargs.get("customAttributes", None)
         object_result = None
         if stix_id is not None:
-            object_result = self.read(id=stix_id,
-                                      customAttributes=custom_attributes)
+            object_result = self.read(id=stix_id, customAttributes=custom_attributes)
         if object_result is None and name is not None and created is not None:
             created_final = parse(created).strftime("%Y-%m-%d")
             object_result = self.read(
                 filters={
-                    "mode":
-                    "and",
+                    "mode": "and",
                     "filters": [
-                        {
-                            "key": "name",
-                            "values": [name]
-                        },
-                        {
-                            "key": "created_day",
-                            "values": [created_final]
-                        },
+                        {"key": "name", "values": [name]},
+                        {"key": "created_day", "values": [created_final]},
                     ],
                     "filterGroups": [],
                 },
@@ -630,13 +628,13 @@ class Feedback:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None)
+            "stixObjectOrStixRelationshipId", None
+        )
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Checking StixObjectOrStixRelationship in Feedback",
                 {
-                    "stix_object_or_stix_relationship_id":
-                    stix_object_or_stix_relationship_id,
+                    "stix_object_or_stix_relationship_id": stix_object_or_stix_relationship_id,
                     "id": id,
                 },
             )
@@ -648,14 +646,11 @@ class Feedback:
             result = self.opencti.query(
                 query,
                 {
-                    "id":
-                    id,
-                    "stixObjectOrStixRelationshipId":
-                    stix_object_or_stix_relationship_id,
+                    "id": id,
+                    "stixObjectOrStixRelationshipId": stix_object_or_stix_relationship_id,
                 },
             )
-            return result["data"][
-                "feedbackContainsStixObjectOrStixRelationship"]
+            return result["data"]["feedbackContainsStixObjectOrStixRelationship"]
         else:
             self.opencti.app_logger.error(
                 "[opencti_feedback] Missing parameters: id or stixObjectOrStixRelationshipId"
@@ -728,11 +723,9 @@ class Feedback:
                     }
                 },
             )
-            return self.opencti.process_multiple_fields(
-                result["data"]["feedbackAdd"])
+            return self.opencti.process_multiple_fields(result["data"]["feedbackAdd"])
         else:
-            self.opencti.app_logger.error(
-                "[opencti_feedback] Missing parameters: name")
+            self.opencti.app_logger.error("[opencti_feedback] Missing parameters: name")
 
     def update_field(self, **kwargs):
         """
@@ -740,8 +733,7 @@ class Feedback:
         :param **kwargs:
 
         """
-        self.opencti.app_logger.info("Updating Feedback",
-                                     {"data": json.dumps(kwargs)})
+        self.opencti.app_logger.info("Updating Feedback", {"data": json.dumps(kwargs)})
         id = kwargs.get("id", None)
         input = kwargs.get("input", None)
         if id is not None and input is not None:
@@ -760,10 +752,12 @@ class Feedback:
                     """
             result = self.opencti.query(query, {"id": id, "input": input})
             return self.opencti.process_multiple_fields(
-                result["data"]["stixDomainObjectEdit"]["fieldPatch"])
+                result["data"]["stixDomainObjectEdit"]["fieldPatch"]
+            )
         else:
             self.opencti.app_logger.error(
-                "[opencti_feedback] Missing parameters: id and key and value")
+                "[opencti_feedback] Missing parameters: id and key and value"
+            )
             return None
         """
         Add a Stix-Entity object to Feedback object (object_refs)
@@ -781,13 +775,13 @@ class Feedback:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None)
+            "stixObjectOrStixRelationshipId", None
+        )
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Adding StixObjectOrStixRelationship in Feedback",
                 {
-                    "stix_object_or_stix_relationship_id":
-                    stix_object_or_stix_relationship_id,
+                    "stix_object_or_stix_relationship_id": stix_object_or_stix_relationship_id,
                     "id": id,
                 },
             )
@@ -832,13 +826,13 @@ class Feedback:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None)
+            "stixObjectOrStixRelationshipId", None
+        )
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Removing StixObjectOrStixRelationship in Feedback",
                 {
-                    "stix_object_or_stix_relationship_id":
-                    stix_object_or_stix_relationship_id,
+                    "stix_object_or_stix_relationship_id": stix_object_or_stix_relationship_id,
                     "id": id,
                 },
             )
@@ -884,52 +878,63 @@ class Feedback:
         if stix_object is not None:
             # Search in extensions
             if "x_opencti_stix_ids" not in stix_object:
-                stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "stix_ids", stix_object))
+                stix_object[
+                    "x_opencti_stix_ids"
+                ] = self.opencti.get_attribute_in_extension("stix_ids", stix_object)
             if "x_opencti_granted_refs" not in stix_object:
-                stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "granted_refs", stix_object))
+                stix_object[
+                    "x_opencti_granted_refs"
+                ] = self.opencti.get_attribute_in_extension("granted_refs", stix_object)
 
             return self.create(
                 stix_id=stix_object["id"],
-                createdBy=(extras["created_by_id"]
-                           if "created_by_id" in extras else None),
-                objectMarking=(extras["object_marking_ids"]
-                               if "object_marking_ids" in extras else None),
-                objectLabel=(extras["object_label_ids"]
-                             if "object_label_ids" in extras else None),
+                createdBy=(
+                    extras["created_by_id"] if "created_by_id" in extras else None
+                ),
+                objectMarking=(
+                    extras["object_marking_ids"]
+                    if "object_marking_ids" in extras
+                    else None
+                ),
+                objectLabel=(
+                    extras["object_label_ids"] if "object_label_ids" in extras else None
+                ),
                 objects=extras["object_ids"] if "object_ids" in extras else [],
-                externalReferences=(extras["external_references_ids"]
-                                    if "external_references_ids" in extras else
-                                    None),
-                revoked=stix_object["revoked"]
-                if "revoked" in stix_object else None,
-                confidence=(stix_object["confidence"]
-                            if "confidence" in stix_object else None),
+                externalReferences=(
+                    extras["external_references_ids"]
+                    if "external_references_ids" in extras
+                    else None
+                ),
+                revoked=stix_object["revoked"] if "revoked" in stix_object else None,
+                confidence=(
+                    stix_object["confidence"] if "confidence" in stix_object else None
+                ),
                 lang=stix_object["lang"] if "lang" in stix_object else None,
-                created=stix_object["created"]
-                if "created" in stix_object else None,
-                modified=stix_object["modified"]
-                if "modified" in stix_object else None,
+                created=stix_object["created"] if "created" in stix_object else None,
+                modified=stix_object["modified"] if "modified" in stix_object else None,
                 name=stix_object["name"],
-                description=(self.opencti.stix2.convert_markdown(
-                    stix_object["description"])
-                             if "description" in stix_object else None),
-                rating=stix_object["rating"]
-                if "rating" in stix_object else None,
-                x_opencti_stix_ids=(stix_object["x_opencti_stix_ids"]
-                                    if "x_opencti_stix_ids" in stix_object else
-                                    None),
-                objectOrganization=(stix_object["x_opencti_granted_refs"]
-                                    if "x_opencti_granted_refs" in stix_object
-                                    else None),
+                description=(
+                    self.opencti.stix2.convert_markdown(stix_object["description"])
+                    if "description" in stix_object
+                    else None
+                ),
+                rating=stix_object["rating"] if "rating" in stix_object else None,
+                x_opencti_stix_ids=(
+                    stix_object["x_opencti_stix_ids"]
+                    if "x_opencti_stix_ids" in stix_object
+                    else None
+                ),
+                objectOrganization=(
+                    stix_object["x_opencti_granted_refs"]
+                    if "x_opencti_granted_refs" in stix_object
+                    else None
+                ),
                 update=update,
             )
         else:
             self.opencti.app_logger.error(
-                "[opencti_feedback] Missing parameters: stixObject")
+                "[opencti_feedback] Missing parameters: stixObject"
+            )
 
     def delete(self, **kwargs):
         """
@@ -949,6 +954,5 @@ class Feedback:
              """
             self.opencti.query(query, {"id": id})
         else:
-            self.opencti.app_logger.error(
-                "[opencti_feedback] Missing parameters: id")
+            self.opencti.app_logger.error("[opencti_feedback] Missing parameters: id")
             return None

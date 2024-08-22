@@ -73,9 +73,7 @@ class ExternalReference:
         else:
             return None
         data = canonicalize(data, utf8=False)
-        id = str(
-            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
-                       data))
+        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
         return "external-reference--" + id
 
     @staticmethod
@@ -85,9 +83,9 @@ class ExternalReference:
         :param data:
 
         """
-        return ExternalReference.generate_id(data.get("url"),
-                                             data.get("source_name"),
-                                             data.get("external_id"))
+        return ExternalReference.generate_id(
+            data.get("url"), data.get("source_name"), data.get("external_id")
+        )
 
     """
         List External-Reference objects
@@ -116,18 +114,22 @@ class ExternalReference:
         if get_all:
             first = 100
 
-        self.opencti.app_logger.info("Listing External-Reference with filters",
-                                     {"filters": json.dumps(filters)})
+        self.opencti.app_logger.info(
+            "Listing External-Reference with filters", {"filters": json.dumps(filters)}
+        )
         query = (
             """
             query ExternalReferences($filters: FilterGroup, $first: Int, $after: ID, $orderBy: ExternalReferencesOrdering, $orderMode: OrderingMode) {
                 externalReferences(filters: $filters, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                     edges {
                         node {
-                            """ +
-            (custom_attributes if custom_attributes is not None else
-             (self.properties_with_files if with_files else self.properties)) +
-            """
+                            """
+            + (
+                custom_attributes
+                if custom_attributes is not None
+                else (self.properties_with_files if with_files else self.properties)
+            )
+            + """
                         }
                     }
                     pageInfo {
@@ -139,7 +141,8 @@ class ExternalReference:
                     }
                 }
             }
-        """)
+        """
+        )
         result = self.opencti.query(
             query,
             {
@@ -152,15 +155,13 @@ class ExternalReference:
         )
         if get_all:
             final_data = []
-            data = self.opencti.process_multiple(
-                result["data"]["externalReferences"])
+            data = self.opencti.process_multiple(result["data"]["externalReferences"])
             final_data = final_data + data
-            while result["data"]["externalReferences"]["pageInfo"][
-                    "hasNextPage"]:
-                after = result["data"]["externalReferences"]["pageInfo"][
-                    "endCursor"]
-                self.opencti.app_logger.info("Listing External-References",
-                                             {"after": after})
+            while result["data"]["externalReferences"]["pageInfo"]["hasNextPage"]:
+                after = result["data"]["externalReferences"]["pageInfo"]["endCursor"]
+                self.opencti.app_logger.info(
+                    "Listing External-References", {"after": after}
+                )
                 result = self.opencti.query(
                     query,
                     {
@@ -172,12 +173,14 @@ class ExternalReference:
                     },
                 )
                 data = self.opencti.process_multiple(
-                    result["data"]["externalReferences"])
+                    result["data"]["externalReferences"]
+                )
                 final_data = final_data + data
             return final_data
         else:
             return self.opencti.process_multiple(
-                result["data"]["externalReferences"], with_pagination)
+                result["data"]["externalReferences"], with_pagination
+            )
 
     """
         Read a External-Reference object
@@ -196,18 +199,22 @@ class ExternalReference:
         id = kwargs.get("id", None)
         filters = kwargs.get("filters", None)
         if id is not None:
-            self.opencti.app_logger.info("Reading External-Reference",
-                                         {"id": id})
-            query = ("""
+            self.opencti.app_logger.info("Reading External-Reference", {"id": id})
+            query = (
+                """
                 query ExternalReference($id: String!) {
                     externalReference(id: $id) {
-                        """ + self.properties + """
+                        """
+                + self.properties
+                + """
                     }
                 }
-            """)
+            """
+            )
             result = self.opencti.query(query, {"id": id})
             return self.opencti.process_multiple_fields(
-                result["data"]["externalReference"])
+                result["data"]["externalReference"]
+            )
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -244,15 +251,20 @@ class ExternalReference:
         update = kwargs.get("update", False)
 
         if source_name is not None or url is not None:
-            self.opencti.app_logger.info("Creating External Reference",
-                                         {"source_name": source_name})
-            query = ("""
+            self.opencti.app_logger.info(
+                "Creating External Reference", {"source_name": source_name}
+            )
+            query = (
+                """
                 mutation ExternalReferenceAdd($input: ExternalReferenceAddInput!) {
                     externalReferenceAdd(input: $input) {
-                        """ + self.properties + """
+                        """
+                + self.properties
+                + """
                     }
                 }
-            """)
+            """
+            )
             result = self.opencti.query(
                 query,
                 {
@@ -270,7 +282,8 @@ class ExternalReference:
                 },
             )
             return self.opencti.process_multiple_fields(
-                result["data"]["externalReferenceAdd"])
+                result["data"]["externalReferenceAdd"]
+            )
         else:
             self.opencti.app_logger.error(
                 "[opencti_external_reference] Missing parameters: source_name and url"
@@ -317,22 +330,19 @@ class ExternalReference:
                     mime_type = magic.from_file(file_name, mime=True)
             self.opencti.app_logger.info(
                 "Uploading a file in Stix-Domain-Object",
-                {
-                    "file": final_file_name,
-                    "id": id
-                },
+                {"file": final_file_name, "id": id},
             )
             return self.opencti.query(
                 query,
                 {
-                    "id":
-                    id,
+                    "id": id,
                     "file": (self.file(final_file_name, data, mime_type)),
-                    "version":
-                    version,
-                    "noTriggerImport":
-                    (no_trigger_import if isinstance(no_trigger_import, bool)
-                     else no_trigger_import == "True"),
+                    "version": version,
+                    "noTriggerImport": (
+                        no_trigger_import
+                        if isinstance(no_trigger_import, bool)
+                        else no_trigger_import == "True"
+                    ),
                 },
             )
         else:
@@ -358,8 +368,7 @@ class ExternalReference:
         id = kwargs.get("id", None)
         input = kwargs.get("input", None)
         if id is not None and input is not None:
-            self.opencti.app_logger.info("Updating External-Reference",
-                                         {"id": id})
+            self.opencti.app_logger.info("Updating External-Reference", {"id": id})
             query = """
                     mutation ExternalReferenceEdit($id: ID!, $input: [EditInput]!) {
                         externalReferenceEdit(id: $id) {
@@ -371,7 +380,8 @@ class ExternalReference:
                 """
             result = self.opencti.query(query, {"id": id, "input": input})
             return self.opencti.process_multiple_fields(
-                result["data"]["externalReferenceEdit"]["fieldPatch"])
+                result["data"]["externalReferenceEdit"]["fieldPatch"]
+            )
         else:
             self.opencti.app_logger.error(
                 "[opencti_external_reference] Missing parameters: id and key and value"
@@ -401,8 +411,7 @@ class ExternalReference:
 
         """
         id = kwargs.get("id", None)
-        self.opencti.app_logger.info("Listing files of External-Reference",
-                                     {"id": id})
+        self.opencti.app_logger.info("Listing files of External-Reference", {"id": id})
         query = """
             query externalReference($id: String!) {
                 externalReference(id: $id) {
@@ -424,5 +433,6 @@ class ExternalReference:
         """
         result = self.opencti.query(query, {"id": id})
         entity = self.opencti.process_multiple_fields(
-            result["data"]["externalReference"])
+            result["data"]["externalReference"]
+        )
         return entity["importFiles"]

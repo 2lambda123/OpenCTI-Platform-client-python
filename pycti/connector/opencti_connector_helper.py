@@ -13,16 +13,11 @@ import threading
 import time
 import uuid
 from queue import Queue
-from typing import Callable
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Union
+from typing import Callable, Dict, List, Optional, Union
 
 import pika
 from filigran_sseclient import SSEClient
-from pika.exceptions import NackError
-from pika.exceptions import UnroutableError
+from pika.exceptions import NackError, UnroutableError
 
 from pycti.api.opencti_api_client import OpenCTIApiClient
 from pycti.connector.opencti_connector import OpenCTIConnector
@@ -94,8 +89,11 @@ def get_config_variable(
     if isNumber:
         return int(result)
 
-    if (required and default is None and
-        (result is None or (isinstance(result, str) and len(result) == 0))):
+    if (
+        required
+        and default is None
+        and (result is None or (isinstance(result, str) and len(result) == 0))
+    ):
         raise ValueError("The configuration " + env_var + " is required")
 
     if isinstance(result, str) and len(result) == 0:
@@ -188,12 +186,11 @@ def create_mq_ssl_context(config) -> ssl.SSLContext:
     :param config:
 
     """
-    use_ssl_ca = get_config_variable("MQ_USE_SSL_CA", ["mq", "use_ssl_ca"],
-                                     config)
-    use_ssl_cert = get_config_variable("MQ_USE_SSL_CERT",
-                                       ["mq", "use_ssl_cert"], config)
-    use_ssl_key = get_config_variable("MQ_USE_SSL_KEY", ["mq", "use_ssl_key"],
-                                      config)
+    use_ssl_ca = get_config_variable("MQ_USE_SSL_CA", ["mq", "use_ssl_ca"], config)
+    use_ssl_cert = get_config_variable(
+        "MQ_USE_SSL_CERT", ["mq", "use_ssl_cert"], config
+    )
+    use_ssl_key = get_config_variable("MQ_USE_SSL_KEY", ["mq", "use_ssl_key"], config)
     use_ssl_reject_unauthorized = get_config_variable(
         "MQ_USE_SSL_REJECT_UNAUTHORIZED",
         ["mq", "use_ssl_reject_unauthorized"],
@@ -201,9 +198,9 @@ def create_mq_ssl_context(config) -> ssl.SSLContext:
         False,
         False,
     )
-    use_ssl_passphrase = get_config_variable("MQ_USE_SSL_PASSPHRASE",
-                                             ["mq", "use_ssl_passphrase"],
-                                             config)
+    use_ssl_passphrase = get_config_variable(
+        "MQ_USE_SSL_PASSPHRASE", ["mq", "use_ssl_passphrase"], config
+    )
     ssl_context = ssl.create_default_context()
     # If no rejection allowed, use private function to generate unverified context
     if not use_ssl_reject_unauthorized:
@@ -274,19 +271,18 @@ class ListenQueue(threading.Thread):
         # Not ACK the message here may lead to infinite re-deliver if the connector is broken
         # Also ACK, will not have any impact on the blocking aspect of the following functions
         channel.basic_ack(delivery_tag=method.delivery_tag)
-        self.helper.connector_logger.info("Message ack",
-                                          {"tag": method.delivery_tag})
+        self.helper.connector_logger.info("Message ack", {"tag": method.delivery_tag})
 
-        self.thread = threading.Thread(target=self._data_handler,
-                                       args=[json_data])
+        self.thread = threading.Thread(target=self._data_handler, args=[json_data])
         self.thread.start()
         five_minutes = 60 * 5
         time_wait = 0
         # Wait for end of execution of the _data_handler
         while self.thread.is_alive():  # Loop while the thread is processing
             self.pika_connection.sleep(0.05)
-            if (self.helper.work_id is not None
-                    and time_wait > five_minutes):  # Ping every 5 minutes
+            if (
+                self.helper.work_id is not None and time_wait > five_minutes
+            ):  # Ping every 5 minutes
                 self.helper.api.work.ping(self.helper.work_id)
                 time_wait = 0
             else:
@@ -318,10 +314,11 @@ class ListenQueue(threading.Thread):
                 # For enrichment connectors only, pre resolve the information
                 if entity_id is None:
                     raise ValueError(
-                        "Internal enrichment must be based on a specific id")
+                        "Internal enrichment must be based on a specific id"
+                    )
                 do_read = self.helper.api.stix2.get_reader(
-                    entity_type
-                    if entity_type is not None else "Stix-Core-Object")
+                    entity_type if entity_type is not None else "Stix-Core-Object"
+                )
                 opencti_entity = do_read(id=entity_id, withFiles=True)
                 if opencti_entity is None:
                     raise ValueError(
@@ -333,19 +330,17 @@ class ListenQueue(threading.Thread):
                 # If playbook, compute object on data bundle
                 if is_playbook:
                     execution_start = self.helper.date_now()
-                    event_id = json_data["internal"]["playbook"].get(
-                        "event_id")
-                    execution_id = json_data["internal"]["playbook"].get(
-                        "execution_id")
-                    playbook_id = json_data["internal"]["playbook"].get(
-                        "playbook_id")
+                    event_id = json_data["internal"]["playbook"].get("event_id")
+                    execution_id = json_data["internal"]["playbook"].get("execution_id")
+                    playbook_id = json_data["internal"]["playbook"].get("playbook_id")
                     data_instance_id = json_data["internal"]["playbook"].get(
-                        "data_instance_id")
-                    previous_bundle = json.dumps(
-                        (json_data["event"]["bundle"]))
+                        "data_instance_id"
+                    )
+                    previous_bundle = json.dumps((json_data["event"]["bundle"]))
                     step_id = json_data["internal"]["playbook"]["step_id"]
                     previous_step_id = json_data["internal"]["playbook"][
-                        "previous_step_id"]
+                        "previous_step_id"
+                    ]
                     playbook_data = {
                         "event_id": event_id,
                         "execution_id": execution_id,
@@ -360,18 +355,19 @@ class ListenQueue(threading.Thread):
                     bundle = event_data["bundle"]
                     stix_objects = bundle["objects"]
                     event_data["stix_objects"] = stix_objects
-                    stix_entity = [
-                        e for e in stix_objects if e["id"] == entity_id
-                    ][0]
+                    stix_entity = [e for e in stix_objects if e["id"] == entity_id][0]
                     event_data["stix_entity"] = stix_entity
                 else:
                     # If not playbook but enrichment, compute object on enrichment_entity
                     opencti_entity = event_data["enrichment_entity"]
                     stix_objects = self.helper.api.stix2.prepare_export(
                         entity=self.helper.api.stix2.generate_export(
-                            copy.copy(opencti_entity)))
+                            copy.copy(opencti_entity)
+                        )
+                    )
                     stix_entity = [
-                        e for e in stix_objects
+                        e
+                        for e in stix_objects
                         if e["id"] == opencti_entity["standard_id"]
                     ][0]
                     event_data["stix_objects"] = stix_objects
@@ -380,25 +376,29 @@ class ListenQueue(threading.Thread):
                 # Keep the sharing to be re-apply automatically at send_stix_bundle stage
                 if "x_opencti_granted_refs" in event_data["stix_entity"]:
                     self.helper.enrichment_shared_organizations = event_data[
-                        "stix_entity"]["x_opencti_granted_refs"]
+                        "stix_entity"
+                    ]["x_opencti_granted_refs"]
                 else:
                     self.helper.enrichment_shared_organizations = (
                         self.helper.get_attribute_in_extension(
-                            "granted_refs", event_data["stix_entity"]))
+                            "granted_refs", event_data["stix_entity"]
+                        )
+                    )
 
             # Handle applicant_id for in-personalization
             self.helper.applicant_id = self.connector_applicant_id
             self.helper.api_impersonate.set_applicant_id_header(
-                self.connector_applicant_id)
+                self.connector_applicant_id
+            )
             applicant_id = json_data["internal"]["applicant_id"]
             if applicant_id is not None:
                 self.helper.applicant_id = applicant_id
-                self.helper.api_impersonate.set_applicant_id_header(
-                    applicant_id)
+                self.helper.api_impersonate.set_applicant_id_header(applicant_id)
 
             if work_id:
                 self.helper.api.work.to_received(
-                    work_id, "Connector ready to process the operation")
+                    work_id, "Connector ready to process the operation"
+                )
             # Send the enriched to the callback
             message = self.callback(event_data)
             if work_id:
@@ -407,36 +407,37 @@ class ListenQueue(threading.Thread):
         except Exception as e:  # pylint: disable=broad-except
             self.helper.metric.inc("error_count")
             self.helper.connector_logger.error(
-                "Error in message processing, reporting error to API")
+                "Error in message processing, reporting error to API"
+            )
             if work_id:
                 try:
                     self.helper.api.work.to_processed(work_id, str(e), True)
                 except:  # pylint: disable=bare-except
                     self.helper.metric.inc("error_count")
                     self.helper.connector_logger.error(
-                        "Failing reporting the processing")
+                        "Failing reporting the processing"
+                    )
 
     def run(self) -> None:
         """ """
         self.helper.connector_logger.info("Starting ListenQueue thread")
         while not self.exit_event.is_set():
             try:
-                self.helper.connector_logger.info(
-                    "ListenQueue connecting to rabbitMq.")
+                self.helper.connector_logger.info("ListenQueue connecting to rabbitMq.")
                 # Connect the broker
-                self.pika_credentials = pika.PlainCredentials(
-                    self.user, self.password)
+                self.pika_credentials = pika.PlainCredentials(self.user, self.password)
                 self.pika_parameters = pika.ConnectionParameters(
                     host=self.host,
                     port=self.port,
                     virtual_host=self.vhost,
                     credentials=self.pika_credentials,
-                    ssl_options=(pika.SSLOptions(
-                        create_mq_ssl_context(self.config), self.host)
-                                 if self.use_ssl else None),
+                    ssl_options=(
+                        pika.SSLOptions(create_mq_ssl_context(self.config), self.host)
+                        if self.use_ssl
+                        else None
+                    ),
                 )
-                self.pika_connection = pika.BlockingConnection(
-                    self.pika_parameters)
+                self.pika_connection = pika.BlockingConnection(self.pika_parameters)
                 self.channel = self.pika_connection.channel()
                 try:
                     # confirm_delivery is only for cluster mode rabbitMQ
@@ -447,25 +448,25 @@ class ListenQueue(threading.Thread):
                 self.channel.basic_qos(prefetch_count=1)
                 assert self.channel is not None
                 self.channel.basic_consume(
-                    queue=self.queue_name,
-                    on_message_callback=self._process_message)
+                    queue=self.queue_name, on_message_callback=self._process_message
+                )
                 self.channel.start_consuming()
             except Exception as err:  # pylint: disable=broad-except
                 try:
                     self.pika_connection.close()
                 except Exception as errInException:
                     self.helper.connector_logger.debug(
-                        type(errInException).__name__,
-                        {"reason": str(errInException)})
+                        type(errInException).__name__, {"reason": str(errInException)}
+                    )
                 self.helper.connector_logger.error(
-                    type(err).__name__, {"reason": str(err)})
+                    type(err).__name__, {"reason": str(err)}
+                )
                 # Wait some time and then retry ListenQueue again.
                 time.sleep(10)
 
     def stop(self):
         """ """
-        self.helper.connector_logger.info(
-            "Preparing ListenQueue for clean shutdown")
+        self.helper.connector_logger.info("Preparing ListenQueue for clean shutdown")
         self.exit_event.set()
         self.pika_connection.close()
         if self.thread:
@@ -475,8 +476,9 @@ class ListenQueue(threading.Thread):
 class PingAlive(threading.Thread):
     """ """
 
-    def __init__(self, connector_logger, connector_id, api, get_state,
-                 set_state, metric) -> None:
+    def __init__(
+        self, connector_logger, connector_id, api, get_state, set_state, metric
+    ) -> None:
         threading.Thread.__init__(self, daemon=True)
         self.connector_logger = connector_logger
         self.connector_id = connector_id
@@ -493,12 +495,13 @@ class PingAlive(threading.Thread):
             try:
                 self.connector_logger.debug("PingAlive running.")
                 initial_state = self.get_state()
-                result = self.api.connector.ping(self.connector_id,
-                                                 initial_state)
-                remote_state = (json.loads(result["connector_state"])
-                                if result["connector_state"] is not None
-                                and len(result["connector_state"]) > 0 else
-                                None)
+                result = self.api.connector.ping(self.connector_id, initial_state)
+                remote_state = (
+                    json.loads(result["connector_state"])
+                    if result["connector_state"] is not None
+                    and len(result["connector_state"]) > 0
+                    else None
+                )
                 if initial_state != remote_state:
                     self.set_state(result["connector_state"])
                     self.connector_logger.info(
@@ -512,8 +515,7 @@ class PingAlive(threading.Thread):
             except Exception as e:  # pylint: disable=broad-except
                 self.in_error = True
                 self.metric.inc("ping_api_error")
-                self.connector_logger.error("Error pinging the API",
-                                            {"reason": str(e)})
+                self.connector_logger.error("Error pinging the API", {"reason": str(e)})
             self.exit_event.wait(40)
 
     def run(self) -> None:
@@ -555,18 +557,18 @@ class StreamAlive(threading.Thread):
                         )
                         break
             self.helper.connector_logger.info(
-                "Exit event in StreamAlive loop, stopping process.")
+                "Exit event in StreamAlive loop, stopping process."
+            )
             sys.excepthook(*sys.exc_info())
         except Exception as ex:
             self.helper.connector_logger.error(
-                "Error in StreamAlive loop, stopping process.",
-                {"reason": str(ex)})
+                "Error in StreamAlive loop, stopping process.", {"reason": str(ex)}
+            )
             sys.excepthook(*sys.exc_info())
 
     def stop(self) -> None:
         """ """
-        self.helper.connector_logger.info(
-            "Preparing StreamAlive for clean shutdown")
+        self.helper.connector_logger.info("Preparing StreamAlive for clean shutdown")
         self.exit_event.set()
 
 
@@ -615,10 +617,9 @@ class ListenStream(threading.Thread):
                 # First run, if no recover iso date in config, put today
                 if recover_until is None:
                     recover_until = self.helper.date_now_z()
-                self.helper.set_state({
-                    "start_from": start_from,
-                    "recover_until": recover_until
-                })
+                self.helper.set_state(
+                    {"start_from": start_from, "recover_until": recover_until}
+                )
             else:
                 # Get start_from from state
                 # Backward compat
@@ -643,12 +644,12 @@ class ListenStream(threading.Thread):
             live_stream_url = self.url
             # In case no recover is explicitely set
             if recover_until is not False and recover_until not in [
-                    "no",
-                    "none",
-                    "No",
-                    "None",
-                    "false",
-                    "False",
+                "no",
+                "none",
+                "No",
+                "None",
+                "false",
+                "False",
             ]:
                 live_stream_url = live_stream_url + "?recover=" + recover_until
             listen_delete = str(self.listen_delete).lower()
@@ -704,13 +705,13 @@ class ListenStream(threading.Thread):
                         self.helper.set_state(state)
         except Exception as ex:
             self.helper.connector_logger.error(
-                "Error in ListenStream loop, exit.", {"reason": str(ex)})
+                "Error in ListenStream loop, exit.", {"reason": str(ex)}
+            )
             sys.excepthook(*sys.exc_info())
 
     def stop(self):
         """ """
-        self.helper.connector_logger.info(
-            "Preparing ListenStream for clean shutdown")
+        self.helper.connector_logger.info("Preparing ListenStream for clean shutdown")
         self.exit_event.set()
 
 
@@ -727,21 +728,25 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
 
         # Load API config
         self.config = config
-        self.opencti_url = get_config_variable("OPENCTI_URL",
-                                               ["opencti", "url"], config)
-        self.opencti_token = get_config_variable("OPENCTI_TOKEN",
-                                                 ["opencti", "token"], config)
+        self.opencti_url = get_config_variable(
+            "OPENCTI_URL", ["opencti", "url"], config
+        )
+        self.opencti_token = get_config_variable(
+            "OPENCTI_TOKEN", ["opencti", "token"], config
+        )
         self.opencti_ssl_verify = get_config_variable(
-            "OPENCTI_SSL_VERIFY", ["opencti", "ssl_verify"], config, False,
-            True)
+            "OPENCTI_SSL_VERIFY", ["opencti", "ssl_verify"], config, False, True
+        )
         self.opencti_json_logging = get_config_variable(
-            "OPENCTI_JSON_LOGGING", ["opencti", "json_logging"], config, False,
-            True)
+            "OPENCTI_JSON_LOGGING", ["opencti", "json_logging"], config, False, True
+        )
         # Load connector config
-        self.connect_id = get_config_variable("CONNECTOR_ID",
-                                              ["connector", "id"], config)
-        self.connect_type = get_config_variable("CONNECTOR_TYPE",
-                                                ["connector", "type"], config)
+        self.connect_id = get_config_variable(
+            "CONNECTOR_ID", ["connector", "id"], config
+        )
+        self.connect_type = get_config_variable(
+            "CONNECTOR_TYPE", ["connector", "type"], config
+        )
         self.connect_live_stream_id = get_config_variable(
             "CONNECTOR_LIVE_STREAM_ID",
             ["connector", "live_stream_id"],
@@ -780,15 +785,16 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
             ["connector", "live_stream_start_timestamp"],
             config,
         )
-        self.connect_name = get_config_variable("CONNECTOR_NAME",
-                                                ["connector", "name"], config)
+        self.connect_name = get_config_variable(
+            "CONNECTOR_NAME", ["connector", "name"], config
+        )
         self.connect_confidence_level = None  # Deprecated since OpenCTI version >= 6.0
-        self.connect_scope = get_config_variable("CONNECTOR_SCOPE",
-                                                 ["connector", "scope"],
-                                                 config)
-        self.connect_auto = get_config_variable("CONNECTOR_AUTO",
-                                                ["connector", "auto"], config,
-                                                False, False)
+        self.connect_scope = get_config_variable(
+            "CONNECTOR_SCOPE", ["connector", "scope"], config
+        )
+        self.connect_auto = get_config_variable(
+            "CONNECTOR_AUTO", ["connector", "auto"], config, False, False
+        )
         self.bundle_send_to_queue = get_config_variable(
             "CONNECTOR_SEND_TO_QUEUE",
             ["connector", "send_to_queue"],
@@ -829,10 +835,9 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
             False,
             False,
         )
-        self.log_level = get_config_variable("CONNECTOR_LOG_LEVEL",
-                                             ["connector", "log_level"],
-                                             config,
-                                             default="INFO").upper()
+        self.log_level = get_config_variable(
+            "CONNECTOR_LOG_LEVEL", ["connector", "log_level"], config, default="INFO"
+        ).upper()
         self.connect_run_and_terminate = get_config_variable(
             "CONNECTOR_RUN_AND_TERMINATE",
             ["connector", "run_and_terminate"],
@@ -855,9 +860,9 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
             False,
             False,
         )
-        metrics_port = get_config_variable("CONNECTOR_METRICS_PORT",
-                                           ["connector", "metrics_port"],
-                                           config, True, 9095)
+        metrics_port = get_config_variable(
+            "CONNECTOR_METRICS_PORT", ["connector", "metrics_port"], config, True, 9095
+        )
 
         # Initialize configuration
         # - Classic API that will be directly attached to the connector rights
@@ -885,8 +890,9 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         self.log_error = self.connector_logger.error
         # For retro compatibility
 
-        self.metric = OpenCTIMetricHandler(self.connector_logger,
-                                           expose_metrics, metrics_port)
+        self.metric = OpenCTIMetricHandler(
+            self.connector_logger, expose_metrics, metrics_port
+        )
         # Register the connector in OpenCTI
         self.connector = OpenCTIConnector(
             self.connect_id,
@@ -898,8 +904,9 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
             playbook_compatible,
         )
         connector_configuration = self.api.connector.register(self.connector)
-        self.connector_logger.info("Connector registered with ID",
-                                   {"id": self.connect_id})
+        self.connector_logger.info(
+            "Connector registered with ID", {"id": self.connect_id}
+        )
         self.work_id = None
         self.playbook = None
         self.enrichment_shared_organizations = None
@@ -960,8 +967,7 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
                         }
                     }
                 """
-                result = self.api.query(query,
-                                        {"id": self.connect_live_stream_id})
+                result = self.api.query(query, {"id": self.connect_live_stream_id})
                 return result["data"]["streamCollection"]
         else:
             raise ValueError("This connector is not connected to any stream")
@@ -1012,15 +1018,17 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         try:
             initial_state = self.get_state()
             result = self.api.connector.ping(self.connector_id, initial_state)
-            remote_state = (json.loads(result["connector_state"])
-                            if result["connector_state"] is not None
-                            and len(result["connector_state"]) > 0 else None)
+            remote_state = (
+                json.loads(result["connector_state"])
+                if result["connector_state"] is not None
+                and len(result["connector_state"]) > 0
+                else None
+            )
             if initial_state != remote_state:
                 self.api.connector.ping(self.connector_id, initial_state)
         except Exception as e:  # pylint: disable=broad-except
             self.metric.inc("error_count")
-            self.connector_logger.error("Error pinging the API",
-                                        {"reason": str(e)})
+            self.connector_logger.error("Error pinging the API", {"reason": str(e)})
 
     def listen(
         self,
@@ -1089,27 +1097,34 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         elif listen_delete is None:
             listen_delete = False
         # No deps
-        if (no_dependencies is None
-                and self.connect_live_stream_no_dependencies is not None):
+        if (
+            no_dependencies is None
+            and self.connect_live_stream_no_dependencies is not None
+        ):
             no_dependencies = self.connect_live_stream_no_dependencies
         elif no_dependencies is None:
             no_dependencies = False
         # With inferences
-        if (with_inferences is None
-                and self.connect_live_stream_with_inferences is not None):
+        if (
+            with_inferences is None
+            and self.connect_live_stream_with_inferences is not None
+        ):
             with_inferences = self.connect_live_stream_with_inferences
         elif with_inferences is None:
             with_inferences = False
         # Start timestamp
-        if (start_timestamp is None
-                and self.connect_live_stream_start_timestamp is not None):
-            start_timestamp = str(
-                self.connect_live_stream_start_timestamp) + "-0"
+        if (
+            start_timestamp is None
+            and self.connect_live_stream_start_timestamp is not None
+        ):
+            start_timestamp = str(self.connect_live_stream_start_timestamp) + "-0"
         elif start_timestamp is not None:
             start_timestamp = str(start_timestamp) + "-0"
         # Recover ISO date
-        if (recover_iso_date is None
-                and self.connect_live_stream_recover_iso_date is not None):
+        if (
+            recover_iso_date is None
+            and self.connect_live_stream_recover_iso_date is not None
+        ):
             recover_iso_date = self.connect_live_stream_recover_iso_date
         # Generate the stream URL
         url = url + "/stream"
@@ -1152,8 +1167,11 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         :rtype: str
 
         """
-        return (datetime.datetime.utcnow().replace(
-            microsecond=0, tzinfo=datetime.timezone.utc).isoformat())
+        return (
+            datetime.datetime.utcnow()
+            .replace(microsecond=0, tzinfo=datetime.timezone.utc)
+            .isoformat()
+        )
 
     def date_now_z(self) -> str:
         """get the current date (UTC)
@@ -1164,9 +1182,12 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         :rtype: str
 
         """
-        return (datetime.datetime.utcnow().replace(
-            microsecond=0,
-            tzinfo=datetime.timezone.utc).isoformat().replace("+00:00", "Z"))
+        return (
+            datetime.datetime.utcnow()
+            .replace(microsecond=0, tzinfo=datetime.timezone.utc)
+            .isoformat()
+            .replace("+00:00", "Z")
+        )
 
     # Push Stix2 helper
     def send_stix2_bundle(self, bundle: str, **kwargs) -> list:
@@ -1194,47 +1215,59 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         bypass_validation = kwargs.get("bypass_validation", False)
         entity_id = kwargs.get("entity_id", None)
         file_name = kwargs.get("file_name", None)
-        bundle_send_to_queue = kwargs.get("send_to_queue",
-                                          self.bundle_send_to_queue)
-        keep_original_id = kwargs.get("keep_original_id",
-                                      self.keep_original_id)
-        bundle_send_to_directory = kwargs.get("send_to_directory",
-                                              self.bundle_send_to_directory)
+        bundle_send_to_queue = kwargs.get("send_to_queue", self.bundle_send_to_queue)
+        keep_original_id = kwargs.get("keep_original_id", self.keep_original_id)
+        bundle_send_to_directory = kwargs.get(
+            "send_to_directory", self.bundle_send_to_directory
+        )
         bundle_send_to_directory_path = kwargs.get(
-            "send_to_directory_path", self.bundle_send_to_directory_path)
+            "send_to_directory_path", self.bundle_send_to_directory_path
+        )
         bundle_send_to_directory_retention = kwargs.get(
-            "send_to_directory_retention",
-            self.bundle_send_to_directory_retention)
+            "send_to_directory_retention", self.bundle_send_to_directory_retention
+        )
 
         # Bundle ids must be rewritten
         bundle = self.api.stix2.prepare_bundle_ids(
-            bundle=bundle, use_json=True, keep_original_id=keep_original_id)
+            bundle=bundle, use_json=True, keep_original_id=keep_original_id
+        )
 
         # In case of enrichment ingestion, ensure the sharing if needed
         if self.enrichment_shared_organizations is not None:
             # Every element of the bundle must be enriched with the same organizations
             bundle_data = json.loads(bundle)
             for item in bundle_data["objects"]:
-                if ("extensions" in item and
-                        "extension-definition--ea279b3e-5c71-4632-ac08-831c66a786ba"
-                        in item["extensions"]):
+                if (
+                    "extensions" in item
+                    and "extension-definition--ea279b3e-5c71-4632-ac08-831c66a786ba"
+                    in item["extensions"]
+                ):
                     octi_extensions = item["extensions"][
-                        "extension-definition--ea279b3e-5c71-4632-ac08-831c66a786ba"]
+                        "extension-definition--ea279b3e-5c71-4632-ac08-831c66a786ba"
+                    ]
                     if octi_extensions.get("granted_refs") is not None:
                         octi_extensions["granted_refs"] = list(
-                            set(octi_extensions["granted_refs"] +
-                                self.enrichment_shared_organizations))
+                            set(
+                                octi_extensions["granted_refs"]
+                                + self.enrichment_shared_organizations
+                            )
+                        )
                     else:
-                        octi_extensions["granted_refs"] = (
-                            self.enrichment_shared_organizations)
+                        octi_extensions[
+                            "granted_refs"
+                        ] = self.enrichment_shared_organizations
                 else:
                     if item.get("x_opencti_granted_refs") is not None:
                         item["x_opencti_granted_refs"] = list(
-                            set(item["x_opencti_granted_refs"] +
-                                self.enrichment_shared_organizations))
+                            set(
+                                item["x_opencti_granted_refs"]
+                                + self.enrichment_shared_organizations
+                            )
+                        )
                     else:
-                        item["x_opencti_granted_refs"] = (
-                            self.enrichment_shared_organizations)
+                        item[
+                            "x_opencti_granted_refs"
+                        ] = self.enrichment_shared_organizations
             bundle = json.dumps(bundle_data)
 
         # If execution in playbook, callback the api
@@ -1264,11 +1297,16 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
                     "also_queuing": bundle_send_to_queue,
                 },
             )
-            bundle_file = (self.connect_name.lower().replace(" ", "_") + "-" +
-                           time.strftime("%Y%m%d-%H%M%S-") + str(time.time()) +
-                           ".json")
-            write_file = os.path.join(bundle_send_to_directory_path,
-                                      bundle_file + ".tmp")
+            bundle_file = (
+                self.connect_name.lower().replace(" ", "_")
+                + "-"
+                + time.strftime("%Y%m%d-%H%M%S-")
+                + str(time.time())
+                + ".json"
+            )
+            write_file = os.path.join(
+                bundle_send_to_directory_path, bundle_file + ".tmp"
+            )
             message_bundle = {
                 "bundle_type": "DIRECTORY_BUNDLE",
                 "applicant_id": self.applicant_id,
@@ -1278,8 +1316,7 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
                     "type": self.connect_type,
                     "scope": self.connect_scope,
                     "auto": self.connect_auto,
-                    "validate_before_import":
-                    self.connect_validate_before_import,
+                    "validate_before_import": self.connect_validate_before_import,
                 },
                 "entities_types": entities_types,
                 "bundle": json.loads(bundle),
@@ -1290,12 +1327,11 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
                 current_time = time.time()
                 for f in os.listdir(bundle_send_to_directory_path):
                     if f.endswith(".json"):
-                        file_location = os.path.join(
-                            bundle_send_to_directory_path, f)
+                        file_location = os.path.join(bundle_send_to_directory_path, f)
                         file_time = os.stat(file_location).st_mtime
                         is_expired_file = (
-                            file_time < current_time -
-                            86400 * bundle_send_to_directory_retention
+                            file_time
+                            < current_time - 86400 * bundle_send_to_directory_retention
                         )  # 86400 = 1 day
                         if is_expired_file:
                             os.remove(file_location)
@@ -1304,8 +1340,7 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
                 str_bundle = json.dumps(message_bundle)
                 f.write(str_bundle)
             # Rename the file after full write
-            final_write_file = os.path.join(bundle_send_to_directory_path,
-                                            bundle_file)
+            final_write_file = os.path.join(bundle_send_to_directory_path, bundle_file)
             os.rename(write_file, final_write_file)
 
         if bypass_split:
@@ -1313,9 +1348,12 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
             expectations_number = len(json.loads(bundle)["objects"])
         else:
             stix2_splitter = OpenCTIStix2Splitter()
-            expectations_number, bundles = (
-                stix2_splitter.split_bundle_with_expectations(
-                    bundle, True, event_version))
+            (
+                expectations_number,
+                bundles,
+            ) = stix2_splitter.split_bundle_with_expectations(
+                bundle, True, event_version
+            )
 
         if len(bundles) == 0:
             self.metric.inc("error_count")
@@ -1335,10 +1373,14 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
                 port=self.connector_config["connection"]["port"],
                 virtual_host=self.connector_config["connection"]["vhost"],
                 credentials=pika_credentials,
-                ssl_options=(pika.SSLOptions(
-                    create_mq_ssl_context(self.config),
-                    self.connector_config["connection"]["host"],
-                ) if self.connector_config["connection"]["use_ssl"] else None),
+                ssl_options=(
+                    pika.SSLOptions(
+                        create_mq_ssl_context(self.config),
+                        self.connector_config["connection"]["host"],
+                    )
+                    if self.connector_config["connection"]["use_ssl"]
+                    else None
+                ),
             )
             pika_connection = pika.BlockingConnection(pika_parameters)
             channel = pika_connection.channel()
@@ -1346,8 +1388,7 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
                 channel.confirm_delivery()
             except Exception as err:  # pylint: disable=broad-except
                 self.connector_logger.warning(str(err))
-            self.connector_logger.info(self.connect_name +
-                                       " sending bundle to queue")
+            self.connector_logger.info(self.connect_name + " sending bundle to queue")
             for sequence, bundle in enumerate(bundles, start=1):
                 self._send_bundle(
                     channel,
@@ -1393,18 +1434,14 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         # if self.current_work_id is None:
         #    raise ValueError('The job id must be specified')
         message = {
-            "bundle_type":
-            "QUEUE_BUNDLE",
-            "applicant_id":
-            self.applicant_id,
-            "action_sequence":
-            sequence,
-            "entities_types":
-            entities_types,
-            "content":
-            base64.b64encode(bundle.encode("utf-8", "escape")).decode("utf-8"),
-            "update":
-            update,
+            "bundle_type": "QUEUE_BUNDLE",
+            "applicant_id": self.applicant_id,
+            "action_sequence": sequence,
+            "entities_types": entities_types,
+            "content": base64.b64encode(bundle.encode("utf-8", "escape")).decode(
+                "utf-8"
+            ),
+            "update": update,
         }
         if work_id is not None:
             message["work_id"] = work_id
@@ -1416,8 +1453,7 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
                 routing_key=self.connector_config["push_routing"],
                 body=json.dumps(message),
                 properties=pika.BasicProperties(
-                    delivery_mode=2,
-                    content_encoding="utf-8"  # make message persistent
+                    delivery_mode=2, content_encoding="utf-8"  # make message persistent
                 ),
             )
             self.connector_logger.debug("Bundle has been sent")
@@ -1441,12 +1477,10 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         if "object_marking_refs" in item:
             for object_marking_ref in item["object_marking_refs"]:
                 if object_marking_ref in self.cache_index:
-                    object_marking_refs.append(
-                        self.cache_index[object_marking_ref])
+                    object_marking_refs.append(self.cache_index[object_marking_ref])
         # Created by ref
         created_by_ref = None
-        if "created_by_ref" in item and item[
-                "created_by_ref"] in self.cache_index:
+        if "created_by_ref" in item and item["created_by_ref"] in self.cache_index:
             created_by_ref = self.cache_index[item["created_by_ref"]]
 
         return {
@@ -1619,20 +1653,30 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         :param object:
 
         """
-        if ("extensions" in object and
+        if (
+            "extensions" in object
+            and "extension-definition--ea279b3e-5c71-4632-ac08-831c66a786ba"
+            in object["extensions"]
+            and key
+            in object["extensions"][
                 "extension-definition--ea279b3e-5c71-4632-ac08-831c66a786ba"
-                in object["extensions"] and key in object["extensions"]
-            ["extension-definition--ea279b3e-5c71-4632-ac08-831c66a786ba"]):
+            ]
+        ):
             return object["extensions"][
-                "extension-definition--ea279b3e-5c71-4632-ac08-831c66a786ba"][
-                    key]
-        elif ("extensions" in object
-              and "extension-definition--f93e2c80-4231-4f9a-af8b-95c9bd566a82"
-              in object["extensions"] and key in object["extensions"]
-              ["extension-definition--f93e2c80-4231-4f9a-af8b-95c9bd566a82"]):
+                "extension-definition--ea279b3e-5c71-4632-ac08-831c66a786ba"
+            ][key]
+        elif (
+            "extensions" in object
+            and "extension-definition--f93e2c80-4231-4f9a-af8b-95c9bd566a82"
+            in object["extensions"]
+            and key
+            in object["extensions"][
+                "extension-definition--f93e2c80-4231-4f9a-af8b-95c9bd566a82"
+            ]
+        ):
             return object["extensions"][
-                "extension-definition--f93e2c80-4231-4f9a-af8b-95c9bd566a82"][
-                    key]
+                "extension-definition--f93e2c80-4231-4f9a-af8b-95c9bd566a82"
+            ][key]
         elif key in object and key not in ["type"]:
             return object[key]
         return None
@@ -1645,13 +1689,18 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         :param object:
 
         """
-        if ("extensions" in object and
+        if (
+            "extensions" in object
+            and "extension-definition--322b8f77-262a-4cb8-a915-1e441e00329b"
+            in object["extensions"]
+            and key
+            in object["extensions"][
                 "extension-definition--322b8f77-262a-4cb8-a915-1e441e00329b"
-                in object["extensions"] and key in object["extensions"]
-            ["extension-definition--322b8f77-262a-4cb8-a915-1e441e00329b"]):
+            ]
+        ):
             return object["extensions"][
-                "extension-definition--322b8f77-262a-4cb8-a915-1e441e00329b"][
-                    key]
+                "extension-definition--322b8f77-262a-4cb8-a915-1e441e00329b"
+            ][key]
         return None
 
     def get_data_from_enrichment(self, data, standard_id, opencti_entity):
@@ -1667,8 +1716,8 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         if bundle is None:
             # Generate bundle
             stix_objects = self.api.stix2.prepare_export(
-                entity=self.api.stix2.generate_export(copy.copy(
-                    opencti_entity)))
+                entity=self.api.stix2.generate_export(copy.copy(opencti_entity))
+            )
         else:
             stix_objects = bundle["objects"]
         stix_entity = [e for e in stix_objects if e["id"] == standard_id][0]

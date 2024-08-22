@@ -223,14 +223,9 @@ class Identity:
         :param identity_class:
 
         """
-        data = {
-            "name": name.lower().strip(),
-            "identity_class": identity_class.lower()
-        }
+        data = {"name": name.lower().strip(), "identity_class": identity_class.lower()}
         data = canonicalize(data, utf8=False)
-        id = str(
-            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
-                       data))
+        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
         return "identity--" + id
 
     @staticmethod
@@ -273,18 +268,22 @@ class Identity:
         if get_all:
             first = 500
 
-        self.opencti.app_logger.info("Listing Identities with filters",
-                                     {"filters": json.dumps(filters)})
+        self.opencti.app_logger.info(
+            "Listing Identities with filters", {"filters": json.dumps(filters)}
+        )
         query = (
             """
             query Identities($types: [String], $filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: IdentitiesOrdering, $orderMode: OrderingMode) {
                 identities(types: $types, filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                     edges {
                         node {
-                            """ +
-            (custom_attributes if custom_attributes is not None else
-             (self.properties_with_files if with_files else self.properties)) +
-            """
+                            """
+            + (
+                custom_attributes
+                if custom_attributes is not None
+                else (self.properties_with_files if with_files else self.properties)
+            )
+            + """
                         }
                     }
                     pageInfo {
@@ -296,7 +295,8 @@ class Identity:
                     }
                 }
             }
-        """)
+        """
+        )
         result = self.opencti.query(
             query,
             {
@@ -315,8 +315,7 @@ class Identity:
             final_data = final_data + data
             while result["data"]["identities"]["pageInfo"]["hasNextPage"]:
                 after = result["data"]["identities"]["pageInfo"]["endCursor"]
-                self.opencti.app_logger.info("Listing Identities",
-                                             {"after": after})
+                self.opencti.app_logger.info("Listing Identities", {"after": after})
                 result = self.opencti.query(
                     query,
                     {
@@ -328,13 +327,13 @@ class Identity:
                         "orderMode": order_mode,
                     },
                 )
-                data = self.opencti.process_multiple(
-                    result["data"]["identities"])
+                data = self.opencti.process_multiple(result["data"]["identities"])
                 final_data = final_data + data
             return final_data
         else:
-            return self.opencti.process_multiple(result["data"]["identities"],
-                                                 with_pagination)
+            return self.opencti.process_multiple(
+                result["data"]["identities"], with_pagination
+            )
 
     """
         Read a Identity object
@@ -356,19 +355,23 @@ class Identity:
         with_files = kwargs.get("withFiles", False)
         if id is not None:
             self.opencti.app_logger.info("Reading Identity", {"id": id})
-            query = ("""
+            query = (
+                """
                 query Identity($id: String!) {
                     identity(id: $id) {
-                        """ +
-                     (custom_attributes if custom_attributes is not None else
-                      (self.properties_with_files
-                       if with_files else self.properties)) + """
+                        """
+                + (
+                    custom_attributes
+                    if custom_attributes is not None
+                    else (self.properties_with_files if with_files else self.properties)
+                )
+                + """
                     }
                 }
-             """)
+             """
+            )
             result = self.opencti.query(query, {"id": id})
-            return self.opencti.process_multiple_fields(
-                result["data"]["identity"])
+            return self.opencti.process_multiple_fields(result["data"]["identity"])
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -377,7 +380,8 @@ class Identity:
                 return None
         else:
             self.opencti.app_logger.error(
-                "[opencti_identity] Missing parameters: id or filters")
+                "[opencti_identity] Missing parameters: id or filters"
+            )
             return None
 
     """
@@ -409,8 +413,7 @@ class Identity:
         contact_information = kwargs.get("contact_information", None)
         roles = kwargs.get("roles", None)
         x_opencti_aliases = kwargs.get("x_opencti_aliases", None)
-        x_opencti_organization_type = kwargs.get("x_opencti_organization_type",
-                                                 None)
+        x_opencti_organization_type = kwargs.get("x_opencti_organization_type", None)
         x_opencti_reliability = kwargs.get("x_opencti_reliability", None)
         x_opencti_firstname = kwargs.get("x_opencti_firstname", None)
         x_opencti_lastname = kwargs.get("x_opencti_lastname", None)
@@ -451,10 +454,10 @@ class Identity:
                         }
                     }
                 """
-                input_variables["x_opencti_organization_type"] = (
-                    x_opencti_organization_type)
                 input_variables[
-                    "x_opencti_reliability"] = x_opencti_reliability
+                    "x_opencti_organization_type"
+                ] = x_opencti_organization_type
+                input_variables["x_opencti_reliability"] = x_opencti_reliability
                 result_data_field = "organizationAdd"
             elif type == IdentityTypes.INDIVIDUAL.value:
                 query = """
@@ -469,8 +472,7 @@ class Identity:
                 """
                 input_variables["x_opencti_firstname"] = x_opencti_firstname
                 input_variables["x_opencti_lastname"] = x_opencti_lastname
-                input_variables[
-                    "x_opencti_reliability"] = x_opencti_reliability
+                input_variables["x_opencti_reliability"] = x_opencti_reliability
                 result_data_field = "individualAdd"
             elif type == IdentityTypes.SYSTEM.value:
                 query = """
@@ -485,8 +487,7 @@ class Identity:
                 """
                 input_variables["x_opencti_firstname"] = x_opencti_firstname
                 input_variables["x_opencti_lastname"] = x_opencti_lastname
-                input_variables[
-                    "x_opencti_reliability"] = x_opencti_reliability
+                input_variables["x_opencti_reliability"] = x_opencti_reliability
                 result_data_field = "systemAdd"
             else:
                 query = """
@@ -508,10 +509,12 @@ class Identity:
                 },
             )
             return self.opencti.process_multiple_fields(
-                result["data"][result_data_field])
+                result["data"][result_data_field]
+            )
         else:
             self.opencti.app_logger.error(
-                "Missing parameters: type, name and description")
+                "Missing parameters: type, name and description"
+            )
 
     """
         Import an Identity object from a STIX2 object
@@ -541,89 +544,118 @@ class Identity:
 
             # Search in extensions
             if "x_opencti_aliases" not in stix_object:
-                stix_object["x_opencti_aliases"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "aliases", stix_object))
+                stix_object[
+                    "x_opencti_aliases"
+                ] = self.opencti.get_attribute_in_extension("aliases", stix_object)
             if "x_opencti_organization_type" not in stix_object:
-                stix_object["x_opencti_organization_type"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "organization_type", stix_object))
+                stix_object[
+                    "x_opencti_organization_type"
+                ] = self.opencti.get_attribute_in_extension(
+                    "organization_type", stix_object
+                )
             if "x_opencti_reliability" not in stix_object:
-                stix_object["x_opencti_reliability"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "reliability", stix_object))
+                stix_object[
+                    "x_opencti_reliability"
+                ] = self.opencti.get_attribute_in_extension("reliability", stix_object)
             if "x_opencti_organization_type" not in stix_object:
-                stix_object["x_opencti_organization_type"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "organization_type", stix_object))
+                stix_object[
+                    "x_opencti_organization_type"
+                ] = self.opencti.get_attribute_in_extension(
+                    "organization_type", stix_object
+                )
             if "x_opencti_firstname" not in stix_object:
-                stix_object["x_opencti_firstname"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "firstname", stix_object))
+                stix_object[
+                    "x_opencti_firstname"
+                ] = self.opencti.get_attribute_in_extension("firstname", stix_object)
             if "x_opencti_lastname" not in stix_object:
-                stix_object["x_opencti_lastname"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "lastname", stix_object))
+                stix_object[
+                    "x_opencti_lastname"
+                ] = self.opencti.get_attribute_in_extension("lastname", stix_object)
             if "x_opencti_stix_ids" not in stix_object:
-                stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "stix_ids", stix_object))
+                stix_object[
+                    "x_opencti_stix_ids"
+                ] = self.opencti.get_attribute_in_extension("stix_ids", stix_object)
             if "x_opencti_workflow_id" not in stix_object:
-                stix_object["x_opencti_workflow_id"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "x_opencti_workflow_id", stix_object))
+                stix_object[
+                    "x_opencti_workflow_id"
+                ] = self.opencti.get_attribute_in_extension(
+                    "x_opencti_workflow_id", stix_object
+                )
 
             return self.create(
                 type=type,
                 stix_id=stix_object["id"],
-                createdBy=(extras["created_by_id"]
-                           if "created_by_id" in extras else None),
-                objectMarking=(extras["object_marking_ids"]
-                               if "object_marking_ids" in extras else None),
-                objectLabel=(extras["object_label_ids"]
-                             if "object_label_ids" in extras else None),
-                externalReferences=(extras["external_references_ids"]
-                                    if "external_references_ids" in extras else
-                                    None),
-                revoked=stix_object["revoked"]
-                if "revoked" in stix_object else None,
-                confidence=(stix_object["confidence"]
-                            if "confidence" in stix_object else None),
+                createdBy=(
+                    extras["created_by_id"] if "created_by_id" in extras else None
+                ),
+                objectMarking=(
+                    extras["object_marking_ids"]
+                    if "object_marking_ids" in extras
+                    else None
+                ),
+                objectLabel=(
+                    extras["object_label_ids"] if "object_label_ids" in extras else None
+                ),
+                externalReferences=(
+                    extras["external_references_ids"]
+                    if "external_references_ids" in extras
+                    else None
+                ),
+                revoked=stix_object["revoked"] if "revoked" in stix_object else None,
+                confidence=(
+                    stix_object["confidence"] if "confidence" in stix_object else None
+                ),
                 lang=stix_object["lang"] if "lang" in stix_object else None,
-                created=stix_object["created"]
-                if "created" in stix_object else None,
-                modified=stix_object["modified"]
-                if "modified" in stix_object else None,
+                created=stix_object["created"] if "created" in stix_object else None,
+                modified=stix_object["modified"] if "modified" in stix_object else None,
                 name=stix_object["name"],
-                description=(self.opencti.stix2.convert_markdown(
-                    stix_object["description"])
-                             if "description" in stix_object else None),
-                contact_information=(self.opencti.stix2.convert_markdown(
-                    stix_object["contact_information"])
-                                     if "contact_information" in stix_object
-                                     else None),
+                description=(
+                    self.opencti.stix2.convert_markdown(stix_object["description"])
+                    if "description" in stix_object
+                    else None
+                ),
+                contact_information=(
+                    self.opencti.stix2.convert_markdown(
+                        stix_object["contact_information"]
+                    )
+                    if "contact_information" in stix_object
+                    else None
+                ),
                 roles=stix_object["roles"] if "roles" in stix_object else None,
                 x_opencti_aliases=self.opencti.stix2.pick_aliases(stix_object),
                 x_opencti_organization_type=(
                     stix_object["x_opencti_organization_type"]
-                    if "x_opencti_organization_type" in stix_object else None),
-                x_opencti_reliability=(stix_object["x_opencti_reliability"]
-                                       if "x_opencti_reliability"
-                                       in stix_object else None),
-                x_opencti_firstname=(stix_object["x_opencti_firstname"]
-                                     if "x_opencti_firstname" in stix_object
-                                     else None),
-                x_opencti_lastname=(stix_object["x_opencti_lastname"]
-                                    if "x_opencti_lastname" in stix_object else
-                                    None),
-                x_opencti_stix_ids=(stix_object["x_opencti_stix_ids"]
-                                    if "x_opencti_stix_ids" in stix_object else
-                                    None),
-                x_opencti_workflow_id=(stix_object["x_opencti_workflow_id"]
-                                       if "x_opencti_workflow_id"
-                                       in stix_object else None),
+                    if "x_opencti_organization_type" in stix_object
+                    else None
+                ),
+                x_opencti_reliability=(
+                    stix_object["x_opencti_reliability"]
+                    if "x_opencti_reliability" in stix_object
+                    else None
+                ),
+                x_opencti_firstname=(
+                    stix_object["x_opencti_firstname"]
+                    if "x_opencti_firstname" in stix_object
+                    else None
+                ),
+                x_opencti_lastname=(
+                    stix_object["x_opencti_lastname"]
+                    if "x_opencti_lastname" in stix_object
+                    else None
+                ),
+                x_opencti_stix_ids=(
+                    stix_object["x_opencti_stix_ids"]
+                    if "x_opencti_stix_ids" in stix_object
+                    else None
+                ),
+                x_opencti_workflow_id=(
+                    stix_object["x_opencti_workflow_id"]
+                    if "x_opencti_workflow_id" in stix_object
+                    else None
+                ),
                 update=update,
             )
         else:
             self.opencti.app_logger.error(
-                "[opencti_identity] Missing parameters: stixObject")
+                "[opencti_identity] Missing parameters: stixObject"
+            )

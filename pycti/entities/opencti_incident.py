@@ -229,9 +229,7 @@ class Incident:
             created = created.isoformat()
         data = {"name": name, "created": created}
         data = canonicalize(data, utf8=False)
-        id = str(
-            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
-                       data))
+        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
         return "incident--" + id
 
     @staticmethod
@@ -272,18 +270,22 @@ class Incident:
         if get_all:
             first = 100
 
-        self.opencti.app_logger.info("Listing Incidents with filters",
-                                     {"filters": json.dumps(filters)})
+        self.opencti.app_logger.info(
+            "Listing Incidents with filters", {"filters": json.dumps(filters)}
+        )
         query = (
             """
             query Incidents($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: IncidentsOrdering, $orderMode: OrderingMode) {
                 incidents(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                     edges {
                         node {
-                            """ +
-            (custom_attributes if custom_attributes is not None else
-             (self.properties_with_files if with_files else self.properties)) +
-            """
+                            """
+            + (
+                custom_attributes
+                if custom_attributes is not None
+                else (self.properties_with_files if with_files else self.properties)
+            )
+            + """
                         }
                     }
                     pageInfo {
@@ -295,7 +297,8 @@ class Incident:
                     }
                 }
             }
-        """)
+        """
+        )
         result = self.opencti.query(
             query,
             {
@@ -313,8 +316,7 @@ class Incident:
             final_data = final_data + data
             while result["data"]["incidents"]["pageInfo"]["hasNextPage"]:
                 after = result["data"]["incidents"]["pageInfo"]["endCursor"]
-                self.opencti.app_logger.info("Listing Incidents",
-                                             {"after": after})
+                self.opencti.app_logger.info("Listing Incidents", {"after": after})
                 result = self.opencti.query(
                     query,
                     {
@@ -326,13 +328,13 @@ class Incident:
                         "orderMode": order_mode,
                     },
                 )
-                data = self.opencti.process_multiple(
-                    result["data"]["incidents"])
+                data = self.opencti.process_multiple(result["data"]["incidents"])
                 final_data = final_data + data
             return final_data
         else:
-            return self.opencti.process_multiple(result["data"]["incidents"],
-                                                 with_pagination)
+            return self.opencti.process_multiple(
+                result["data"]["incidents"], with_pagination
+            )
 
     """
         Read a Incident object
@@ -354,19 +356,23 @@ class Incident:
         with_files = kwargs.get("withFiles", False)
         if id is not None:
             self.opencti.app_logger.info("Reading Incident", {"id": id})
-            query = ("""
+            query = (
+                """
                 query Incident($id: String!) {
                     incident(id: $id) {
-                        """ +
-                     (custom_attributes if custom_attributes is not None else
-                      (self.properties_with_files
-                       if with_files else self.properties)) + """
+                        """
+                + (
+                    custom_attributes
+                    if custom_attributes is not None
+                    else (self.properties_with_files if with_files else self.properties)
+                )
+                + """
                     }
                 }
-             """)
+             """
+            )
             result = self.opencti.query(query, {"id": id})
-            return self.opencti.process_multiple_fields(
-                result["data"]["incident"])
+            return self.opencti.process_multiple_fields(result["data"]["incident"])
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -375,7 +381,8 @@ class Incident:
                 return None
         else:
             self.opencti.app_logger.error(
-                "[opencti_incident] Missing parameters: id or filters")
+                "[opencti_incident] Missing parameters: id or filters"
+            )
             return None
 
     """
@@ -457,11 +464,9 @@ class Incident:
                     }
                 },
             )
-            return self.opencti.process_multiple_fields(
-                result["data"]["incidentAdd"])
+            return self.opencti.process_multiple_fields(result["data"]["incidentAdd"])
         else:
-            self.opencti.app_logger.error(
-                "Missing parameters: name and description")
+            self.opencti.app_logger.error("Missing parameters: name and description")
 
     """
         Import a Incident object from a STIX2 object
@@ -482,66 +487,84 @@ class Incident:
         if stix_object is not None:
             # Search in extensions
             if "x_opencti_stix_ids" not in stix_object:
-                stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "stix_ids", stix_object))
+                stix_object[
+                    "x_opencti_stix_ids"
+                ] = self.opencti.get_attribute_in_extension("stix_ids", stix_object)
             if "x_opencti_granted_refs" not in stix_object:
-                stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "granted_refs", stix_object))
+                stix_object[
+                    "x_opencti_granted_refs"
+                ] = self.opencti.get_attribute_in_extension("granted_refs", stix_object)
             if "x_opencti_workflow_id" not in stix_object:
-                stix_object["x_opencti_workflow_id"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "workflow_id", stix_object))
+                stix_object[
+                    "x_opencti_workflow_id"
+                ] = self.opencti.get_attribute_in_extension("workflow_id", stix_object)
 
             return self.create(
                 stix_id=stix_object["id"],
-                createdBy=(extras["created_by_id"]
-                           if "created_by_id" in extras else None),
-                objectMarking=(extras["object_marking_ids"]
-                               if "object_marking_ids" in extras else None),
-                objectLabel=(extras["object_label_ids"]
-                             if "object_label_ids" in extras else None),
-                externalReferences=(extras["external_references_ids"]
-                                    if "external_references_ids" in extras else
-                                    None),
-                revoked=stix_object["revoked"]
-                if "revoked" in stix_object else None,
-                confidence=(stix_object["confidence"]
-                            if "confidence" in stix_object else None),
+                createdBy=(
+                    extras["created_by_id"] if "created_by_id" in extras else None
+                ),
+                objectMarking=(
+                    extras["object_marking_ids"]
+                    if "object_marking_ids" in extras
+                    else None
+                ),
+                objectLabel=(
+                    extras["object_label_ids"] if "object_label_ids" in extras else None
+                ),
+                externalReferences=(
+                    extras["external_references_ids"]
+                    if "external_references_ids" in extras
+                    else None
+                ),
+                revoked=stix_object["revoked"] if "revoked" in stix_object else None,
+                confidence=(
+                    stix_object["confidence"] if "confidence" in stix_object else None
+                ),
                 lang=stix_object["lang"] if "lang" in stix_object else None,
-                created=stix_object["created"]
-                if "created" in stix_object else None,
-                modified=stix_object["modified"]
-                if "modified" in stix_object else None,
+                created=stix_object["created"] if "created" in stix_object else None,
+                modified=stix_object["modified"] if "modified" in stix_object else None,
                 name=stix_object["name"],
-                description=(self.opencti.stix2.convert_markdown(
-                    stix_object["description"])
-                             if "description" in stix_object else None),
+                description=(
+                    self.opencti.stix2.convert_markdown(stix_object["description"])
+                    if "description" in stix_object
+                    else None
+                ),
                 aliases=self.opencti.stix2.pick_aliases(stix_object),
-                objective=(stix_object["objective"]
-                           if "objective" in stix_object else None),
-                first_seen=(stix_object["first_seen"]
-                            if "first_seen" in stix_object else None),
-                last_seen=(stix_object["last_seen"]
-                           if "last_seen" in stix_object else None),
-                incident_type=(stix_object["incident_type"]
-                               if "incident_type" in stix_object else None),
-                severity=stix_object["severity"]
-                if "severity" in stix_object else None,
-                source=stix_object["source"]
-                if "source" in stix_object else None,
-                x_opencti_stix_ids=(stix_object["x_opencti_stix_ids"]
-                                    if "x_opencti_stix_ids" in stix_object else
-                                    None),
-                objectOrganization=(stix_object["x_opencti_granted_refs"]
-                                    if "x_opencti_granted_refs" in stix_object
-                                    else None),
-                x_opencti_workflow_id=(stix_object["x_opencti_workflow_id"]
-                                       if "x_opencti_workflow_id"
-                                       in stix_object else None),
+                objective=(
+                    stix_object["objective"] if "objective" in stix_object else None
+                ),
+                first_seen=(
+                    stix_object["first_seen"] if "first_seen" in stix_object else None
+                ),
+                last_seen=(
+                    stix_object["last_seen"] if "last_seen" in stix_object else None
+                ),
+                incident_type=(
+                    stix_object["incident_type"]
+                    if "incident_type" in stix_object
+                    else None
+                ),
+                severity=stix_object["severity"] if "severity" in stix_object else None,
+                source=stix_object["source"] if "source" in stix_object else None,
+                x_opencti_stix_ids=(
+                    stix_object["x_opencti_stix_ids"]
+                    if "x_opencti_stix_ids" in stix_object
+                    else None
+                ),
+                objectOrganization=(
+                    stix_object["x_opencti_granted_refs"]
+                    if "x_opencti_granted_refs" in stix_object
+                    else None
+                ),
+                x_opencti_workflow_id=(
+                    stix_object["x_opencti_workflow_id"]
+                    if "x_opencti_workflow_id" in stix_object
+                    else None
+                ),
                 update=update,
             )
         else:
             self.opencti.app_logger.error(
-                "[opencti_incident] Missing parameters: stixObject")
+                "[opencti_incident] Missing parameters: stixObject"
+            )

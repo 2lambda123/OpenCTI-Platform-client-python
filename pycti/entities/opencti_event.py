@@ -219,9 +219,7 @@ class Event:
         name = name.lower().strip()
         data = {"name": name}
         data = canonicalize(data, utf8=False)
-        id = str(
-            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
-                       data))
+        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
         return "event--" + id
 
     @staticmethod
@@ -262,18 +260,22 @@ class Event:
         if get_all:
             first = 100
 
-        self.opencti.app_logger.info("Listing Events with filters",
-                                     {"filters": json.dumps(filters)})
+        self.opencti.app_logger.info(
+            "Listing Events with filters", {"filters": json.dumps(filters)}
+        )
         query = (
             """
             query Events($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: EventsOrdering, $orderMode: OrderingMode) {
                 events(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                     edges {
                         node {
-                            """ +
-            (custom_attributes if custom_attributes is not None else
-             (self.properties_with_files if with_files else self.properties)) +
-            """
+                            """
+            + (
+                custom_attributes
+                if custom_attributes is not None
+                else (self.properties_with_files if with_files else self.properties)
+            )
+            + """
                         }
                     }
                     pageInfo {
@@ -285,7 +287,8 @@ class Event:
                     }
                 }
             }
-        """)
+        """
+        )
         result = self.opencti.query(
             query,
             {
@@ -303,8 +306,7 @@ class Event:
             final_data = final_data + data
             while result["data"]["events"]["pageInfo"]["hasNextPage"]:
                 after = result["data"]["events"]["pageInfo"]["endCursor"]
-                self.opencti.app_logger.info("Listing Events",
-                                             {"after": after})
+                self.opencti.app_logger.info("Listing Events", {"after": after})
                 result = self.opencti.query(
                     query,
                     {
@@ -320,8 +322,9 @@ class Event:
                 final_data = final_data + data
             return final_data
         else:
-            return self.opencti.process_multiple(result["data"]["events"],
-                                                 with_pagination)
+            return self.opencti.process_multiple(
+                result["data"]["events"], with_pagination
+            )
 
     """
         Read a Event object
@@ -343,19 +346,23 @@ class Event:
         with_files = kwargs.get("withFiles", False)
         if id is not None:
             self.opencti.app_logger.info("Reading Event", {"id": id})
-            query = ("""
+            query = (
+                """
                 query Event($id: String!) {
                     event(id: $id) {
-                        """ +
-                     (custom_attributes if custom_attributes is not None else
-                      (self.properties_with_files
-                       if with_files else self.properties)) + """
+                        """
+                + (
+                    custom_attributes
+                    if custom_attributes is not None
+                    else (self.properties_with_files if with_files else self.properties)
+                )
+                + """
                     }
                 }
-             """)
+             """
+            )
             result = self.opencti.query(query, {"id": id})
-            return self.opencti.process_multiple_fields(
-                result["data"]["event"])
+            return self.opencti.process_multiple_fields(result["data"]["event"])
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -364,7 +371,8 @@ class Event:
                 return None
         else:
             self.opencti.app_logger.error(
-                "[opencti_event] Missing parameters: id or filters")
+                "[opencti_event] Missing parameters: id or filters"
+            )
             return None
 
     """
@@ -436,11 +444,11 @@ class Event:
                     }
                 },
             )
-            return self.opencti.process_multiple_fields(
-                result["data"]["eventAdd"])
+            return self.opencti.process_multiple_fields(result["data"]["eventAdd"])
         else:
             self.opencti.app_logger.error(
-                "[opencti_event] Missing parameters: name and description")
+                "[opencti_event] Missing parameters: name and description"
+            )
 
     """
         Import an Event object from a STIX2 object
@@ -461,50 +469,63 @@ class Event:
         if stix_object is not None:
             # Search in extensions
             if "x_opencti_stix_ids" not in stix_object:
-                stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "stix_ids", stix_object))
+                stix_object[
+                    "x_opencti_stix_ids"
+                ] = self.opencti.get_attribute_in_extension("stix_ids", stix_object)
             if "x_opencti_granted_refs" not in stix_object:
-                stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "granted_refs", stix_object))
+                stix_object[
+                    "x_opencti_granted_refs"
+                ] = self.opencti.get_attribute_in_extension("granted_refs", stix_object)
 
             return self.opencti.event.create(
                 stix_id=stix_object["id"],
-                createdBy=(extras["created_by_id"]
-                           if "created_by_id" in extras else None),
-                objectMarking=(extras["object_marking_ids"]
-                               if "object_marking_ids" in extras else None),
-                objectLabel=(extras["object_label_ids"]
-                             if "object_label_ids" in extras else None),
-                externalReferences=(extras["external_references_ids"]
-                                    if "external_references_ids" in extras else
-                                    None),
-                revoked=stix_object["revoked"]
-                if "revoked" in stix_object else None,
-                confidence=(stix_object["confidence"]
-                            if "confidence" in stix_object else None),
+                createdBy=(
+                    extras["created_by_id"] if "created_by_id" in extras else None
+                ),
+                objectMarking=(
+                    extras["object_marking_ids"]
+                    if "object_marking_ids" in extras
+                    else None
+                ),
+                objectLabel=(
+                    extras["object_label_ids"] if "object_label_ids" in extras else None
+                ),
+                externalReferences=(
+                    extras["external_references_ids"]
+                    if "external_references_ids" in extras
+                    else None
+                ),
+                revoked=stix_object["revoked"] if "revoked" in stix_object else None,
+                confidence=(
+                    stix_object["confidence"] if "confidence" in stix_object else None
+                ),
                 lang=stix_object["lang"] if "lang" in stix_object else None,
-                created=stix_object["created"]
-                if "created" in stix_object else None,
-                modified=stix_object["modified"]
-                if "modified" in stix_object else None,
+                created=stix_object["created"] if "created" in stix_object else None,
+                modified=stix_object["modified"] if "modified" in stix_object else None,
                 name=stix_object["name"],
-                description=(self.opencti.stix2.convert_markdown(
-                    stix_object["description"])
-                             if "description" in stix_object else None),
+                description=(
+                    self.opencti.stix2.convert_markdown(stix_object["description"])
+                    if "description" in stix_object
+                    else None
+                ),
                 aliases=self.opencti.stix2.pick_aliases(stix_object),
-                event_types=(stix_object["event_types"]
-                             if "event_types" in stix_object else None),
-                start_time=(stix_object["start_time"]
-                            if "start_time" in stix_object else None),
-                stop_time=(stix_object["stop_time"]
-                           if "stop_time" in stix_object else None),
-                x_opencti_stix_ids=(stix_object["x_opencti_stix_ids"]
-                                    if "x_opencti_stix_ids" in stix_object else
-                                    None),
+                event_types=(
+                    stix_object["event_types"] if "event_types" in stix_object else None
+                ),
+                start_time=(
+                    stix_object["start_time"] if "start_time" in stix_object else None
+                ),
+                stop_time=(
+                    stix_object["stop_time"] if "stop_time" in stix_object else None
+                ),
+                x_opencti_stix_ids=(
+                    stix_object["x_opencti_stix_ids"]
+                    if "x_opencti_stix_ids" in stix_object
+                    else None
+                ),
                 update=update,
             )
         else:
             self.opencti.app_logger.error(
-                "[opencti_event] Missing parameters: stixObject")
+                "[opencti_event] Missing parameters: stixObject"
+            )

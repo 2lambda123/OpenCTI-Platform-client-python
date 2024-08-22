@@ -462,9 +462,7 @@ class CaseRft:
             created = created.isoformat()
         data = {"name": name, "created": created}
         data = canonicalize(data, utf8=False)
-        id = str(
-            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
-                       data))
+        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
         return "case-rft--" + id
 
     @staticmethod
@@ -504,18 +502,22 @@ class CaseRft:
         with_files = kwargs.get("withFiles", False)
         if get_all:
             first = 500
-        self.opencti.app_logger.info("Listing Case Rfts with filters",
-                                     {"filters": json.dumps(filters)})
+        self.opencti.app_logger.info(
+            "Listing Case Rfts with filters", {"filters": json.dumps(filters)}
+        )
         query = (
             """
                         query CaseRfts($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: CaseRftsOrdering, $orderMode: OrderingMode) {
                             caseRfts(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                                 edges {
                                     node {
-                                        """ +
-            (custom_attributes if custom_attributes is not None else
-             (self.properties_with_files if with_files else self.properties)) +
-            """
+                                        """
+            + (
+                custom_attributes
+                if custom_attributes is not None
+                else (self.properties_with_files if with_files else self.properties)
+            )
+            + """
                         }
                     }
                     pageInfo {
@@ -527,7 +529,8 @@ class CaseRft:
                     }
                 }
             }
-        """)
+        """
+        )
         result = self.opencti.query(
             query,
             {
@@ -545,8 +548,7 @@ class CaseRft:
             final_data = final_data + data
             while result["data"]["caseRfts"]["pageInfo"]["hasNextPage"]:
                 after = result["date"]["caseRfts"]["pageInfo"]["endCursor"]
-                self.opencti.app_logger.info("Listing Case Rfts",
-                                             {"after": after})
+                self.opencti.app_logger.info("Listing Case Rfts", {"after": after})
                 result = self.opencti.query(
                     query,
                     {
@@ -558,13 +560,13 @@ class CaseRft:
                         "orderMode": order_mode,
                     },
                 )
-                data = self.opencti.process_multiple(
-                    result["data"]["caseRfts"])
+                data = self.opencti.process_multiple(result["data"]["caseRfts"])
                 final_data = final_data + data
             return final_data
         else:
-            return self.opencti.process_multiple(result["data"]["caseRfts"],
-                                                 with_pagination)
+            return self.opencti.process_multiple(
+                result["data"]["caseRfts"], with_pagination
+            )
 
     """
         Read a Case Rft object
@@ -586,19 +588,23 @@ class CaseRft:
         with_files = kwargs.get("withFiles", False)
         if id is not None:
             self.opencti.app_logger.info("Reading Case Rft", {"id": id})
-            query = ("""
+            query = (
+                """
                             query CaseRft($id: String!) {
                                 caseRft(id: $id) {
-                                    """ +
-                     (custom_attributes if custom_attributes is not None else
-                      (self.properties_with_files
-                       if with_files else self.properties)) + """
+                                    """
+                + (
+                    custom_attributes
+                    if custom_attributes is not None
+                    else (self.properties_with_files if with_files else self.properties)
+                )
+                + """
                     }
                 }
-            """)
+            """
+            )
             result = self.opencti.query(query, {"id": id})
-            return self.opencti.process_multiple_fields(
-                result["data"]["caseRft"])
+            return self.opencti.process_multiple_fields(result["data"]["caseRft"])
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -627,23 +633,15 @@ class CaseRft:
         custom_attributes = kwargs.get("customAttributes", None)
         object_result = None
         if stix_id is not None:
-            object_result = self.read(id=stix_id,
-                                      customAttributes=custom_attributes)
+            object_result = self.read(id=stix_id, customAttributes=custom_attributes)
         if object_result is None and name is not None and created is not None:
             created_final = parse(created).strftime("%Y-%m-%d")
             object_result = self.read(
                 filters={
-                    "mode":
-                    "and",
+                    "mode": "and",
                     "filters": [
-                        {
-                            "key": "name",
-                            "values": [name]
-                        },
-                        {
-                            "key": "created_day",
-                            "values": [created_final]
-                        },
+                        {"key": "name", "values": [name]},
+                        {"key": "created_day", "values": [created_final]},
                     ],
                     "filterGroups": [],
                 },
@@ -667,13 +665,13 @@ class CaseRft:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None)
+            "stixObjectOrStixRelationshipId", None
+        )
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Checking StixObjectOrStixRelationship in CaseRft",
                 {
-                    "stix_object_or_stix_relationship_id":
-                    stix_object_or_stix_relationship_id,
+                    "stix_object_or_stix_relationship_id": stix_object_or_stix_relationship_id,
                     "id": id,
                 },
             )
@@ -685,14 +683,11 @@ class CaseRft:
             result = self.opencti.query(
                 query,
                 {
-                    "id":
-                    id,
-                    "stixObjectOrStixRelationshipId":
-                    stix_object_or_stix_relationship_id,
+                    "id": id,
+                    "stixObjectOrStixRelationshipId": stix_object_or_stix_relationship_id,
                 },
             )
-            return result["data"][
-                "caseRftContainsStixObjectOrStixRelationship"]
+            return result["data"]["caseRftContainsStixObjectOrStixRelationship"]
         else:
             self.opencti.app_logger.error(
                 "[opencti_caseRft] Missing parameters: id or stixObjectOrStixRelationshipId"
@@ -765,11 +760,9 @@ class CaseRft:
                     }
                 },
             )
-            return self.opencti.process_multiple_fields(
-                result["data"]["caseRftAdd"])
+            return self.opencti.process_multiple_fields(result["data"]["caseRftAdd"])
         else:
-            self.opencti.app_logger.error(
-                "[opencti_caseRft] Missing parameters: name")
+            self.opencti.app_logger.error("[opencti_caseRft] Missing parameters: name")
         """
         Add a Stix-Entity object to Case Rft object (object_refs)
 
@@ -786,13 +779,13 @@ class CaseRft:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None)
+            "stixObjectOrStixRelationshipId", None
+        )
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Adding StixObjectOrStixRelationship in CaseRft",
                 {
-                    "stix_object_or_stix_relationship_id":
-                    stix_object_or_stix_relationship_id,
+                    "stix_object_or_stix_relationship_id": stix_object_or_stix_relationship_id,
                     "id": id,
                 },
             )
@@ -838,13 +831,13 @@ class CaseRft:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None)
+            "stixObjectOrStixRelationshipId", None
+        )
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Removing StixObjectOrStixRelationship in CaseRft",
                 {
-                    "stix_object_or_stix_relationship_id":
-                    stix_object_or_stix_relationship_id,
+                    "stix_object_or_stix_relationship_id": stix_object_or_stix_relationship_id,
                     "id": id,
                 },
             )
@@ -890,52 +883,67 @@ class CaseRft:
         if stix_object is not None:
             # Search in extensions
             if "x_opencti_stix_ids" not in stix_object:
-                stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "stix_ids", stix_object))
+                stix_object[
+                    "x_opencti_stix_ids"
+                ] = self.opencti.get_attribute_in_extension("stix_ids", stix_object)
             if "x_opencti_granted_refs" not in stix_object:
-                stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "granted_refs", stix_object))
+                stix_object[
+                    "x_opencti_granted_refs"
+                ] = self.opencti.get_attribute_in_extension("granted_refs", stix_object)
 
             return self.create(
                 stix_id=stix_object["id"],
-                createdBy=(extras["created_by_id"]
-                           if "created_by_id" in extras else None),
-                objectMarking=(extras["object_marking_ids"]
-                               if "object_marking_ids" in extras else None),
-                objectLabel=(extras["object_label_ids"]
-                             if "object_label_ids" in extras else None),
+                createdBy=(
+                    extras["created_by_id"] if "created_by_id" in extras else None
+                ),
+                objectMarking=(
+                    extras["object_marking_ids"]
+                    if "object_marking_ids" in extras
+                    else None
+                ),
+                objectLabel=(
+                    extras["object_label_ids"] if "object_label_ids" in extras else None
+                ),
                 objects=extras["object_ids"] if "object_ids" in extras else [],
-                externalReferences=(extras["external_references_ids"]
-                                    if "external_references_ids" in extras else
-                                    None),
-                revoked=stix_object["revoked"]
-                if "revoked" in stix_object else None,
-                confidence=(stix_object["confidence"]
-                            if "confidence" in stix_object else None),
+                externalReferences=(
+                    extras["external_references_ids"]
+                    if "external_references_ids" in extras
+                    else None
+                ),
+                revoked=stix_object["revoked"] if "revoked" in stix_object else None,
+                confidence=(
+                    stix_object["confidence"] if "confidence" in stix_object else None
+                ),
                 lang=stix_object["lang"] if "lang" in stix_object else None,
-                created=stix_object["created"]
-                if "created" in stix_object else None,
-                modified=stix_object["modified"]
-                if "modified" in stix_object else None,
+                created=stix_object["created"] if "created" in stix_object else None,
+                modified=stix_object["modified"] if "modified" in stix_object else None,
                 name=stix_object["name"],
-                description=(self.opencti.stix2.convert_markdown(
-                    stix_object["description"])
-                             if "description" in stix_object else None),
-                takedown_types=(stix_object["takedown_types"]
-                                if "takedown_types" in stix_object else None),
-                x_opencti_stix_ids=(stix_object["x_opencti_stix_ids"]
-                                    if "x_opencti_stix_ids" in stix_object else
-                                    None),
-                objectOrganization=(stix_object["x_opencti_granted_refs"]
-                                    if "x_opencti_granted_refs" in stix_object
-                                    else None),
+                description=(
+                    self.opencti.stix2.convert_markdown(stix_object["description"])
+                    if "description" in stix_object
+                    else None
+                ),
+                takedown_types=(
+                    stix_object["takedown_types"]
+                    if "takedown_types" in stix_object
+                    else None
+                ),
+                x_opencti_stix_ids=(
+                    stix_object["x_opencti_stix_ids"]
+                    if "x_opencti_stix_ids" in stix_object
+                    else None
+                ),
+                objectOrganization=(
+                    stix_object["x_opencti_granted_refs"]
+                    if "x_opencti_granted_refs" in stix_object
+                    else None
+                ),
                 update=update,
             )
         else:
             self.opencti.app_logger.error(
-                "[opencti_caseRft] Missing parameters: stixObject")
+                "[opencti_caseRft] Missing parameters: stixObject"
+            )
 
     def delete(self, **kwargs):
         """
@@ -955,6 +963,5 @@ class CaseRft:
              """
             self.opencti.query(query, {"id": id})
         else:
-            self.opencti.app_logger.error(
-                "[opencti_case_rft] Missing parameters: id")
+            self.opencti.app_logger.error("[opencti_case_rft] Missing parameters: id")
             return None
