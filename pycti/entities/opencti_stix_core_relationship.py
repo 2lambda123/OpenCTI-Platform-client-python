@@ -1121,10 +1121,10 @@ class StixCoreRelationship:
         if stix_relation is not None:
             # Search in extensions
             if "x_opencti_granted_refs" not in stix_relation:
-                stix_relation["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "granted_refs", stix_relation
-                    )
+                stix_relation[
+                    "x_opencti_granted_refs"
+                ] = self.opencti.get_attribute_in_extension(
+                    "granted_refs", stix_relation
                 )
 
             source_ref = stix_relation["source_ref"]
