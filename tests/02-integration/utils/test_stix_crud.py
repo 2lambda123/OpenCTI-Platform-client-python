@@ -34,7 +34,8 @@ def test_entity_create(entity_class, api_stix, opencti_splitter):
     stix_object = stix_class(**class_data)
     bundle = Bundle(objects=[stix_object]).serialize()
     split_bundle = opencti_splitter.split_bundle(bundle, True, None)[0]
-    bundles_sent = api_stix.import_bundle_from_json(split_bundle, False, None, None)
+    bundles_sent = api_stix.import_bundle_from_json(split_bundle, False, None,
+                                                    None)
 
     assert len(bundles_sent) == 1
     element_new_id = api_stix.generate_standard_id_from_stix(stix_object)

@@ -280,7 +280,9 @@ class Indicator:
         """
         data = {"pattern": pattern}
         data = canonicalize(data, utf8=False)
-        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
+        id = str(
+            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
+                       data))
         return "indicator--" + id
 
     @staticmethod
@@ -326,22 +328,18 @@ class Indicator:
         if get_all:
             first = 100
 
-        self.opencti.app_logger.info(
-            "Listing Indicators with filters", {"filters": json.dumps(filters)}
-        )
+        self.opencti.app_logger.info("Listing Indicators with filters",
+                                     {"filters": json.dumps(filters)})
         query = (
             """
                 query Indicators($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: IndicatorsOrdering, $orderMode: OrderingMode) {
                     indicators(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                         edges {
                             node {
-                                """
-            + (
-                custom_attributes
-                if custom_attributes is not None
-                else (self.properties_with_files if with_files else self.properties)
-            )
-            + """
+                                """ +
+            (custom_attributes if custom_attributes is not None else
+             (self.properties_with_files if with_files else self.properties)) +
+            """
                         }
                     }
                     pageInfo {
@@ -353,8 +351,7 @@ class Indicator:
                     }
                 }
             }
-        """
-        )
+        """)
         result = self.opencti.query(
             query,
             {
@@ -372,7 +369,8 @@ class Indicator:
             final_data = final_data + data
             while result["data"]["indicators"]["pageInfo"]["hasNextPage"]:
                 after = result["data"]["indicators"]["pageInfo"]["endCursor"]
-                self.opencti.app_logger.info("Listing Indicators", {"after": after})
+                self.opencti.app_logger.info("Listing Indicators",
+                                             {"after": after})
                 result = self.opencti.query(
                     query,
                     {
@@ -384,13 +382,13 @@ class Indicator:
                         "orderMode": order_mode,
                     },
                 )
-                data = self.opencti.process_multiple(result["data"]["indicators"])
+                data = self.opencti.process_multiple(
+                    result["data"]["indicators"])
                 final_data = final_data + data
             return final_data
         else:
-            return self.opencti.process_multiple(
-                result["data"]["indicators"], with_pagination
-            )
+            return self.opencti.process_multiple(result["data"]["indicators"],
+                                                 with_pagination)
 
     def read(self, **kwargs):
         """Read an Indicator object
@@ -416,33 +414,29 @@ class Indicator:
         with_files = kwargs.get("withFiles", False)
         if id is not None:
             self.opencti.app_logger.info("Reading Indicator", {"id": id})
-            query = (
-                """
+            query = ("""
                     query Indicator($id: String!) {
                         indicator(id: $id) {
-                            """
-                + (
-                    custom_attributes
-                    if custom_attributes is not None
-                    else (self.properties_with_files if with_files else self.properties)
-                )
-                + """
+                            """ +
+                     (custom_attributes if custom_attributes is not None else
+                      (self.properties_with_files
+                       if with_files else self.properties)) + """
                     }
                 }
-             """
-            )
+             """)
             result = self.opencti.query(query, {"id": id})
-            return self.opencti.process_multiple_fields(result["data"]["indicator"])
+            return self.opencti.process_multiple_fields(
+                result["data"]["indicator"])
         elif filters is not None:
-            result = self.list(filters=filters, customAttributes=custom_attributes)
+            result = self.list(filters=filters,
+                               customAttributes=custom_attributes)
             if len(result) > 0:
                 return result[0]
             else:
                 return None
         else:
             self.opencti.app_logger.error(
-                "[opencti_indicator] Missing parameters: id or filters"
-            )
+                "[opencti_indicator] Missing parameters: id or filters")
             return None
 
     def create(self, **kwargs):
@@ -477,8 +471,7 @@ class Indicator:
         x_opencti_score = kwargs.get("x_opencti_score", 50)
         x_opencti_detection = kwargs.get("x_opencti_detection", False)
         x_opencti_main_observable_type = kwargs.get(
-            "x_opencti_main_observable_type", None
-        )
+            "x_opencti_main_observable_type", None)
         x_mitre_platforms = kwargs.get("x_mitre_platforms", None)
         kill_chain_phases = kwargs.get("killChainPhases", None)
         x_opencti_stix_ids = kwargs.get("x_opencti_stix_ids", None)
@@ -487,12 +480,9 @@ class Indicator:
         x_opencti_workflow_id = kwargs.get("x_opencti_workflow_id", None)
         update = kwargs.get("update", False)
 
-        if (
-            name is not None
-            and pattern is not None
-            and pattern_type is not None
-            and x_opencti_main_observable_type is not None
-        ):
+        if (name is not None and pattern is not None
+                and pattern_type is not None
+                and x_opencti_main_observable_type is not None):
             if x_opencti_main_observable_type == "File":
                 x_opencti_main_observable_type = "StixFile"
             self.opencti.app_logger.info("Creating Indicator", {"name": name})
@@ -540,7 +530,8 @@ class Indicator:
                         "valid_from": valid_from,
                         "x_opencti_score": x_opencti_score,
                         "x_opencti_detection": x_opencti_detection,
-                        "x_opencti_main_observable_type": x_opencti_main_observable_type,
+                        "x_opencti_main_observable_type":
+                        x_opencti_main_observable_type,
                         "x_mitre_platforms": x_mitre_platforms,
                         "x_opencti_stix_ids": x_opencti_stix_ids,
                         "killChainPhases": kill_chain_phases,
@@ -550,7 +541,8 @@ class Indicator:
                     }
                 },
             )
-            return self.opencti.process_multiple_fields(result["data"]["indicatorAdd"])
+            return self.opencti.process_multiple_fields(
+                result["data"]["indicatorAdd"])
         else:
             self.opencti.app_logger.error(
                 "[opencti_indicator] Missing parameters: "
@@ -583,7 +575,10 @@ class Indicator:
             else:
                 self.opencti.app_logger.info(
                     "Adding Stix-Observable to Indicator",
-                    {"observable": stix_cyber_observable_id, "indicator": id},
+                    {
+                        "observable": stix_cyber_observable_id,
+                        "indicator": id
+                    },
                 )
                 query = """
                     mutation StixCoreRelationshipAdd($input: StixCoreRelationshipAddInput!) {
@@ -628,148 +623,100 @@ class Indicator:
             # Search in extensions
             if "x_opencti_score" not in stix_object:
                 stix_object["x_opencti_score"] = (
-                    self.opencti.get_attribute_in_extension("score", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "score", stix_object))
             if "x_opencti_detection" not in stix_object:
                 stix_object["x_opencti_detection"] = (
-                    self.opencti.get_attribute_in_extension("detection", stix_object)
-                )
-            if (
-                "x_opencti_main_observable_type" not in stix_object
-                and self.opencti.get_attribute_in_extension(
-                    "main_observable_type", stix_object
-                )
-                is not None
-            ):
+                    self.opencti.get_attribute_in_extension(
+                        "detection", stix_object))
+            if ("x_opencti_main_observable_type" not in stix_object
+                    and self.opencti.get_attribute_in_extension(
+                        "main_observable_type", stix_object) is not None):
                 stix_object["x_opencti_main_observable_type"] = (
                     self.opencti.get_attribute_in_extension(
-                        "main_observable_type", stix_object
-                    )
-                )
+                        "main_observable_type", stix_object))
             if "x_opencti_create_observables" not in stix_object:
                 stix_object["x_opencti_create_observables"] = (
                     self.opencti.get_attribute_in_extension(
-                        "create_observables", stix_object
-                    )
-                )
+                        "create_observables", stix_object))
             if "x_opencti_stix_ids" not in stix_object:
                 stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension("stix_ids", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "stix_ids", stix_object))
             if "x_opencti_granted_refs" not in stix_object:
                 stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension("granted_refs", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "granted_refs", stix_object))
             if "x_opencti_workflow_id" not in stix_object:
                 stix_object["x_opencti_workflow_id"] = (
-                    self.opencti.get_attribute_in_extension("workflow_id", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "workflow_id", stix_object))
 
             return self.create(
                 stix_id=stix_object["id"],
-                createdBy=(
-                    extras["created_by_id"] if "created_by_id" in extras else None
-                ),
-                objectMarking=(
-                    extras["object_marking_ids"]
-                    if "object_marking_ids" in extras
-                    else None
-                ),
-                objectLabel=(
-                    extras["object_label_ids"] if "object_label_ids" in extras else None
-                ),
-                externalReferences=(
-                    extras["external_references_ids"]
-                    if "external_references_ids" in extras
-                    else None
-                ),
-                revoked=stix_object["revoked"] if "revoked" in stix_object else None,
-                confidence=(
-                    stix_object["confidence"] if "confidence" in stix_object else None
-                ),
+                createdBy=(extras["created_by_id"]
+                           if "created_by_id" in extras else None),
+                objectMarking=(extras["object_marking_ids"]
+                               if "object_marking_ids" in extras else None),
+                objectLabel=(extras["object_label_ids"]
+                             if "object_label_ids" in extras else None),
+                externalReferences=(extras["external_references_ids"]
+                                    if "external_references_ids" in extras else
+                                    None),
+                revoked=stix_object["revoked"]
+                if "revoked" in stix_object else None,
+                confidence=(stix_object["confidence"]
+                            if "confidence" in stix_object else None),
                 lang=stix_object["lang"] if "lang" in stix_object else None,
-                created=stix_object["created"] if "created" in stix_object else None,
-                modified=stix_object["modified"] if "modified" in stix_object else None,
-                pattern_type=(
-                    stix_object["pattern_type"]
-                    if "pattern_type" in stix_object
-                    else None
-                ),
-                pattern_version=(
-                    stix_object["pattern_version"]
-                    if "pattern_version" in stix_object
-                    else None
-                ),
-                pattern=stix_object["pattern"] if "pattern" in stix_object else "",
-                name=(
-                    stix_object["name"]
-                    if "name" in stix_object
-                    else stix_object["pattern"]
-                ),
-                description=(
-                    self.opencti.stix2.convert_markdown(stix_object["description"])
-                    if "description" in stix_object
-                    else None
-                ),
-                indicator_types=(
-                    stix_object["indicator_types"]
-                    if "indicator_types" in stix_object
-                    else None
-                ),
-                valid_from=(
-                    stix_object["valid_from"] if "valid_from" in stix_object else None
-                ),
-                valid_until=(
-                    stix_object["valid_until"] if "valid_until" in stix_object else None
-                ),
-                x_opencti_score=(
-                    stix_object["x_opencti_score"]
-                    if "x_opencti_score" in stix_object
-                    else 50
-                ),
-                x_opencti_detection=(
-                    stix_object["x_opencti_detection"]
-                    if "x_opencti_detection" in stix_object
-                    else False
-                ),
-                x_mitre_platforms=(
-                    stix_object["x_mitre_platforms"]
-                    if "x_mitre_platforms" in stix_object
-                    else None
-                ),
+                created=stix_object["created"]
+                if "created" in stix_object else None,
+                modified=stix_object["modified"]
+                if "modified" in stix_object else None,
+                pattern_type=(stix_object["pattern_type"]
+                              if "pattern_type" in stix_object else None),
+                pattern_version=(stix_object["pattern_version"] if
+                                 "pattern_version" in stix_object else None),
+                pattern=stix_object["pattern"]
+                if "pattern" in stix_object else "",
+                name=(stix_object["name"]
+                      if "name" in stix_object else stix_object["pattern"]),
+                description=(self.opencti.stix2.convert_markdown(
+                    stix_object["description"])
+                             if "description" in stix_object else None),
+                indicator_types=(stix_object["indicator_types"] if
+                                 "indicator_types" in stix_object else None),
+                valid_from=(stix_object["valid_from"]
+                            if "valid_from" in stix_object else None),
+                valid_until=(stix_object["valid_until"]
+                             if "valid_until" in stix_object else None),
+                x_opencti_score=(stix_object["x_opencti_score"]
+                                 if "x_opencti_score" in stix_object else 50),
+                x_opencti_detection=(stix_object["x_opencti_detection"]
+                                     if "x_opencti_detection" in stix_object
+                                     else False),
+                x_mitre_platforms=(stix_object["x_mitre_platforms"]
+                                   if "x_mitre_platforms" in stix_object else
+                                   None),
                 x_opencti_main_observable_type=(
                     stix_object["x_opencti_main_observable_type"]
-                    if "x_opencti_main_observable_type" in stix_object
-                    else "Unknown"
-                ),
-                killChainPhases=(
-                    extras["kill_chain_phases_ids"]
-                    if "kill_chain_phases_ids" in extras
-                    else None
-                ),
-                x_opencti_stix_ids=(
-                    stix_object["x_opencti_stix_ids"]
-                    if "x_opencti_stix_ids" in stix_object
-                    else None
-                ),
+                    if "x_opencti_main_observable_type" in stix_object else
+                    "Unknown"),
+                killChainPhases=(extras["kill_chain_phases_ids"] if
+                                 "kill_chain_phases_ids" in extras else None),
+                x_opencti_stix_ids=(stix_object["x_opencti_stix_ids"]
+                                    if "x_opencti_stix_ids" in stix_object else
+                                    None),
                 x_opencti_create_observables=(
-                    stix_object["x_opencti_create_observables"]
-                    if "x_opencti_create_observables" in stix_object
-                    else False
-                ),
-                objectOrganization=(
-                    stix_object["x_opencti_granted_refs"]
-                    if "x_opencti_granted_refs" in stix_object
-                    else None
-                ),
-                x_opencti_workflow_id=(
-                    stix_object["x_opencti_workflow_id"]
-                    if "x_opencti_workflow_id" in stix_object
-                    else None
-                ),
+                    stix_object["x_opencti_create_observables"] if
+                    "x_opencti_create_observables" in stix_object else False),
+                objectOrganization=(stix_object["x_opencti_granted_refs"]
+                                    if "x_opencti_granted_refs" in stix_object
+                                    else None),
+                x_opencti_workflow_id=(stix_object["x_opencti_workflow_id"]
+                                       if "x_opencti_workflow_id"
+                                       in stix_object else None),
                 update=update,
             )
         else:
             self.opencti.app_logger.error(
-                "[opencti_indicator] Missing parameters: stixObject"
-            )
+                "[opencti_indicator] Missing parameters: stixObject")

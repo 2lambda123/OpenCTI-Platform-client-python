@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 class DataComponent:
     """ """
+
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -248,7 +249,9 @@ class DataComponent:
         name = name.lower().strip()
         data = {"name": name}
         data = canonicalize(data, utf8=False)
-        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
+        id = str(
+            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
+                       data))
         return "data-component--" + id
 
     @staticmethod
@@ -289,22 +292,18 @@ class DataComponent:
         if get_all:
             first = 100
 
-        self.opencti.app_logger.info(
-            "Listing Data-Components with filters", {"filters": json.dumps(filters)}
-        )
+        self.opencti.app_logger.info("Listing Data-Components with filters",
+                                     {"filters": json.dumps(filters)})
         query = (
             """
             query DataComponents($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: DataComponentsOrdering, $orderMode: OrderingMode) {
                 dataComponents(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                     edges {
                         node {
-                            """
-            + (
-                custom_attributes
-                if custom_attributes is not None
-                else (self.properties_with_files if with_files else self.properties)
-            )
-            + """
+                            """ +
+            (custom_attributes if custom_attributes is not None else
+             (self.properties_with_files if with_files else self.properties)) +
+            """
                         }
                     }
                     pageInfo {
@@ -316,8 +315,7 @@ class DataComponent:
                     }
                 }
             }
-        """
-        )
+        """)
         result = self.opencti.query(
             query,
             {
@@ -331,13 +329,14 @@ class DataComponent:
         )
         if get_all:
             final_data = []
-            data = self.opencti.process_multiple(result["data"]["dataComponents"])
+            data = self.opencti.process_multiple(
+                result["data"]["dataComponents"])
             final_data = final_data + data
             while result["data"]["dataComponents"]["pageInfo"]["hasNextPage"]:
-                after = result["data"]["dataComponents"]["pageInfo"]["endCursor"]
-                self.opencti.app_logger.info(
-                    "Listing Data-Components", {"after": after}
-                )
+                after = result["data"]["dataComponents"]["pageInfo"][
+                    "endCursor"]
+                self.opencti.app_logger.info("Listing Data-Components",
+                                             {"after": after})
                 result = self.opencti.query(
                     query,
                     {
@@ -349,13 +348,13 @@ class DataComponent:
                         "orderMode": order_mode,
                     },
                 )
-                data = self.opencti.process_multiple(result["data"]["dataComponents"])
+                data = self.opencti.process_multiple(
+                    result["data"]["dataComponents"])
                 final_data = final_data + data
             return final_data
         else:
             return self.opencti.process_multiple(
-                result["data"]["dataComponents"], with_pagination
-            )
+                result["data"]["dataComponents"], with_pagination)
 
     """
         Read a Data-Component object
@@ -377,23 +376,19 @@ class DataComponent:
         with_files = kwargs.get("withFiles", False)
         if id is not None:
             self.opencti.app_logger.info("Reading Data-Component", {"id": id})
-            query = (
-                """
+            query = ("""
                 query DataComponent($id: String!) {
                     dataComponent(id: $id) {
-                        """
-                + (
-                    custom_attributes
-                    if custom_attributes is not None
-                    else (self.properties_with_files if with_files else self.properties)
-                )
-                + """
+                        """ +
+                     (custom_attributes if custom_attributes is not None else
+                      (self.properties_with_files
+                       if with_files else self.properties)) + """
                     }
                 }
-             """
-            )
+             """)
             result = self.opencti.query(query, {"id": id})
-            return self.opencti.process_multiple_fields(result["data"]["dataComponent"])
+            return self.opencti.process_multiple_fields(
+                result["data"]["dataComponent"])
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -402,8 +397,7 @@ class DataComponent:
                 return None
         else:
             self.opencti.app_logger.error(
-                "[opencti_data_component] Missing parameters: id or filters"
-            )
+                "[opencti_data_component] Missing parameters: id or filters")
             return None
 
     """
@@ -438,10 +432,10 @@ class DataComponent:
         update = kwargs.get("update", False)
 
         if name is not None:
-            self.opencti.app_logger.info("Creating Data Component", {"name": name})
-            self.opencti.app_logger.info(
-                "Creating Data Component", {"data": str(kwargs)}
-            )
+            self.opencti.app_logger.info("Creating Data Component",
+                                         {"name": name})
+            self.opencti.app_logger.info("Creating Data Component",
+                                         {"data": str(kwargs)})
             query = """
                 mutation DataComponentAdd($input: DataComponentAddInput!) {
                     dataComponentAdd(input: $input) {
@@ -477,8 +471,7 @@ class DataComponent:
                 },
             )
             return self.opencti.process_multiple_fields(
-                result["data"]["dataComponentAdd"]
-            )
+                result["data"]["dataComponentAdd"])
         else:
             self.opencti.app_logger.error(
                 "[opencti_data_component] Missing parameters: name and description"
@@ -503,78 +496,62 @@ class DataComponent:
 
         if stix_object is not None:
             # Handle ref
-            if (
-                stix_object["type"] == "x-mitre-data-component"
-                and "x_mitre_data_source_ref" in stix_object
-            ):
-                stix_object["dataSource"] = stix_object["x_mitre_data_source_ref"]
-            if (
-                stix_object["type"] == "data-component"
-                and "data_source_ref" in stix_object
-            ):
+            if (stix_object["type"] == "x-mitre-data-component"
+                    and "x_mitre_data_source_ref" in stix_object):
+                stix_object["dataSource"] = stix_object[
+                    "x_mitre_data_source_ref"]
+            if (stix_object["type"] == "data-component"
+                    and "data_source_ref" in stix_object):
                 stix_object["dataSource"] = stix_object["data_source_ref"]
 
             # Search in extensions
             if "x_opencti_stix_ids" not in stix_object:
                 stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension("stix_ids", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "stix_ids", stix_object))
             if "x_opencti_granted_refs" not in stix_object:
                 stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension("granted_refs", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "granted_refs", stix_object))
 
             return self.opencti.data_component.create(
                 stix_id=stix_object["id"],
-                createdBy=(
-                    extras["created_by_id"] if "created_by_id" in extras else None
-                ),
-                objectMarking=(
-                    extras["object_marking_ids"]
-                    if "object_marking_ids" in extras
-                    else None
-                ),
-                objectLabel=(
-                    extras["object_label_ids"] if "object_label_ids" in extras else None
-                ),
-                externalReferences=(
-                    extras["external_references_ids"]
-                    if "external_references_ids" in extras
-                    else None
-                ),
-                revoked=stix_object["revoked"] if "revoked" in stix_object else None,
-                confidence=(
-                    stix_object["confidence"] if "confidence" in stix_object else None
-                ),
+                createdBy=(extras["created_by_id"]
+                           if "created_by_id" in extras else None),
+                objectMarking=(extras["object_marking_ids"]
+                               if "object_marking_ids" in extras else None),
+                objectLabel=(extras["object_label_ids"]
+                             if "object_label_ids" in extras else None),
+                externalReferences=(extras["external_references_ids"]
+                                    if "external_references_ids" in extras else
+                                    None),
+                revoked=stix_object["revoked"]
+                if "revoked" in stix_object else None,
+                confidence=(stix_object["confidence"]
+                            if "confidence" in stix_object else None),
                 lang=stix_object["lang"] if "lang" in stix_object else None,
-                created=stix_object["created"] if "created" in stix_object else None,
-                modified=stix_object["modified"] if "modified" in stix_object else None,
+                created=stix_object["created"]
+                if "created" in stix_object else None,
+                modified=stix_object["modified"]
+                if "modified" in stix_object else None,
                 name=stix_object["name"],
-                description=(
-                    self.opencti.stix2.convert_markdown(stix_object["description"])
-                    if "description" in stix_object
-                    else None
-                ),
+                description=(self.opencti.stix2.convert_markdown(
+                    stix_object["description"])
+                             if "description" in stix_object else None),
                 aliases=self.opencti.stix2.pick_aliases(stix_object),
-                dataSource=(
-                    stix_object["dataSource"] if "dataSource" in stix_object else None
-                ),
-                x_opencti_stix_ids=(
-                    stix_object["x_opencti_stix_ids"]
-                    if "x_opencti_stix_ids" in stix_object
-                    else None
-                ),
-                objectOrganization=(
-                    stix_object["x_opencti_granted_refs"]
-                    if "x_opencti_granted_refs" in stix_object
-                    else None
-                ),
+                dataSource=(stix_object["dataSource"]
+                            if "dataSource" in stix_object else None),
+                x_opencti_stix_ids=(stix_object["x_opencti_stix_ids"]
+                                    if "x_opencti_stix_ids" in stix_object else
+                                    None),
+                objectOrganization=(stix_object["x_opencti_granted_refs"]
+                                    if "x_opencti_granted_refs" in stix_object
+                                    else None),
                 update=update,
             )
         else:
             self.opencti.app_logger.error(
-                "[opencti_data_source] Missing parameters: stixObject"
-            )
+                "[opencti_data_source] Missing parameters: stixObject")
 
     def process_multiple_fields(self, data):
         """

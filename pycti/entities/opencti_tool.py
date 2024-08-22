@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 class Tool:
     """ """
+
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -136,7 +137,9 @@ class Tool:
         name = name.lower().strip()
         data = {"name": name}
         data = canonicalize(data, utf8=False)
-        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
+        id = str(
+            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
+                       data))
         return "tool--" + id
 
     @staticmethod
@@ -176,18 +179,15 @@ class Tool:
         if get_all:
             first = 100
 
-        self.opencti.app_logger.info(
-            "Listing Tools with filters", {"filters": json.dumps(filters)}
-        )
-        query = (
-            """
+        self.opencti.app_logger.info("Listing Tools with filters",
+                                     {"filters": json.dumps(filters)})
+        query = ("""
             query Tools($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: ToolsOrdering, $orderMode: OrderingMode) {
                 tools(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                     edges {
                         node {
-                            """
-            + (custom_attributes if custom_attributes is not None else self.properties)
-            + """
+                            """ + (custom_attributes if custom_attributes
+                                   is not None else self.properties) + """
                         }
                     }
                     pageInfo {
@@ -199,8 +199,7 @@ class Tool:
                     }
                 }
             }
-        """
-        )
+        """)
         result = self.opencti.query(
             query,
             {
@@ -234,9 +233,8 @@ class Tool:
                 final_data = final_data + data
             return final_data
         else:
-            return self.opencti.process_multiple(
-                result["data"]["tools"], with_pagination
-            )
+            return self.opencti.process_multiple(result["data"]["tools"],
+                                                 with_pagination)
 
     """
         Read a Tool object
@@ -257,21 +255,14 @@ class Tool:
         custom_attributes = kwargs.get("customAttributes", None)
         if id is not None:
             self.opencti.app_logger.info("Reading Tool", {"id": id})
-            query = (
-                """
+            query = ("""
                 query Tool($id: String!) {
                     tool(id: $id) {
-                        """
-                + (
-                    custom_attributes
-                    if custom_attributes is not None
-                    else self.properties
-                )
-                + """
+                        """ + (custom_attributes if custom_attributes
+                               is not None else self.properties) + """
                     }
                 }
-             """
-            )
+             """)
             result = self.opencti.query(query, {"id": id})
             return self.opencti.process_multiple_fields(result["data"]["tool"])
         elif filters is not None:
@@ -282,8 +273,7 @@ class Tool:
                 return None
         else:
             self.opencti.app_logger.error(
-                "[opencti_tool] Missing parameters: id or filters"
-            )
+                "[opencti_tool] Missing parameters: id or filters")
             return None
 
     """
@@ -357,11 +347,11 @@ class Tool:
                     }
                 },
             )
-            return self.opencti.process_multiple_fields(result["data"]["toolAdd"])
+            return self.opencti.process_multiple_fields(
+                result["data"]["toolAdd"])
         else:
             self.opencti.app_logger.error(
-                "[opencti_tool] Missing parameters: name and description"
-            )
+                "[opencti_tool] Missing parameters: name and description")
 
     """
         Import an Tool object from a STIX2 object
@@ -383,71 +373,52 @@ class Tool:
             # Search in extensions
             if "x_opencti_stix_ids" not in stix_object:
                 stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension("stix_ids", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "stix_ids", stix_object))
             if "x_opencti_granted_refs" not in stix_object:
                 stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension("granted_refs", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "granted_refs", stix_object))
 
             return self.opencti.tool.create(
                 stix_id=stix_object["id"],
-                createdBy=(
-                    extras["created_by_id"] if "created_by_id" in extras else None
-                ),
-                objectMarking=(
-                    extras["object_marking_ids"]
-                    if "object_marking_ids" in extras
-                    else None
-                ),
-                objectLabel=(
-                    extras["object_label_ids"] if "object_label_ids" in extras else None
-                ),
-                externalReferences=(
-                    extras["external_references_ids"]
-                    if "external_references_ids" in extras
-                    else None
-                ),
-                revoked=stix_object["revoked"] if "revoked" in stix_object else None,
-                confidence=(
-                    stix_object["confidence"] if "confidence" in stix_object else None
-                ),
+                createdBy=(extras["created_by_id"]
+                           if "created_by_id" in extras else None),
+                objectMarking=(extras["object_marking_ids"]
+                               if "object_marking_ids" in extras else None),
+                objectLabel=(extras["object_label_ids"]
+                             if "object_label_ids" in extras else None),
+                externalReferences=(extras["external_references_ids"]
+                                    if "external_references_ids" in extras else
+                                    None),
+                revoked=stix_object["revoked"]
+                if "revoked" in stix_object else None,
+                confidence=(stix_object["confidence"]
+                            if "confidence" in stix_object else None),
                 lang=stix_object["lang"] if "lang" in stix_object else None,
-                created=stix_object["created"] if "created" in stix_object else None,
-                modified=stix_object["modified"] if "modified" in stix_object else None,
+                created=stix_object["created"]
+                if "created" in stix_object else None,
+                modified=stix_object["modified"]
+                if "modified" in stix_object else None,
                 name=stix_object["name"],
-                description=(
-                    self.opencti.stix2.convert_markdown(stix_object["description"])
-                    if "description" in stix_object
-                    else None
-                ),
+                description=(self.opencti.stix2.convert_markdown(
+                    stix_object["description"])
+                             if "description" in stix_object else None),
                 aliases=self.opencti.stix2.pick_aliases(stix_object),
-                tool_types=(
-                    stix_object["tool_types"] if "tool_types" in stix_object else None
-                ),
-                tool_version=(
-                    stix_object["tool_version"]
-                    if "tool_version" in stix_object
-                    else None
-                ),
-                killChainPhases=(
-                    extras["kill_chain_phases_ids"]
-                    if "kill_chain_phases_ids" in extras
-                    else None
-                ),
-                x_opencti_stix_ids=(
-                    stix_object["x_opencti_stix_ids"]
-                    if "x_opencti_stix_ids" in stix_object
-                    else None
-                ),
-                objectOrganization=(
-                    stix_object["x_opencti_granted_refs"]
-                    if "x_opencti_granted_refs" in stix_object
-                    else None
-                ),
+                tool_types=(stix_object["tool_types"]
+                            if "tool_types" in stix_object else None),
+                tool_version=(stix_object["tool_version"]
+                              if "tool_version" in stix_object else None),
+                killChainPhases=(extras["kill_chain_phases_ids"] if
+                                 "kill_chain_phases_ids" in extras else None),
+                x_opencti_stix_ids=(stix_object["x_opencti_stix_ids"]
+                                    if "x_opencti_stix_ids" in stix_object else
+                                    None),
+                objectOrganization=(stix_object["x_opencti_granted_refs"]
+                                    if "x_opencti_granted_refs" in stix_object
+                                    else None),
                 update=update,
             )
         else:
             self.opencti.app_logger.error(
-                "[opencti_tool] Missing parameters: stixObject"
-            )
+                "[opencti_tool] Missing parameters: stixObject")

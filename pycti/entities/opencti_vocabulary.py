@@ -6,6 +6,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 class Vocabulary:
     """ """
+
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -30,7 +31,9 @@ class Vocabulary:
         name = name.lower().strip()
         data = {"name": name, "category": category}
         data = canonicalize(data, utf8=False)
-        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
+        id = str(
+            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
+                       data))
         return "vocabulary--" + id
 
     @staticmethod
@@ -49,24 +52,19 @@ class Vocabulary:
 
         """
         filters = kwargs.get("filters", None)
-        self.opencti.app_logger.info(
-            "Listing Vocabularies with filters", {"filters": json.dumps(filters)}
-        )
-        query = (
-            """
+        self.opencti.app_logger.info("Listing Vocabularies with filters",
+                                     {"filters": json.dumps(filters)})
+        query = ("""
                     query Vocabularies($filters: FilterGroup) {
                         vocabularies(filters: $filters) {
                             edges {
                                 node {
-                                    """
-            + self.properties
-            + """
+                                    """ + self.properties + """
                         }
                     }
                 }
             }
-        """
-        )
+        """)
         result = self.opencti.query(
             query,
             {
@@ -85,19 +83,16 @@ class Vocabulary:
         filters = kwargs.get("filters", None)
         if id is not None:
             self.opencti.app_logger.info("Reading vocabulary", {"id": id})
-            query = (
-                """
+            query = ("""
                         query Vocabulary($id: String!) {
                             vocabulary(id: $id) {
-                                """
-                + self.properties
-                + """
+                                """ + self.properties + """
                     }
                 }
-            """
-            )
+            """)
             result = self.opencti.query(query, {"id": id})
-            return self.opencti.process_multiple_fields(result["data"]["vocabulary"])
+            return self.opencti.process_multiple_fields(
+                result["data"]["vocabulary"])
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -106,8 +101,7 @@ class Vocabulary:
                 return None
         else:
             self.opencti.app_logger.error(
-                "[opencti_vocabulary] Missing parameters: id or filters"
-            )
+                "[opencti_vocabulary] Missing parameters: id or filters")
             return None
 
     def handle_vocab(self, vocab, cache, field):
@@ -148,19 +142,14 @@ class Vocabulary:
 
         if name is not None and category is not None:
             self.opencti.app_logger.info(
-                "Creating or Getting aliased Vocabulary", {"name": name}
-            )
-            query = (
-                """
+                "Creating or Getting aliased Vocabulary", {"name": name})
+            query = ("""
                         mutation VocabularyAdd($input: VocabularyAddInput!) {
                             vocabularyAdd(input: $input) {
-                                """
-                + self.properties
-                + """
+                                """ + self.properties + """
                     }
                 }
-            """
-            )
+            """)
             result = self.opencti.query(
                 query,
                 {
@@ -180,8 +169,7 @@ class Vocabulary:
             return result["data"]["vocabularyAdd"]
         else:
             self.opencti.app_logger.error(
-                "[opencti_vocabulary] Missing parameters: name or category",
-            )
+                "[opencti_vocabulary] Missing parameters: name or category", )
 
     def read_or_create_unchecked(self, **kwargs):
         """
@@ -193,10 +181,12 @@ class Vocabulary:
         vocab = self.read(
             filters={
                 "mode": "and",
-                "filters": [{"key": "name", "values": [value]}],
+                "filters": [{
+                    "key": "name",
+                    "values": [value]
+                }],
                 "filterGroups": [],
-            }
-        )
+            })
         if vocab is None:
             try:
                 return self.create(**kwargs)
@@ -231,8 +221,7 @@ class Vocabulary:
                 },
             )
             return self.opencti.process_multiple_fields(
-                result["data"]["vocabularyFieldPatch"]
-            )
+                result["data"]["vocabularyFieldPatch"])
         else:
             self.opencti.app_logger.error(
                 "[opencti_vocabulary] Missing parameters: id and key and value"

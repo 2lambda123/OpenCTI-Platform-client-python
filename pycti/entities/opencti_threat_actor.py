@@ -151,7 +151,9 @@ class ThreatActor:
         """
         data = {"name": name.lower().strip(), "opencti_type": opencti_type}
         data = canonicalize(data, utf8=False)
-        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
+        id = str(
+            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
+                       data))
         return "threat-actor--" + id
 
     def generate_id_from_data(self, data):
@@ -197,18 +199,15 @@ class ThreatActor:
         if get_all:
             first = 500
 
-        self.opencti.app_logger.info(
-            "Listing Threat-Actors with filters", {"filters": json.dumps(filters)}
-        )
-        query = (
-            """
+        self.opencti.app_logger.info("Listing Threat-Actors with filters",
+                                     {"filters": json.dumps(filters)})
+        query = ("""
                 query ThreatActors($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: ThreatActorsOrdering, $orderMode: OrderingMode) {
                     threatActors(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                         edges {
                             node {
-                                """
-            + (custom_attributes if custom_attributes is not None else self.properties)
-            + """
+                                """ + (custom_attributes if custom_attributes
+                                       is not None else self.properties) + """
                         }
                     }
                     pageInfo {
@@ -220,8 +219,7 @@ class ThreatActor:
                     }
                 }
             }
-        """
-        )
+        """)
         result = self.opencti.query(
             query,
             {
@@ -233,9 +231,8 @@ class ThreatActor:
                 "orderMode": order_mode,
             },
         )
-        return self.opencti.process_multiple(
-            result["data"]["threatActors"], with_pagination
-        )
+        return self.opencti.process_multiple(result["data"]["threatActors"],
+                                             with_pagination)
 
     def read(self, **kwargs) -> Union[dict, None]:
         """Read a Threat-Actor object
@@ -258,23 +255,17 @@ class ThreatActor:
         custom_attributes = kwargs.get("customAttributes", None)
         if id is not None:
             self.opencti.app_logger.info("Reading Threat-Actor", {"id": id})
-            query = (
-                """
+            query = ("""
                     query ThreatActor($id: String!) {
                         threatActor(id: $id) {
-                            """
-                + (
-                    custom_attributes
-                    if custom_attributes is not None
-                    else self.properties
-                )
-                + """
+                            """ + (custom_attributes if custom_attributes
+                                   is not None else self.properties) + """
                     }
                 }
-             """
-            )
+             """)
             result = self.opencti.query(query, {"id": id})
-            return self.opencti.process_multiple_fields(result["data"]["threatActor"])
+            return self.opencti.process_multiple_fields(
+                result["data"]["threatActor"])
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -283,8 +274,7 @@ class ThreatActor:
                 return None
         else:
             self.opencti.app_logger.error(
-                "[opencti_threat_actor] Missing parameters: id or filters"
-            )
+                "[opencti_threat_actor] Missing parameters: id or filters")
             return None
 
     @DeprecationWarning
@@ -313,12 +303,12 @@ class ThreatActor:
         stix_object = kwargs.get("stixObject", None)
         if "x_opencti_type" in stix_object:
             type = stix_object["x_opencti_type"].lower()
-        elif self.opencti.get_attribute_in_extension("type", stix_object) is not None:
-            type = self.opencti.get_attribute_in_extension("type", stix_object).lower()
-        elif (
-            "resource_level" in stix_object
-            and stix_object["resource_level"].lower() == "individual"
-        ):
+        elif self.opencti.get_attribute_in_extension("type",
+                                                     stix_object) is not None:
+            type = self.opencti.get_attribute_in_extension(
+                "type", stix_object).lower()
+        elif ("resource_level" in stix_object
+              and stix_object["resource_level"].lower() == "individual"):
             type = "threat-actor-individual"
         else:
             type = "threat-actor-group"

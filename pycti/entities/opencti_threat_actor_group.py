@@ -147,7 +147,9 @@ class ThreatActorGroup:
         name = name.lower().strip()
         data = {"name": name}
         data = canonicalize(data, utf8=False)
-        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
+        id = str(
+            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
+                       data))
         return "threat-actor--" + id
 
     @staticmethod
@@ -190,17 +192,15 @@ class ThreatActorGroup:
             first = 500
 
         self.opencti.app_logger.info(
-            "Listing Threat-Actors-Group with filters", {"filters": json.dumps(filters)}
-        )
-        query = (
-            """
+            "Listing Threat-Actors-Group with filters",
+            {"filters": json.dumps(filters)})
+        query = ("""
             query ThreatActorsGroup($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: ThreatActorsOrdering, $orderMode: OrderingMode) {
                 threatActorsGroup(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                     edges {
                         node {
-                            """
-            + (custom_attributes if custom_attributes is not None else self.properties)
-            + """
+                            """ + (custom_attributes if custom_attributes
+                                   is not None else self.properties) + """
                         }
                     }
                     pageInfo {
@@ -212,8 +212,7 @@ class ThreatActorGroup:
                     }
                 }
             }
-        """
-        )
+        """)
         result = self.opencti.query(
             query,
             {
@@ -226,8 +225,7 @@ class ThreatActorGroup:
             },
         )
         return self.opencti.process_multiple(
-            result["data"]["threatActorsGroup"], with_pagination
-        )
+            result["data"]["threatActorsGroup"], with_pagination)
 
     def read(self, **kwargs) -> Union[dict, None]:
         """Read a Threat-Actor-Group object
@@ -249,26 +247,19 @@ class ThreatActorGroup:
         filters = kwargs.get("filters", None)
         custom_attributes = kwargs.get("customAttributes", None)
         if id is not None:
-            self.opencti.app_logger.info("Reading Threat-Actor-Group", {"id": id})
-            query = (
-                """
+            self.opencti.app_logger.info("Reading Threat-Actor-Group",
+                                         {"id": id})
+            query = ("""
                 query ThreatActorGroup($id: String!) {
                     threatActorGroup(id: $id) {
-                        """
-                + (
-                    custom_attributes
-                    if custom_attributes is not None
-                    else self.properties
-                )
-                + """
+                        """ + (custom_attributes if custom_attributes
+                               is not None else self.properties) + """
                     }
                 }
-             """
-            )
+             """)
             result = self.opencti.query(query, {"id": id})
             return self.opencti.process_multiple_fields(
-                result["data"]["threatActorGroup"]
-            )
+                result["data"]["threatActorGroup"])
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -347,7 +338,8 @@ class ThreatActorGroup:
         update = kwargs.get("update", False)
 
         if name is not None:
-            self.opencti.app_logger.info("Creating Threat-Actor-Group", {"name": name})
+            self.opencti.app_logger.info("Creating Threat-Actor-Group",
+                                         {"name": name})
             query = """
                 mutation ThreatActorGroupAdd($input: ThreatActorGroupAddInput!) {
                     threatActorGroupAdd(input: $input) {
@@ -391,8 +383,7 @@ class ThreatActorGroup:
                 },
             )
             return self.opencti.process_multiple_fields(
-                result["data"]["threatActorGroupAdd"]
-            )
+                result["data"]["threatActorGroupAdd"])
         else:
             self.opencti.app_logger.error(
                 "[opencti_threat_actor_group] Missing parameters: name and description"
@@ -418,95 +409,67 @@ class ThreatActorGroup:
             # Search in extensions
             if "x_opencti_stix_ids" not in stix_object:
                 stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension("stix_ids", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "stix_ids", stix_object))
             if "x_opencti_granted_refs" not in stix_object:
                 stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension("granted_refs", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "granted_refs", stix_object))
 
             return self.create(
                 stix_id=stix_object["id"],
-                createdBy=(
-                    extras["created_by_id"] if "created_by_id" in extras else None
-                ),
-                objectMarking=(
-                    extras["object_marking_ids"]
-                    if "object_marking_ids" in extras
-                    else None
-                ),
-                objectLabel=(
-                    extras["object_label_ids"] if "object_label_ids" in extras else None
-                ),
-                externalReferences=(
-                    extras["external_references_ids"]
-                    if "external_references_ids" in extras
-                    else None
-                ),
-                revoked=stix_object["revoked"] if "revoked" in stix_object else None,
-                confidence=(
-                    stix_object["confidence"] if "confidence" in stix_object else None
-                ),
+                createdBy=(extras["created_by_id"]
+                           if "created_by_id" in extras else None),
+                objectMarking=(extras["object_marking_ids"]
+                               if "object_marking_ids" in extras else None),
+                objectLabel=(extras["object_label_ids"]
+                             if "object_label_ids" in extras else None),
+                externalReferences=(extras["external_references_ids"]
+                                    if "external_references_ids" in extras else
+                                    None),
+                revoked=stix_object["revoked"]
+                if "revoked" in stix_object else None,
+                confidence=(stix_object["confidence"]
+                            if "confidence" in stix_object else None),
                 lang=stix_object["lang"] if "lang" in stix_object else None,
-                created=stix_object["created"] if "created" in stix_object else None,
-                modified=stix_object["modified"] if "modified" in stix_object else None,
+                created=stix_object["created"]
+                if "created" in stix_object else None,
+                modified=stix_object["modified"]
+                if "modified" in stix_object else None,
                 name=stix_object["name"],
-                description=(
-                    self.opencti.stix2.convert_markdown(stix_object["description"])
-                    if "description" in stix_object
-                    else None
-                ),
+                description=(self.opencti.stix2.convert_markdown(
+                    stix_object["description"])
+                             if "description" in stix_object else None),
                 aliases=self.opencti.stix2.pick_aliases(stix_object),
-                threat_actor_types=(
-                    stix_object["threat_actor_types"]
-                    if "threat_actor_types" in stix_object
-                    else None
-                ),
-                first_seen=(
-                    stix_object["first_seen"] if "first_seen" in stix_object else None
-                ),
-                last_seen=(
-                    stix_object["last_seen"] if "last_seen" in stix_object else None
-                ),
+                threat_actor_types=(stix_object["threat_actor_types"]
+                                    if "threat_actor_types" in stix_object else
+                                    None),
+                first_seen=(stix_object["first_seen"]
+                            if "first_seen" in stix_object else None),
+                last_seen=(stix_object["last_seen"]
+                           if "last_seen" in stix_object else None),
                 goals=stix_object["goals"] if "goals" in stix_object else None,
-                sophistication=(
-                    stix_object["sophistication"]
-                    if "sophistication" in stix_object
-                    else None
-                ),
-                resource_level=(
-                    stix_object["resource_level"]
-                    if "resource_level" in stix_object
-                    else None
-                ),
-                primary_motivation=(
-                    stix_object["primary_motivation"]
-                    if "primary_motivation" in stix_object
-                    else None
-                ),
-                secondary_motivations=(
-                    stix_object["secondary_motivations"]
-                    if "secondary_motivations" in stix_object
-                    else None
-                ),
-                personal_motivations=(
-                    stix_object["personal_motivations"]
-                    if "personal_motivations" in stix_object
-                    else None
-                ),
-                x_opencti_stix_ids=(
-                    stix_object["x_opencti_stix_ids"]
-                    if "x_opencti_stix_ids" in stix_object
-                    else None
-                ),
-                objectOrganization=(
-                    stix_object["x_opencti_granted_refs"]
-                    if "x_opencti_granted_refs" in stix_object
-                    else None
-                ),
+                sophistication=(stix_object["sophistication"]
+                                if "sophistication" in stix_object else None),
+                resource_level=(stix_object["resource_level"]
+                                if "resource_level" in stix_object else None),
+                primary_motivation=(stix_object["primary_motivation"]
+                                    if "primary_motivation" in stix_object else
+                                    None),
+                secondary_motivations=(stix_object["secondary_motivations"]
+                                       if "secondary_motivations"
+                                       in stix_object else None),
+                personal_motivations=(stix_object["personal_motivations"]
+                                      if "personal_motivations" in stix_object
+                                      else None),
+                x_opencti_stix_ids=(stix_object["x_opencti_stix_ids"]
+                                    if "x_opencti_stix_ids" in stix_object else
+                                    None),
+                objectOrganization=(stix_object["x_opencti_granted_refs"]
+                                    if "x_opencti_granted_refs" in stix_object
+                                    else None),
                 update=update,
             )
         else:
             self.opencti.app_logger.error(
-                "[opencti_threat_actor_group] Missing parameters: stixObject"
-            )
+                "[opencti_threat_actor_group] Missing parameters: stixObject")

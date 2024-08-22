@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 class Grouping:
     """ """
+
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -406,7 +407,9 @@ class Grouping:
         context = context.lower().strip()
         data = {"name": name, "context": context}
         data = canonicalize(data, utf8=False)
-        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
+        id = str(
+            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
+                       data))
         return "grouping--" + id
 
     @staticmethod
@@ -447,22 +450,18 @@ class Grouping:
         if get_all:
             first = 100
 
-        self.opencti.app_logger.info(
-            "Listing Groupings with filters", {"filters": json.dumps(filters)}
-        )
+        self.opencti.app_logger.info("Listing Groupings with filters",
+                                     {"filters": json.dumps(filters)})
         query = (
             """
             query Groupings($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: GroupingsOrdering, $orderMode: OrderingMode) {
                 groupings(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                     edges {
                         node {
-                            """
-            + (
-                custom_attributes
-                if custom_attributes is not None
-                else (self.properties_with_files if with_files else self.properties)
-            )
-            + """
+                            """ +
+            (custom_attributes if custom_attributes is not None else
+             (self.properties_with_files if with_files else self.properties)) +
+            """
                         }
                     }
                     pageInfo {
@@ -474,8 +473,7 @@ class Grouping:
                     }
                 }
             }
-        """
-        )
+        """)
         result = self.opencti.query(
             query,
             {
@@ -493,7 +491,8 @@ class Grouping:
             final_data = final_data + data
             while result["data"]["groupings"]["pageInfo"]["hasNextPage"]:
                 after = result["data"]["groupings"]["pageInfo"]["endCursor"]
-                self.opencti.app_logger.info("Listing Groupings", {"after": after})
+                self.opencti.app_logger.info("Listing Groupings",
+                                             {"after": after})
                 result = self.opencti.query(
                     query,
                     {
@@ -505,13 +504,13 @@ class Grouping:
                         "orderMode": order_mode,
                     },
                 )
-                data = self.opencti.process_multiple(result["data"]["groupings"])
+                data = self.opencti.process_multiple(
+                    result["data"]["groupings"])
                 final_data = final_data + data
             return final_data
         else:
-            return self.opencti.process_multiple(
-                result["data"]["groupings"], with_pagination
-            )
+            return self.opencti.process_multiple(result["data"]["groupings"],
+                                                 with_pagination)
 
     """
         Read a Grouping object
@@ -533,23 +532,19 @@ class Grouping:
         with_files = kwargs.get("withFiles", False)
         if id is not None:
             self.opencti.app_logger.info("Reading Grouping", {"id": id})
-            query = (
-                """
+            query = ("""
                 query Grouping($id: String!) {
                     grouping(id: $id) {
-                        """
-                + (
-                    custom_attributes
-                    if custom_attributes is not None
-                    else (self.properties_with_files if with_files else self.properties)
-                )
-                + """
+                        """ +
+                     (custom_attributes if custom_attributes is not None else
+                      (self.properties_with_files
+                       if with_files else self.properties)) + """
                     }
                 }
-            """
-            )
+            """)
             result = self.opencti.query(query, {"id": id})
-            return self.opencti.process_multiple_fields(result["data"]["grouping"])
+            return self.opencti.process_multiple_fields(
+                result["data"]["grouping"])
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -578,14 +573,22 @@ class Grouping:
         custom_attributes = kwargs.get("customAttributes", None)
         object_result = None
         if stix_id is not None:
-            object_result = self.read(id=stix_id, customAttributes=custom_attributes)
+            object_result = self.read(id=stix_id,
+                                      customAttributes=custom_attributes)
         if object_result is None and name is not None and context is not None:
             object_result = self.read(
                 filters={
-                    "mode": "and",
+                    "mode":
+                    "and",
                     "filters": [
-                        {"key": "name", "values": [name]},
-                        {"key": "context", "values": [context]},
+                        {
+                            "key": "name",
+                            "values": [name]
+                        },
+                        {
+                            "key": "context",
+                            "values": [context]
+                        },
                     ],
                     "filterGroups": [],
                 },
@@ -609,12 +612,14 @@ class Grouping:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None
-        )
+            "stixObjectOrStixRelationshipId", None)
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Checking StixObjectOrStixRelationship in Grouping",
-                {"id": stix_object_or_stix_relationship_id, "grouping": id},
+                {
+                    "id": stix_object_or_stix_relationship_id,
+                    "grouping": id
+                },
             )
             query = """
                 query GroupingContainsStixObjectOrStixRelationship($id: String!, $stixObjectOrStixRelationshipId: String!) {
@@ -624,11 +629,14 @@ class Grouping:
             result = self.opencti.query(
                 query,
                 {
-                    "id": id,
-                    "stixObjectOrStixRelationshipId": stix_object_or_stix_relationship_id,
+                    "id":
+                    id,
+                    "stixObjectOrStixRelationshipId":
+                    stix_object_or_stix_relationship_id,
                 },
             )
-            return result["data"]["groupingContainsStixObjectOrStixRelationship"]
+            return result["data"][
+                "groupingContainsStixObjectOrStixRelationship"]
         else:
             self.opencti.app_logger.error(
                 "[opencti_grouping] Missing parameters: id or stixObjectOrStixRelationshipId"
@@ -703,7 +711,8 @@ class Grouping:
                     }
                 },
             )
-            return self.opencti.process_multiple_fields(result["data"]["groupingAdd"])
+            return self.opencti.process_multiple_fields(
+                result["data"]["groupingAdd"])
         else:
             self.opencti.app_logger.error(
                 "[opencti_grouping] Missing parameters: name and description and context"
@@ -725,12 +734,14 @@ class Grouping:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None
-        )
+            "stixObjectOrStixRelationshipId", None)
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Adding StixObjectOrStixRelationship to Grouping",
-                {"id": stix_object_or_stix_relationship_id, "grouping": id},
+                {
+                    "id": stix_object_or_stix_relationship_id,
+                    "grouping": id
+                },
             )
             query = """
                mutation GroupingEditRelationAdd($id: ID!, $input: StixRefRelationshipAddInput!) {
@@ -772,12 +783,14 @@ class Grouping:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None
-        )
+            "stixObjectOrStixRelationshipId", None)
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Removing StixObjectOrStixRelationship to Grouping",
-                {"id": stix_object_or_stix_relationship_id, "grouping": id},
+                {
+                    "id": stix_object_or_stix_relationship_id,
+                    "grouping": id
+                },
             )
             query = """
                mutation GroupingEditRelationDelete($id: ID!, $toId: StixRef!, $relationship_type: String!) {
@@ -821,64 +834,52 @@ class Grouping:
             # Search in extensions
             if "x_opencti_aliases" not in stix_object:
                 stix_object["x_opencti_aliases"] = (
-                    self.opencti.get_attribute_in_extension("aliases", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "aliases", stix_object))
             if "x_opencti_stix_ids" not in stix_object:
                 stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension("stix_ids", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "stix_ids", stix_object))
             if "x_opencti_granted_refs" not in stix_object:
                 stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension("granted_refs", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "granted_refs", stix_object))
 
             return self.create(
                 stix_id=stix_object["id"],
-                createdBy=(
-                    extras["created_by_id"] if "created_by_id" in extras else None
-                ),
-                objectMarking=(
-                    extras["object_marking_ids"]
-                    if "object_marking_ids" in extras
-                    else None
-                ),
-                objectLabel=(
-                    extras["object_label_ids"] if "object_label_ids" in extras else None
-                ),
+                createdBy=(extras["created_by_id"]
+                           if "created_by_id" in extras else None),
+                objectMarking=(extras["object_marking_ids"]
+                               if "object_marking_ids" in extras else None),
+                objectLabel=(extras["object_label_ids"]
+                             if "object_label_ids" in extras else None),
                 objects=extras["object_ids"] if "object_ids" in extras else [],
-                externalReferences=(
-                    extras["external_references_ids"]
-                    if "external_references_ids" in extras
-                    else None
-                ),
-                revoked=stix_object["revoked"] if "revoked" in stix_object else None,
-                confidence=(
-                    stix_object["confidence"] if "confidence" in stix_object else None
-                ),
+                externalReferences=(extras["external_references_ids"]
+                                    if "external_references_ids" in extras else
+                                    None),
+                revoked=stix_object["revoked"]
+                if "revoked" in stix_object else None,
+                confidence=(stix_object["confidence"]
+                            if "confidence" in stix_object else None),
                 lang=stix_object["lang"] if "lang" in stix_object else None,
-                created=stix_object["created"] if "created" in stix_object else None,
-                modified=stix_object["modified"] if "modified" in stix_object else None,
+                created=stix_object["created"]
+                if "created" in stix_object else None,
+                modified=stix_object["modified"]
+                if "modified" in stix_object else None,
                 name=stix_object["name"],
                 context=stix_object["context"],
-                description=(
-                    self.opencti.stix2.convert_markdown(stix_object["description"])
-                    if "description" in stix_object
-                    else None
-                ),
-                x_opencti_stix_ids=(
-                    stix_object["x_opencti_stix_ids"]
-                    if "x_opencti_stix_ids" in stix_object
-                    else None
-                ),
-                objectOrganization=(
-                    stix_object["x_opencti_granted_refs"]
-                    if "x_opencti_granted_refs" in stix_object
-                    else None
-                ),
+                description=(self.opencti.stix2.convert_markdown(
+                    stix_object["description"])
+                             if "description" in stix_object else None),
+                x_opencti_stix_ids=(stix_object["x_opencti_stix_ids"]
+                                    if "x_opencti_stix_ids" in stix_object else
+                                    None),
+                objectOrganization=(stix_object["x_opencti_granted_refs"]
+                                    if "x_opencti_granted_refs" in stix_object
+                                    else None),
                 x_opencti_aliases=self.opencti.stix2.pick_aliases(stix_object),
                 update=update,
             )
         else:
             self.opencti.app_logger.error(
-                "[opencti_grouping] Missing parameters: stixObject"
-            )
+                "[opencti_grouping] Missing parameters: stixObject")

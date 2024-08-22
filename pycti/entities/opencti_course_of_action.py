@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 class CourseOfAction:
     """ """
+
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -207,7 +208,9 @@ class CourseOfAction:
         else:
             data = {"name": name.lower().strip()}
         data = canonicalize(data, utf8=False)
-        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
+        id = str(
+            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
+                       data))
         return "course-of-action--" + id
 
     @staticmethod
@@ -217,7 +220,8 @@ class CourseOfAction:
         :param data:
 
         """
-        return CourseOfAction.generate_id(data.get("name"), data.get("x_mitre_id"))
+        return CourseOfAction.generate_id(data.get("name"),
+                                          data.get("x_mitre_id"))
 
     """
         List Course-Of-Action objects
@@ -248,22 +252,18 @@ class CourseOfAction:
         if get_all:
             first = 100
 
-        self.opencti.app_logger.info(
-            "Listing Courses-Of-Action with filters", {"filters": json.dumps(filters)}
-        )
+        self.opencti.app_logger.info("Listing Courses-Of-Action with filters",
+                                     {"filters": json.dumps(filters)})
         query = (
             """
             query CoursesOfAction($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: CoursesOfActionOrdering, $orderMode: OrderingMode) {
                 coursesOfAction(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                     edges {
                         node {
-                            """
-            + (
-                custom_attributes
-                if custom_attributes is not None
-                else (self.properties_with_files if with_files else self.properties)
-            )
-            + """
+                            """ +
+            (custom_attributes if custom_attributes is not None else
+             (self.properties_with_files if with_files else self.properties)) +
+            """
                         }
                     }
                     pageInfo {
@@ -275,8 +275,7 @@ class CourseOfAction:
                     }
                 }
             }
-        """
-        )
+        """)
         result = self.opencti.query(
             query,
             {
@@ -290,13 +289,14 @@ class CourseOfAction:
         )
         if get_all:
             final_data = []
-            data = self.opencti.process_multiple(result["data"]["coursesOfAction"])
+            data = self.opencti.process_multiple(
+                result["data"]["coursesOfAction"])
             final_data = final_data + data
             while result["data"]["coursesOfAction"]["pageInfo"]["hasNextPage"]:
-                after = result["data"]["coursesOfAction"]["pageInfo"]["endCursor"]
-                self.opencti.app_logger.info(
-                    "Listing Courses-Of-Action", {"after": after}
-                )
+                after = result["data"]["coursesOfAction"]["pageInfo"][
+                    "endCursor"]
+                self.opencti.app_logger.info("Listing Courses-Of-Action",
+                                             {"after": after})
                 result = self.opencti.query(
                     query,
                     {
@@ -308,13 +308,13 @@ class CourseOfAction:
                         "orderMode": order_mode,
                     },
                 )
-                data = self.opencti.process_multiple(result["data"]["coursesOfAction"])
+                data = self.opencti.process_multiple(
+                    result["data"]["coursesOfAction"])
                 final_data = final_data + data
             return final_data
         else:
             return self.opencti.process_multiple(
-                result["data"]["coursesOfAction"], with_pagination
-            )
+                result["data"]["coursesOfAction"], with_pagination)
 
     """
         Read a Course-Of-Action object
@@ -335,26 +335,21 @@ class CourseOfAction:
         custom_attributes = kwargs.get("customAttributes", None)
         with_files = kwargs.get("withFiles", False)
         if id is not None:
-            self.opencti.app_logger.info("Reading Course-Of-Action", {"id": id})
-            query = (
-                """
+            self.opencti.app_logger.info("Reading Course-Of-Action",
+                                         {"id": id})
+            query = ("""
                 query CourseOfAction($id: String!) {
                     courseOfAction(id: $id) {
-                        """
-                + (
-                    custom_attributes
-                    if custom_attributes is not None
-                    else (self.properties_with_files if with_files else self.properties)
-                )
-                + """
+                        """ +
+                     (custom_attributes if custom_attributes is not None else
+                      (self.properties_with_files
+                       if with_files else self.properties)) + """
                     }
                 }
-             """
-            )
+             """)
             result = self.opencti.query(query, {"id": id})
             return self.opencti.process_multiple_fields(
-                result["data"]["courseOfAction"]
-            )
+                result["data"]["courseOfAction"])
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -363,8 +358,7 @@ class CourseOfAction:
                 return None
         else:
             self.opencti.app_logger.error(
-                "[opencti_course_of_action] Missing parameters: id or filters"
-            )
+                "[opencti_course_of_action] Missing parameters: id or filters")
             return None
 
     """
@@ -399,7 +393,8 @@ class CourseOfAction:
         update = kwargs.get("update", False)
 
         if name is not None:
-            self.opencti.app_logger.info("Creating Course Of Action", {"name": name})
+            self.opencti.app_logger.info("Creating Course Of Action",
+                                         {"name": name})
             query = """
                 mutation CourseOfActionAdd($input: CourseOfActionAddInput!) {
                     courseOfActionAdd(input: $input) {
@@ -435,8 +430,7 @@ class CourseOfAction:
                 },
             )
             return self.opencti.process_multiple_fields(
-                result["data"]["courseOfActionAdd"]
-            )
+                result["data"]["courseOfActionAdd"])
         else:
             self.opencti.app_logger.error(
                 "[opencti_course_of_action] Missing parameters: name and description"
@@ -463,83 +457,70 @@ class CourseOfAction:
             x_mitre_id = None
             if "x_mitre_id" in stix_object:
                 x_mitre_id = stix_object["x_mitre_id"]
-            elif (
-                self.opencti.get_attribute_in_mitre_extension("id", stix_object)
-                is not None
-            ):
+            elif (self.opencti.get_attribute_in_mitre_extension(
+                    "id", stix_object) is not None):
                 x_mitre_id = self.opencti.get_attribute_in_mitre_extension(
-                    "id", stix_object
-                )
+                    "id", stix_object)
             elif "external_references" in stix_object:
                 for external_reference in stix_object["external_references"]:
-                    if (
-                        external_reference["source_name"] == "mitre-attack"
-                        or external_reference["source_name"] == "mitre-pre-attack"
-                        or external_reference["source_name"] == "mitre-mobile-attack"
-                        or external_reference["source_name"] == "amitt-attack"
-                    ):
-                        x_mitre_id = external_reference.get("external_id", None)
+                    if (external_reference["source_name"] == "mitre-attack"
+                            or external_reference["source_name"]
+                            == "mitre-pre-attack"
+                            or external_reference["source_name"]
+                            == "mitre-mobile-attack"
+                            or external_reference["source_name"]
+                            == "amitt-attack"):
+                        x_mitre_id = external_reference.get(
+                            "external_id", None)
 
             # Search in extensions
             if "x_opencti_aliases" not in stix_object:
                 stix_object["x_opencti_aliases"] = (
-                    self.opencti.get_attribute_in_extension("aliases", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "aliases", stix_object))
             if "x_opencti_stix_ids" not in stix_object:
                 stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension("stix_ids", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "stix_ids", stix_object))
             if "x_opencti_granted_refs" not in stix_object:
                 stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension("granted_refs", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "granted_refs", stix_object))
 
             return self.create(
                 stix_id=stix_object["id"],
-                createdBy=(
-                    extras["created_by_id"] if "created_by_id" in extras else None
-                ),
-                objectMarking=(
-                    extras["object_marking_ids"]
-                    if "object_marking_ids" in extras
-                    else None
-                ),
-                objectLabel=(
-                    extras["object_label_ids"] if "object_label_ids" in extras else None
-                ),
-                externalReferences=(
-                    extras["external_references_ids"]
-                    if "external_references_ids" in extras
-                    else None
-                ),
-                revoked=stix_object["revoked"] if "revoked" in stix_object else None,
-                confidence=(
-                    stix_object["confidence"] if "confidence" in stix_object else None
-                ),
+                createdBy=(extras["created_by_id"]
+                           if "created_by_id" in extras else None),
+                objectMarking=(extras["object_marking_ids"]
+                               if "object_marking_ids" in extras else None),
+                objectLabel=(extras["object_label_ids"]
+                             if "object_label_ids" in extras else None),
+                externalReferences=(extras["external_references_ids"]
+                                    if "external_references_ids" in extras else
+                                    None),
+                revoked=stix_object["revoked"]
+                if "revoked" in stix_object else None,
+                confidence=(stix_object["confidence"]
+                            if "confidence" in stix_object else None),
                 lang=stix_object["lang"] if "lang" in stix_object else None,
-                created=stix_object["created"] if "created" in stix_object else None,
-                modified=stix_object["modified"] if "modified" in stix_object else None,
+                created=stix_object["created"]
+                if "created" in stix_object else None,
+                modified=stix_object["modified"]
+                if "modified" in stix_object else None,
                 name=stix_object["name"],
-                description=(
-                    self.opencti.stix2.convert_markdown(stix_object["description"])
-                    if "description" in stix_object
-                    else None
-                ),
-                x_opencti_stix_ids=(
-                    stix_object["x_opencti_stix_ids"]
-                    if "x_opencti_stix_ids" in stix_object
-                    else None
-                ),
+                description=(self.opencti.stix2.convert_markdown(
+                    stix_object["description"])
+                             if "description" in stix_object else None),
+                x_opencti_stix_ids=(stix_object["x_opencti_stix_ids"]
+                                    if "x_opencti_stix_ids" in stix_object else
+                                    None),
                 x_opencti_aliases=self.opencti.stix2.pick_aliases(stix_object),
                 x_mitre_id=x_mitre_id,
-                objectOrganization=(
-                    stix_object["x_opencti_granted_refs"]
-                    if "x_opencti_granted_refs" in stix_object
-                    else None
-                ),
+                objectOrganization=(stix_object["x_opencti_granted_refs"]
+                                    if "x_opencti_granted_refs" in stix_object
+                                    else None),
                 update=update,
             )
         else:
             self.opencti.app_logger.error(
-                "[opencti_course_of_action] Missing parameters: stixObject"
-            )
+                "[opencti_course_of_action] Missing parameters: stixObject")

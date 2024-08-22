@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 class ObservedData:
     """ """
+
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -441,7 +442,9 @@ class ObservedData:
         """
         data = {"objects": object_ids}
         data = canonicalize(data, utf8=False)
-        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
+        id = str(
+            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
+                       data))
         return "observed-data--" + id
 
     @staticmethod
@@ -482,22 +485,18 @@ class ObservedData:
         if get_all:
             first = 500
 
-        self.opencti.app_logger.info(
-            "Listing ObservedDatas with filters", {"filters": json.dumps(filters)}
-        )
+        self.opencti.app_logger.info("Listing ObservedDatas with filters",
+                                     {"filters": json.dumps(filters)})
         query = (
             """
             query ObservedDatas($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: ObservedDatasOrdering, $orderMode: OrderingMode) {
                 observedDatas(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                     edges {
                         node {
-                            """
-            + (
-                custom_attributes
-                if custom_attributes is not None
-                else (self.properties_with_files if with_files else self.properties)
-            )
-            + """
+                            """ +
+            (custom_attributes if custom_attributes is not None else
+             (self.properties_with_files if with_files else self.properties)) +
+            """
                         }
                     }
                     pageInfo {
@@ -509,8 +508,7 @@ class ObservedData:
                     }
                 }
             }
-        """
-        )
+        """)
         result = self.opencti.query(
             query,
             {
@@ -522,9 +520,8 @@ class ObservedData:
                 "orderMode": order_mode,
             },
         )
-        return self.opencti.process_multiple(
-            result["data"]["observedDatas"], with_pagination
-        )
+        return self.opencti.process_multiple(result["data"]["observedDatas"],
+                                             with_pagination)
 
     """
         Read a ObservedData object
@@ -546,23 +543,19 @@ class ObservedData:
         with_files = kwargs.get("withFiles", False)
         if id is not None:
             self.opencti.app_logger.info("Reading ObservedData", {"id": id})
-            query = (
-                """
+            query = ("""
                 query ObservedData($id: String!) {
                     observedData(id: $id) {
-                        """
-                + (
-                    custom_attributes
-                    if custom_attributes is not None
-                    else (self.properties_with_files if with_files else self.properties)
-                )
-                + """
+                        """ +
+                     (custom_attributes if custom_attributes is not None else
+                      (self.properties_with_files
+                       if with_files else self.properties)) + """
                     }
                 }
-            """
-            )
+            """)
             result = self.opencti.query(query, {"id": id})
-            return self.opencti.process_multiple_fields(result["data"]["observedData"])
+            return self.opencti.process_multiple_fields(
+                result["data"]["observedData"])
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -584,14 +577,15 @@ class ObservedData:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None
-        )
+            "stixObjectOrStixRelationshipId", None)
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Checking StixObjectOrStixRelationship in ObservedData",
                 {
-                    "id": id,
-                    "stixObjectOrStixRelationshipId": stix_object_or_stix_relationship_id,
+                    "id":
+                    id,
+                    "stixObjectOrStixRelationshipId":
+                    stix_object_or_stix_relationship_id,
                 },
             )
             query = """
@@ -602,15 +596,17 @@ class ObservedData:
             result = self.opencti.query(
                 query,
                 {
-                    "id": id,
-                    "stixObjectOrStixRelationshipId": stix_object_or_stix_relationship_id,
+                    "id":
+                    id,
+                    "stixObjectOrStixRelationshipId":
+                    stix_object_or_stix_relationship_id,
                 },
             )
-            return result["data"]["observedDataContainsStixObjectOrStixRelationship"]
+            return result["data"][
+                "observedDataContainsStixObjectOrStixRelationship"]
         else:
             self.opencti.app_logger.error(
-                "[opencti_observedData] Missing parameters: id or entity_id"
-            )
+                "[opencti_observedData] Missing parameters: id or entity_id")
 
     """
         Create a ObservedData object
@@ -643,11 +639,8 @@ class ObservedData:
         granted_refs = kwargs.get("objectOrganization", None)
         update = kwargs.get("update", False)
 
-        if (
-            first_observed is not None
-            and last_observed is not None
-            and objects is not None
-        ):
+        if (first_observed is not None and last_observed is not None
+                and objects is not None):
             self.opencti.app_logger.info("Creating ObservedData")
             query = """
                 mutation ObservedDataAdd($input: ObservedDataAddInput!) {
@@ -684,13 +677,11 @@ class ObservedData:
                 },
             )
             return self.opencti.process_multiple_fields(
-                result["data"]["observedDataAdd"]
-            )
+                result["data"]["observedDataAdd"])
         else:
             self.opencti.app_logger.error(
                 "[opencti_observedData] Missing parameters: "
-                "first_observed, last_observed or objects"
-            )
+                "first_observed, last_observed or objects")
 
     """
         Add a Stix-Core-Object or stix_relationship to ObservedData object (object)
@@ -708,19 +699,21 @@ class ObservedData:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None
-        )
+            "stixObjectOrStixRelationshipId", None)
         if id is not None and stix_object_or_stix_relationship_id is not None:
             if self.contains_stix_object_or_stix_relationship(
-                id=id,
-                stixObjectOrStixRelationshipId=stix_object_or_stix_relationship_id,
+                    id=id,
+                    stixObjectOrStixRelationshipId=
+                    stix_object_or_stix_relationship_id,
             ):
                 return True
             self.opencti.app_logger.info(
                 "Adding StixObjectOrStixRelationship to ObservedData",
                 {
-                    "id": id,
-                    "stixObjectOrStixRelationshipId": stix_object_or_stix_relationship_id,
+                    "id":
+                    id,
+                    "stixObjectOrStixRelationshipId":
+                    stix_object_or_stix_relationship_id,
                 },
             )
             query = """
@@ -746,8 +739,7 @@ class ObservedData:
         else:
             self.opencti.app_logger.error(
                 "[opencti_observedData] Missing parameters: "
-                "id and stix_object_or_stix_relationship_id"
-            )
+                "id and stix_object_or_stix_relationship_id")
             return False
 
     """
@@ -766,14 +758,15 @@ class ObservedData:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None
-        )
+            "stixObjectOrStixRelationshipId", None)
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Removing StixObjectOrStixRelationship to Observed-Data",
                 {
-                    "id": id,
-                    "stixObjectOrStixRelationshipId": stix_object_or_stix_relationship_id,
+                    "id":
+                    id,
+                    "stixObjectOrStixRelationshipId":
+                    stix_object_or_stix_relationship_id,
                 },
             )
             query = """
@@ -796,8 +789,7 @@ class ObservedData:
             return True
         else:
             self.opencti.app_logger.error(
-                "[opencti_observed_data] Missing parameters: id and entity_id"
-            )
+                "[opencti_observed_data] Missing parameters: id and entity_id")
             return False
 
     """
@@ -824,28 +816,17 @@ class ObservedData:
                 stix_observable_results.append(
                     self.opencti.stix_cyber_observable.create(
                         observableData=observable_item,
-                        createdBy=(
-                            extras["created_by_id"]
-                            if "created_by_id" in extras
-                            else None
-                        ),
-                        objectMarking=(
-                            extras["object_marking_ids"]
-                            if "object_marking_ids" in extras
-                            else None
-                        ),
-                        objectLabel=(
-                            extras["object_label_ids"]
-                            if "object_label_ids" in extras
-                            else None
-                        ),
-                        objectOrganization=(
-                            extras["granted_refs_ids"]
-                            if "granted_refs_ids" in extras
-                            else None
-                        ),
-                    )
-                )
+                        createdBy=(extras["created_by_id"]
+                                   if "created_by_id" in extras else None),
+                        objectMarking=(extras["object_marking_ids"]
+                                       if "object_marking_ids" in extras else
+                                       None),
+                        objectLabel=(extras["object_label_ids"] if
+                                     "object_label_ids" in extras else None),
+                        objectOrganization=(extras["granted_refs_ids"]
+                                            if "granted_refs_ids" in extras
+                                            else None),
+                    ))
                 for item in stix_observable_results:
                     object_refs.append(item["standard_id"])
 
@@ -853,69 +834,50 @@ class ObservedData:
             # Search in extensions
             if "x_opencti_stix_ids" not in stix_object:
                 stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension("stix_ids", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "stix_ids", stix_object))
             if "x_opencti_granted_refs" not in stix_object:
                 stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension("granted_refs", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "granted_refs", stix_object))
 
             observed_data_result = self.create(
                 stix_id=stix_object["id"],
-                createdBy=(
-                    extras["created_by_id"] if "created_by_id" in extras else None
-                ),
-                objectMarking=(
-                    extras["object_marking_ids"]
-                    if "object_marking_ids" in extras
-                    else None
-                ),
-                objectLabel=(
-                    extras["object_label_ids"] if "object_label_ids" in extras else None
-                ),
+                createdBy=(extras["created_by_id"]
+                           if "created_by_id" in extras else None),
+                objectMarking=(extras["object_marking_ids"]
+                               if "object_marking_ids" in extras else None),
+                objectLabel=(extras["object_label_ids"]
+                             if "object_label_ids" in extras else None),
                 objects=object_refs,
-                externalReferences=(
-                    extras["external_references_ids"]
-                    if "external_references_ids" in extras
-                    else None
-                ),
-                revoked=stix_object["revoked"] if "revoked" in stix_object else None,
-                confidence=(
-                    stix_object["confidence"] if "confidence" in stix_object else None
-                ),
+                externalReferences=(extras["external_references_ids"]
+                                    if "external_references_ids" in extras else
+                                    None),
+                revoked=stix_object["revoked"]
+                if "revoked" in stix_object else None,
+                confidence=(stix_object["confidence"]
+                            if "confidence" in stix_object else None),
                 lang=stix_object["lang"] if "lang" in stix_object else None,
-                created=stix_object["created"] if "created" in stix_object else None,
-                modified=stix_object["modified"] if "modified" in stix_object else None,
-                first_observed=(
-                    stix_object["first_observed"]
-                    if "first_observed" in stix_object
-                    else None
-                ),
-                last_observed=(
-                    stix_object["last_observed"]
-                    if "last_observed" in stix_object
-                    else None
-                ),
-                number_observed=(
-                    stix_object["number_observed"]
-                    if "number_observed" in stix_object
-                    else None
-                ),
-                x_opencti_stix_ids=(
-                    stix_object["x_opencti_stix_ids"]
-                    if "x_opencti_stix_ids" in stix_object
-                    else None
-                ),
-                objectOrganization=(
-                    stix_object["x_opencti_granted_refs"]
-                    if "x_opencti_granted_refs" in stix_object
-                    else None
-                ),
+                created=stix_object["created"]
+                if "created" in stix_object else None,
+                modified=stix_object["modified"]
+                if "modified" in stix_object else None,
+                first_observed=(stix_object["first_observed"]
+                                if "first_observed" in stix_object else None),
+                last_observed=(stix_object["last_observed"]
+                               if "last_observed" in stix_object else None),
+                number_observed=(stix_object["number_observed"] if
+                                 "number_observed" in stix_object else None),
+                x_opencti_stix_ids=(stix_object["x_opencti_stix_ids"]
+                                    if "x_opencti_stix_ids" in stix_object else
+                                    None),
+                objectOrganization=(stix_object["x_opencti_granted_refs"]
+                                    if "x_opencti_granted_refs" in stix_object
+                                    else None),
                 update=update,
             )
 
             return observed_data_result
         else:
             self.opencti.app_logger.error(
-                "[opencti_observed_data] Missing parameters: stixObject"
-            )
+                "[opencti_observed_data] Missing parameters: stixObject")

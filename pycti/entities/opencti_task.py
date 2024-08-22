@@ -8,6 +8,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 class Task:
     """ """
+
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -237,7 +238,9 @@ class Task:
             created = created.isoformat()
         data = {"name": name.lower().strip(), "created": created}
         data = canonicalize(data, utf8=False)
-        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
+        id = str(
+            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
+                       data))
         return "task--" + id
 
     @staticmethod
@@ -277,18 +280,15 @@ class Task:
         if get_all:
             first = 500
 
-        self.opencti.app_logger.info(
-            "Listing Tasks with filters", {"filters": json.dumps(filters)}
-        )
-        query = (
-            """
+        self.opencti.app_logger.info("Listing Tasks with filters",
+                                     {"filters": json.dumps(filters)})
+        query = ("""
         query tasks($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: TasksOrdering, $orderMode: OrderingMode) {
             tasks(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                 edges {
                     node {
-                            """
-            + (custom_attributes if custom_attributes is not None else self.properties)
-            + """
+                            """ + (custom_attributes if custom_attributes
+                                   is not None else self.properties) + """
                         }
                     }
                     pageInfo {
@@ -300,8 +300,7 @@ class Task:
                     }
                 }
             }
-        """
-        )
+        """)
         result = self.opencti.query(
             query,
             {
@@ -335,9 +334,8 @@ class Task:
                 final_data = final_data + data
             return final_data
         else:
-            return self.opencti.process_multiple(
-                result["data"]["tasks"], with_pagination
-            )
+            return self.opencti.process_multiple(result["data"]["tasks"],
+                                                 with_pagination)
 
     """
         Read a Task object
@@ -358,21 +356,15 @@ class Task:
         custom_attributes = kwargs.get("customAttributes", None)
         if id is not None:
             self.opencti.app_logger.info("Reading Task", {"id": id})
-            query = (
-                """
+            query = ("""
                                     query task($id: String!) {
                                         task(id: $id) {
-                                            """
-                + (
-                    custom_attributes
-                    if custom_attributes is not None
-                    else self.properties
-                )
-                + """
+                                            """ +
+                     (custom_attributes if custom_attributes is not None else
+                      self.properties) + """
                     }
                 }
-            """
-            )
+            """)
             result = self.opencti.query(query, {"id": id})
             return self.opencti.process_multiple_fields(result["data"]["task"])
         elif filters is not None:
@@ -403,15 +395,23 @@ class Task:
         custom_attributes = kwargs.get("customAttributes", None)
         object_result = None
         if stix_id is not None:
-            object_result = self.read(id=stix_id, customAttributes=custom_attributes)
+            object_result = self.read(id=stix_id,
+                                      customAttributes=custom_attributes)
         if object_result is None and name is not None and created is not None:
             created_final = parse(created).strftime("%Y-%m-%d")
             object_result = self.read(
                 filters={
-                    "mode": "and",
+                    "mode":
+                    "and",
                     "filters": [
-                        {"key": "name", "values": [name]},
-                        {"key": "created_day", "values": [created_final]},
+                        {
+                            "key": "name",
+                            "values": [name]
+                        },
+                        {
+                            "key": "created_day",
+                            "values": [created_final]
+                        },
                     ],
                     "filterGroups": [],
                 },
@@ -435,13 +435,13 @@ class Task:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None
-        )
+            "stixObjectOrStixRelationshipId", None)
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Checking StixObjectOrStixRelationship in Task",
                 {
-                    "stix_object_or_stix_relationship_id": stix_object_or_stix_relationship_id,
+                    "stix_object_or_stix_relationship_id":
+                    stix_object_or_stix_relationship_id,
                     "id": id,
                 },
             )
@@ -453,8 +453,10 @@ class Task:
             result = self.opencti.query(
                 query,
                 {
-                    "id": id,
-                    "stixObjectOrStixRelationshipId": stix_object_or_stix_relationship_id,
+                    "id":
+                    id,
+                    "stixObjectOrStixRelationshipId":
+                    stix_object_or_stix_relationship_id,
                 },
             )
             return result["data"]["taskContainsStixObjectOrStixRelationship"]
@@ -520,9 +522,11 @@ class Task:
                     }
                 },
             )
-            return self.opencti.process_multiple_fields(result["data"]["taskAdd"])
+            return self.opencti.process_multiple_fields(
+                result["data"]["taskAdd"])
         else:
-            self.opencti.app_logger.error("[opencti_task] Missing parameters: name")
+            self.opencti.app_logger.error(
+                "[opencti_task] Missing parameters: name")
 
     def update_field(self, **kwargs):
         """
@@ -530,7 +534,8 @@ class Task:
         :param **kwargs:
 
         """
-        self.opencti.app_logger.info("Updating Task", {"data": json.dumps(kwargs)})
+        self.opencti.app_logger.info("Updating Task",
+                                     {"data": json.dumps(kwargs)})
         id = kwargs.get("id", None)
         input = kwargs.get("input", None)
         if id is not None and input is not None:
@@ -545,12 +550,10 @@ class Task:
                     """
             result = self.opencti.query(query, {"id": id, "input": input})
             return self.opencti.process_multiple_fields(
-                result["data"]["taskFieldPatch"]
-            )
+                result["data"]["taskFieldPatch"])
         else:
             self.opencti.app_logger.error(
-                "[opencti_Task] Missing parameters: id and key and value"
-            )
+                "[opencti_Task] Missing parameters: id and key and value")
             return None
 
     """
@@ -569,13 +572,13 @@ class Task:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None
-        )
+            "stixObjectOrStixRelationshipId", None)
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Adding StixObjectOrStixRelationship in Task",
                 {
-                    "stix_object_or_stix_relationship_id": stix_object_or_stix_relationship_id,
+                    "stix_object_or_stix_relationship_id":
+                    stix_object_or_stix_relationship_id,
                     "id": id,
                 },
             )
@@ -619,13 +622,13 @@ class Task:
         """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
-            "stixObjectOrStixRelationshipId", None
-        )
+            "stixObjectOrStixRelationshipId", None)
         if id is not None and stix_object_or_stix_relationship_id is not None:
             self.opencti.app_logger.info(
                 "Removing StixObjectOrStixRelationship in Task",
                 {
-                    "stix_object_or_stix_relationship_id": stix_object_or_stix_relationship_id,
+                    "stix_object_or_stix_relationship_id":
+                    stix_object_or_stix_relationship_id,
                     "id": id,
                 },
             )
@@ -671,66 +674,52 @@ class Task:
             # Search in extensions
             if "x_opencti_stix_ids" not in stix_object:
                 stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension("stix_ids", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "stix_ids", stix_object))
             if "x_opencti_granted_refs" not in stix_object:
                 stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension("granted_refs", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "granted_refs", stix_object))
             if "x_opencti_workflow_id" not in stix_object:
                 stix_object["x_opencti_workflow_id"] = (
                     self.opencti.get_attribute_in_extension(
-                        "x_opencti_workflow_id", stix_object
-                    )
-                )
+                        "x_opencti_workflow_id", stix_object))
             if "x_opencti_assignee_ids" not in stix_object:
                 stix_object["x_opencti_assignee_ids"] = (
-                    self.opencti.get_attribute_in_extension("assignee_ids", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "assignee_ids", stix_object))
 
             return self.create(
                 stix_id=stix_object["id"],
-                createdBy=(
-                    extras["created_by_id"] if "created_by_id" in extras else None
-                ),
-                objectMarking=(
-                    extras["object_marking_ids"]
-                    if "object_marking_ids" in extras
-                    else None
-                ),
-                objectLabel=(
-                    extras["object_label_ids"] if "object_label_ids" in extras else None
-                ),
+                createdBy=(extras["created_by_id"]
+                           if "created_by_id" in extras else None),
+                objectMarking=(extras["object_marking_ids"]
+                               if "object_marking_ids" in extras else None),
+                objectLabel=(extras["object_label_ids"]
+                             if "object_label_ids" in extras else None),
                 objects=extras["object_ids"] if "object_ids" in extras else [],
-                created=stix_object["created"] if "created" in stix_object else None,
+                created=stix_object["created"]
+                if "created" in stix_object else None,
                 name=stix_object["name"],
-                description=(
-                    self.opencti.stix2.convert_markdown(stix_object["description"])
-                    if "description" in stix_object
-                    else None
-                ),
-                due_date=stix_object["due_date"] if "due_date" in stix_object else None,
-                objectOrganization=(
-                    stix_object["x_opencti_granted_refs"]
-                    if "x_opencti_granted_refs" in stix_object
-                    else None
-                ),
-                objectAssignee=(
-                    stix_object["x_opencti_assignee_ids"]
-                    if "x_opencti_assignee_ids" in stix_object
-                    else None
-                ),
-                x_opencti_workflow_id=(
-                    stix_object["x_opencti_workflow_id"]
-                    if "x_opencti_workflow_id" in stix_object
-                    else None
-                ),
+                description=(self.opencti.stix2.convert_markdown(
+                    stix_object["description"])
+                             if "description" in stix_object else None),
+                due_date=stix_object["due_date"]
+                if "due_date" in stix_object else None,
+                objectOrganization=(stix_object["x_opencti_granted_refs"]
+                                    if "x_opencti_granted_refs" in stix_object
+                                    else None),
+                objectAssignee=(stix_object["x_opencti_assignee_ids"]
+                                if "x_opencti_assignee_ids" in stix_object else
+                                None),
+                x_opencti_workflow_id=(stix_object["x_opencti_workflow_id"]
+                                       if "x_opencti_workflow_id"
+                                       in stix_object else None),
                 update=update,
             )
         else:
             self.opencti.app_logger.error(
-                "[opencti_task] Missing parameters: stixObject"
-            )
+                "[opencti_task] Missing parameters: stixObject")
 
     def delete(self, **kwargs):
         """
@@ -748,5 +737,6 @@ class Task:
              """
             self.opencti.query(query, {"id": id})
         else:
-            self.opencti.app_logger.error("[opencti_task] Missing parameters: id")
+            self.opencti.app_logger.error(
+                "[opencti_task] Missing parameters: id")
             return None

@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 class Narrative:
     """ """
+
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -204,7 +205,9 @@ class Narrative:
         name = name.lower().strip()
         data = {"name": name}
         data = canonicalize(data, utf8=False)
-        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
+        id = str(
+            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
+                       data))
         return "narrative--" + id
 
     @staticmethod
@@ -245,22 +248,18 @@ class Narrative:
         if get_all:
             first = 100
 
-        self.opencti.app_logger.info(
-            "Listing Narratives with filters", {"filters": json.dumps(filters)}
-        )
+        self.opencti.app_logger.info("Listing Narratives with filters",
+                                     {"filters": json.dumps(filters)})
         query = (
             """
             query Narratives($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: NarrativesOrdering, $orderMode: OrderingMode) {
                 narratives(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                     edges {
                         node {
-                            """
-            + (
-                custom_attributes
-                if custom_attributes is not None
-                else (self.properties_with_files if with_files else self.properties)
-            )
-            + """
+                            """ +
+            (custom_attributes if custom_attributes is not None else
+             (self.properties_with_files if with_files else self.properties)) +
+            """
                         }
                     }
                     pageInfo {
@@ -272,8 +271,7 @@ class Narrative:
                     }
                 }
             }
-        """
-        )
+        """)
         result = self.opencti.query(
             query,
             {
@@ -291,7 +289,8 @@ class Narrative:
             final_data = final_data + data
             while result["data"]["narratives"]["pageInfo"]["hasNextPage"]:
                 after = result["data"]["narratives"]["pageInfo"]["endCursor"]
-                self.opencti.app_logger.info("Listing Narratives", {"after": after})
+                self.opencti.app_logger.info("Listing Narratives",
+                                             {"after": after})
                 result = self.opencti.query(
                     query,
                     {
@@ -303,13 +302,13 @@ class Narrative:
                         "orderMode": order_mode,
                     },
                 )
-                data = self.opencti.process_multiple(result["data"]["narratives"])
+                data = self.opencti.process_multiple(
+                    result["data"]["narratives"])
                 final_data = final_data + data
             return final_data
         else:
-            return self.opencti.process_multiple(
-                result["data"]["narratives"], with_pagination
-            )
+            return self.opencti.process_multiple(result["data"]["narratives"],
+                                                 with_pagination)
 
     """
         Read a Narrative object
@@ -331,23 +330,19 @@ class Narrative:
         with_files = kwargs.get("withFiles", False)
         if id is not None:
             self.opencti.app_logger.info("Reading Narrative", {"id": id})
-            query = (
-                """
+            query = ("""
                 query Narrative($id: String!) {
                     narrative(id: $id) {
-                        """
-                + (
-                    custom_attributes
-                    if custom_attributes is not None
-                    else (self.properties_with_files if with_files else self.properties)
-                )
-                + """
+                        """ +
+                     (custom_attributes if custom_attributes is not None else
+                      (self.properties_with_files
+                       if with_files else self.properties)) + """
                     }
                 }
-             """
-            )
+             """)
             result = self.opencti.query(query, {"id": id})
-            return self.opencti.process_multiple_fields(result["data"]["narrative"])
+            return self.opencti.process_multiple_fields(
+                result["data"]["narrative"])
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -356,8 +351,7 @@ class Narrative:
                 return None
         else:
             self.opencti.app_logger.error(
-                "[opencti_narrative] Missing parameters: id or filters"
-            )
+                "[opencti_narrative] Missing parameters: id or filters")
             return None
 
     """
@@ -427,11 +421,11 @@ class Narrative:
                     }
                 },
             )
-            return self.opencti.process_multiple_fields(result["data"]["narrativeAdd"])
+            return self.opencti.process_multiple_fields(
+                result["data"]["narrativeAdd"])
         else:
             self.opencti.app_logger.error(
-                "[opencti_narrative] Missing parameters: name and description"
-            )
+                "[opencti_narrative] Missing parameters: name and description")
 
     """
         Import an Narrative object from a STIX2 object
@@ -453,63 +447,48 @@ class Narrative:
             # Search in extensions
             if "x_opencti_stix_ids" not in stix_object:
                 stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension("stix_ids", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "stix_ids", stix_object))
             if "x_opencti_granted_refs" not in stix_object:
                 stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension("granted_refs", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "granted_refs", stix_object))
 
             return self.opencti.narrative.create(
                 stix_id=stix_object["id"],
-                createdBy=(
-                    extras["created_by_id"] if "created_by_id" in extras else None
-                ),
-                objectMarking=(
-                    extras["object_marking_ids"]
-                    if "object_marking_ids" in extras
-                    else None
-                ),
-                objectLabel=(
-                    extras["object_label_ids"] if "object_label_ids" in extras else None
-                ),
-                externalReferences=(
-                    extras["external_references_ids"]
-                    if "external_references_ids" in extras
-                    else None
-                ),
-                revoked=stix_object["revoked"] if "revoked" in stix_object else None,
-                confidence=(
-                    stix_object["confidence"] if "confidence" in stix_object else None
-                ),
+                createdBy=(extras["created_by_id"]
+                           if "created_by_id" in extras else None),
+                objectMarking=(extras["object_marking_ids"]
+                               if "object_marking_ids" in extras else None),
+                objectLabel=(extras["object_label_ids"]
+                             if "object_label_ids" in extras else None),
+                externalReferences=(extras["external_references_ids"]
+                                    if "external_references_ids" in extras else
+                                    None),
+                revoked=stix_object["revoked"]
+                if "revoked" in stix_object else None,
+                confidence=(stix_object["confidence"]
+                            if "confidence" in stix_object else None),
                 lang=stix_object["lang"] if "lang" in stix_object else None,
-                created=stix_object["created"] if "created" in stix_object else None,
-                modified=stix_object["modified"] if "modified" in stix_object else None,
+                created=stix_object["created"]
+                if "created" in stix_object else None,
+                modified=stix_object["modified"]
+                if "modified" in stix_object else None,
                 name=stix_object["name"],
-                description=(
-                    self.opencti.stix2.convert_markdown(stix_object["description"])
-                    if "description" in stix_object
-                    else None
-                ),
+                description=(self.opencti.stix2.convert_markdown(
+                    stix_object["description"])
+                             if "description" in stix_object else None),
                 aliases=self.opencti.stix2.pick_aliases(stix_object),
-                narrative_types=(
-                    stix_object["narrative_types"]
-                    if "narrative_types" in stix_object
-                    else None
-                ),
-                x_opencti_stix_ids=(
-                    stix_object["x_opencti_stix_ids"]
-                    if "x_opencti_stix_ids" in stix_object
-                    else None
-                ),
-                objectOrganization=(
-                    stix_object["x_opencti_granted_refs"]
-                    if "x_opencti_granted_refs" in stix_object
-                    else None
-                ),
+                narrative_types=(stix_object["narrative_types"] if
+                                 "narrative_types" in stix_object else None),
+                x_opencti_stix_ids=(stix_object["x_opencti_stix_ids"]
+                                    if "x_opencti_stix_ids" in stix_object else
+                                    None),
+                objectOrganization=(stix_object["x_opencti_granted_refs"]
+                                    if "x_opencti_granted_refs" in stix_object
+                                    else None),
                 update=update,
             )
         else:
             self.opencti.app_logger.error(
-                "[opencti_narrative] Missing parameters: stixObject"
-            )
+                "[opencti_narrative] Missing parameters: stixObject")

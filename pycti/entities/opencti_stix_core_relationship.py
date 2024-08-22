@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 class StixCoreRelationship:
     """ """
+
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -329,9 +330,11 @@ class StixCoreRelationship:
         """
 
     @staticmethod
-    def generate_id(
-        relationship_type, source_ref, target_ref, start_time=None, stop_time=None
-    ):
+    def generate_id(relationship_type,
+                    source_ref,
+                    target_ref,
+                    start_time=None,
+                    stop_time=None):
         """
 
         :param relationship_type:
@@ -368,7 +371,9 @@ class StixCoreRelationship:
                 "target_ref": target_ref,
             }
         data = canonicalize(data, utf8=False)
-        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
+        id = str(
+            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
+                       data))
         return "relationship--" + id
 
     """
@@ -441,15 +446,13 @@ class StixCoreRelationship:
                 "to_types": to_types,
             },
         )
-        query = (
-            """
+        query = ("""
                 query StixCoreRelationships($fromOrToId: [String], $elementWithTargetTypes: [String], $fromId: [String], $fromTypes: [String], $toId: [String], $toTypes: [String], $relationship_type: [String], $startTimeStart: DateTime, $startTimeStop: DateTime, $stopTimeStart: DateTime, $stopTimeStop: DateTime, $filters: FilterGroup, $first: Int, $after: ID, $orderBy: StixCoreRelationshipsOrdering, $orderMode: OrderingMode) {
                     stixCoreRelationships(fromOrToId: $fromOrToId, elementWithTargetTypes: $elementWithTargetTypes, fromId: $fromId, fromTypes: $fromTypes, toId: $toId, toTypes: $toTypes, relationship_type: $relationship_type, startTimeStart: $startTimeStart, startTimeStop: $startTimeStop, stopTimeStart: $stopTimeStart, stopTimeStop: $stopTimeStop, filters: $filters, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                         edges {
                             node {
-                                """
-            + (custom_attributes if custom_attributes is not None else self.properties)
-            + """
+                                """ + (custom_attributes if custom_attributes
+                                       is not None else self.properties) + """
                         }
                     }
                     pageInfo {
@@ -461,8 +464,7 @@ class StixCoreRelationship:
                     }
                 }
             }
-         """
-        )
+         """)
         result = self.opencti.query(
             query,
             {
@@ -487,14 +489,14 @@ class StixCoreRelationship:
         if get_all:
             final_data = []
             data = self.opencti.process_multiple(
-                result["data"]["stixCoreRelationships"]
-            )
+                result["data"]["stixCoreRelationships"])
             final_data = final_data + data
-            while result["data"]["stixCoreRelationships"]["pageInfo"]["hasNextPage"]:
-                after = result["data"]["stixCoreRelationships"]["pageInfo"]["endCursor"]
-                self.opencti.app_logger.info(
-                    "Listing StixCoreRelationships", {"after": after}
-                )
+            while result["data"]["stixCoreRelationships"]["pageInfo"][
+                    "hasNextPage"]:
+                after = result["data"]["stixCoreRelationships"]["pageInfo"][
+                    "endCursor"]
+                self.opencti.app_logger.info("Listing StixCoreRelationships",
+                                             {"after": after})
                 result = self.opencti.query(
                     query,
                     {
@@ -517,14 +519,12 @@ class StixCoreRelationship:
                     },
                 )
                 data = self.opencti.process_multiple(
-                    result["data"]["stixCoreRelationships"]
-                )
+                    result["data"]["stixCoreRelationships"])
                 final_data = final_data + data
             return final_data
         else:
             return self.opencti.process_multiple(
-                result["data"]["stixCoreRelationships"], with_pagination
-            )
+                result["data"]["stixCoreRelationships"], with_pagination)
 
     """
         Read a stix_core_relationship object
@@ -558,26 +558,19 @@ class StixCoreRelationship:
         stop_time_stop = kwargs.get("stopTimeStop", None)
         custom_attributes = kwargs.get("customAttributes", None)
         if id is not None:
-            self.opencti.app_logger.info("Reading stix_core_relationship", {"id": id})
-            query = (
-                """
+            self.opencti.app_logger.info("Reading stix_core_relationship",
+                                         {"id": id})
+            query = ("""
                     query StixCoreRelationship($id: String!) {
                         stixCoreRelationship(id: $id) {
-                            """
-                + (
-                    custom_attributes
-                    if custom_attributes is not None
-                    else self.properties
-                )
-                + """
+                            """ + (custom_attributes if custom_attributes
+                                   is not None else self.properties) + """
                     }
                 }
-             """
-            )
+             """)
             result = self.opencti.query(query, {"id": id})
             return self.opencti.process_multiple_fields(
-                result["data"]["stixCoreRelationship"]
-            )
+                result["data"]["stixCoreRelationship"])
         elif from_id is not None and to_id is not None:
             result = self.list(
                 fromOrToId=from_or_to_id,
@@ -594,7 +587,8 @@ class StixCoreRelationship:
             else:
                 return None
         else:
-            self.opencti.app_logger.error("Missing parameters: id or from_id and to_id")
+            self.opencti.app_logger.error(
+                "Missing parameters: id or from_id and to_id")
             return None
 
     """
@@ -677,8 +671,7 @@ class StixCoreRelationship:
             },
         )
         return self.opencti.process_multiple_fields(
-            result["data"]["stixCoreRelationshipAdd"]
-        )
+            result["data"]["stixCoreRelationshipAdd"])
 
     """
         Update a stix_core_relationship object field
@@ -697,7 +690,8 @@ class StixCoreRelationship:
         id = kwargs.get("id", None)
         input = kwargs.get("input", None)
         if id is not None and input is not None:
-            self.opencti.app_logger.info("Updating stix_core_relationship", {"id": id})
+            self.opencti.app_logger.info("Updating stix_core_relationship",
+                                         {"id": id})
             query = """
                     mutation StixCoreRelationshipEdit($id: ID!, $input: [EditInput]!) {
                         stixCoreRelationshipEdit(id: $id) {
@@ -717,8 +711,7 @@ class StixCoreRelationship:
                 },
             )
             return self.opencti.process_multiple_fields(
-                result["data"]["stixCoreRelationshipEdit"]["fieldPatch"]
-            )
+                result["data"]["stixCoreRelationshipEdit"]["fieldPatch"])
         else:
             self.opencti.app_logger.error(
                 "[opencti_stix_core_relationship] Missing parameters: id and key and value",
@@ -740,7 +733,8 @@ class StixCoreRelationship:
         """
         id = kwargs.get("id", None)
         if id is not None:
-            self.opencti.app_logger.info("Deleting stix_core_relationship", {"id": id})
+            self.opencti.app_logger.info("Deleting stix_core_relationship",
+                                         {"id": id})
             query = """
                 mutation StixCoreRelationshipEdit($id: ID!) {
                     stixCoreRelationshipEdit(id: $id) {
@@ -751,8 +745,7 @@ class StixCoreRelationship:
             self.opencti.query(query, {"id": id})
         else:
             self.opencti.app_logger.error(
-                "[opencti_stix_core_relationship] Missing parameters: id"
-            )
+                "[opencti_stix_core_relationship] Missing parameters: id")
             return None
 
     """
@@ -787,19 +780,21 @@ class StixCoreRelationship:
                 }
             """
             stix_core_relationship = self.read(
-                id=id, customAttributes=custom_attributes
-            )
+                id=id, customAttributes=custom_attributes)
             if stix_core_relationship is None:
                 self.opencti.app_logger.error(
-                    "Cannot add Marking-Definition, entity not found"
-                )
+                    "Cannot add Marking-Definition, entity not found")
                 return False
-            if marking_definition_id in stix_core_relationship["objectMarkingIds"]:
+            if marking_definition_id in stix_core_relationship[
+                    "objectMarkingIds"]:
                 return True
             else:
                 self.opencti.app_logger.info(
                     "Adding Marking-Definition to Stix-Domain-Object",
-                    {"id": id, "marking_definition_id": marking_definition_id},
+                    {
+                        "id": id,
+                        "marking_definition_id": marking_definition_id
+                    },
                 )
                 query = """
                    mutation StixCoreRelationshipAddRelation($id: ID!, $input: StixRefRelationshipAddInput!) {
@@ -823,8 +818,7 @@ class StixCoreRelationship:
                 return True
         else:
             self.opencti.app_logger.error(
-                "Missing parameters: id and marking_definition_id"
-            )
+                "Missing parameters: id and marking_definition_id")
             return False
 
     """
@@ -846,7 +840,10 @@ class StixCoreRelationship:
         if id is not None and marking_definition_id is not None:
             self.opencti.app_logger.info(
                 "Removing Marking-Definition from stix_core_relationship",
-                {"id": id, "marking_definition_id": marking_definition_id},
+                {
+                    "id": id,
+                    "marking_definition_id": marking_definition_id
+                },
             )
             query = """
                mutation StixCoreRelationshipRemoveRelation($id: ID!, $toId: StixRef!, $relationship_type: String!) {
@@ -867,7 +864,8 @@ class StixCoreRelationship:
             )
             return True
         else:
-            self.opencti.app_logger.error("Missing parameters: id and label_id")
+            self.opencti.app_logger.error(
+                "Missing parameters: id and label_id")
             return False
 
     """
@@ -891,10 +889,12 @@ class StixCoreRelationship:
             label = self.opencti.label.read(
                 filters={
                     "mode": "and",
-                    "filters": [{"key": "value", "values": [label_name]}],
+                    "filters": [{
+                        "key": "value",
+                        "values": [label_name]
+                    }],
                     "filterGroups": [],
-                }
-            )
+                })
             if label:
                 label_id = label["id"]
             else:
@@ -903,7 +903,10 @@ class StixCoreRelationship:
         if id is not None and label_id is not None:
             self.opencti.app_logger.info(
                 "Adding label to stix-core-relationship",
-                {"label_id": label_id, "id": id},
+                {
+                    "label_id": label_id,
+                    "id": id
+                },
             )
             query = """
                mutation StixCoreRelationshipAddRelation($id: ID!, $input: StixRefRelationshipAddInput!) {
@@ -926,7 +929,8 @@ class StixCoreRelationship:
             )
             return True
         else:
-            self.opencti.app_logger.error("Missing parameters: id and label_id")
+            self.opencti.app_logger.error(
+                "Missing parameters: id and label_id")
             return False
 
     """
@@ -948,7 +952,10 @@ class StixCoreRelationship:
         if id is not None and external_reference_id is not None:
             self.opencti.app_logger.info(
                 "Adding External-Reference to stix-core-relationship",
-                {"external_reference_id": external_reference_id, "id": id},
+                {
+                    "external_reference_id": external_reference_id,
+                    "id": id
+                },
             )
             query = """
                mutation StixCoreRelationshipEditRelationAdd($id: ID!, $input: StixRefRelationshipAddInput!) {
@@ -972,8 +979,7 @@ class StixCoreRelationship:
             return True
         else:
             self.opencti.app_logger.error(
-                "Missing parameters: id and external_reference_id"
-            )
+                "Missing parameters: id and external_reference_id")
             return False
 
     """
@@ -995,7 +1001,10 @@ class StixCoreRelationship:
         if id is not None and external_reference_id is not None:
             self.opencti.app_logger.info(
                 "Removing External-Reference from stix_core_relationship",
-                {"external_reference_id": external_reference_id, "id": id},
+                {
+                    "external_reference_id": external_reference_id,
+                    "id": id
+                },
             )
             query = """
                mutation StixCoreRelationshipRemoveRelation($id: ID!, $toId: StixRef!, $relationship_type: String!) {
@@ -1016,7 +1025,8 @@ class StixCoreRelationship:
             )
             return True
         else:
-            self.opencti.app_logger.error("Missing parameters: id and label_id")
+            self.opencti.app_logger.error(
+                "Missing parameters: id and label_id")
             return False
 
     """
@@ -1038,7 +1048,10 @@ class StixCoreRelationship:
         if id is not None and kill_chain_phase_id is not None:
             self.opencti.app_logger.info(
                 "Adding Kill-Chain-Phase to stix-core-relationship",
-                {"kill_chain_phase_id": kill_chain_phase_id, "id": id},
+                {
+                    "kill_chain_phase_id": kill_chain_phase_id,
+                    "id": id
+                },
             )
             query = """
                mutation StixCoreRelationshipAddRelation($id: ID!, $input: StixRefRelationshipAddInput!) {
@@ -1085,7 +1098,10 @@ class StixCoreRelationship:
         if id is not None and kill_chain_phase_id is not None:
             self.opencti.app_logger.info(
                 "Removing Kill-Chain-Phase from stix_core_relationship",
-                {"kill_chain_phase_id": kill_chain_phase_id, "id": id},
+                {
+                    "kill_chain_phase_id": kill_chain_phase_id,
+                    "id": id
+                },
             )
             query = """
                mutation StixCoreRelationshipRemoveRelation($id: ID!, $toId: StixRef!, $relationship_type: String!) {
@@ -1130,7 +1146,10 @@ class StixCoreRelationship:
         if id is not None:
             self.opencti.app_logger.info(
                 "Updating author of stix_core_relationship with Identity",
-                {"id": id, "identity_id": identity_id},
+                {
+                    "id": id,
+                    "identity_id": identity_id
+                },
             )
             custom_attributes = """
                 id
@@ -1156,7 +1175,8 @@ class StixCoreRelationship:
                     }
                 }
             """
-            stix_domain_object = self.read(id=id, customAttributes=custom_attributes)
+            stix_domain_object = self.read(id=id,
+                                           customAttributes=custom_attributes)
             if stix_domain_object["createdBy"] is not None:
                 query = """
                     mutation StixCoreRelationshipEdit($id: ID!, $toId: StixRef! $relationship_type: String!) {
@@ -1220,9 +1240,7 @@ class StixCoreRelationship:
             if "x_opencti_granted_refs" not in stix_relation:
                 stix_relation["x_opencti_granted_refs"] = (
                     self.opencti.get_attribute_in_extension(
-                        "granted_refs", stix_relation
-                    )
-                )
+                        "granted_refs", stix_relation))
 
             source_ref = stix_relation["source_ref"]
             target_ref = stix_relation["target_ref"]
@@ -1231,67 +1249,40 @@ class StixCoreRelationship:
                 toId=target_ref,
                 stix_id=stix_relation["id"],
                 relationship_type=stix_relation["relationship_type"],
-                description=(
-                    self.opencti.stix2.convert_markdown(stix_relation["description"])
-                    if "description" in stix_relation
-                    else None
-                ),
-                start_time=(
-                    stix_relation["start_time"]
-                    if "start_time" in stix_relation
-                    else default_date
-                ),
-                stop_time=(
-                    stix_relation["stop_time"]
-                    if "stop_time" in stix_relation
-                    else default_date
-                ),
-                revoked=(
-                    stix_relation["revoked"] if "revoked" in stix_relation else None
-                ),
-                confidence=(
-                    stix_relation["confidence"]
-                    if "confidence" in stix_relation
-                    else None
-                ),
-                lang=stix_relation["lang"] if "lang" in stix_relation else None,
-                created=(
-                    stix_relation["created"] if "created" in stix_relation else None
-                ),
-                modified=(
-                    stix_relation["modified"] if "modified" in stix_relation else None
-                ),
-                createdBy=(
-                    extras["created_by_id"] if "created_by_id" in extras else None
-                ),
-                objectMarking=(
-                    extras["object_marking_ids"]
-                    if "object_marking_ids" in extras
-                    else None
-                ),
-                objectLabel=(
-                    extras["object_label_ids"] if "object_label_ids" in extras else None
-                ),
-                externalReferences=(
-                    extras["external_references_ids"]
-                    if "external_references_ids" in extras
-                    else None
-                ),
-                killChainPhases=(
-                    extras["kill_chain_phases_ids"]
-                    if "kill_chain_phases_ids" in extras
-                    else None
-                ),
-                objectOrganization=(
-                    stix_relation["x_opencti_granted_refs"]
-                    if "x_opencti_granted_refs" in stix_relation
-                    else None
-                ),
-                x_opencti_workflow_id=(
-                    stix_relation["x_opencti_workflow_id"]
-                    if "x_opencti_workflow_id" in stix_relation
-                    else None
-                ),
+                description=(self.opencti.stix2.convert_markdown(
+                    stix_relation["description"])
+                             if "description" in stix_relation else None),
+                start_time=(stix_relation["start_time"] if "start_time"
+                            in stix_relation else default_date),
+                stop_time=(stix_relation["stop_time"]
+                           if "stop_time" in stix_relation else default_date),
+                revoked=(stix_relation["revoked"]
+                         if "revoked" in stix_relation else None),
+                confidence=(stix_relation["confidence"]
+                            if "confidence" in stix_relation else None),
+                lang=stix_relation["lang"]
+                if "lang" in stix_relation else None,
+                created=(stix_relation["created"]
+                         if "created" in stix_relation else None),
+                modified=(stix_relation["modified"]
+                          if "modified" in stix_relation else None),
+                createdBy=(extras["created_by_id"]
+                           if "created_by_id" in extras else None),
+                objectMarking=(extras["object_marking_ids"]
+                               if "object_marking_ids" in extras else None),
+                objectLabel=(extras["object_label_ids"]
+                             if "object_label_ids" in extras else None),
+                externalReferences=(extras["external_references_ids"]
+                                    if "external_references_ids" in extras else
+                                    None),
+                killChainPhases=(extras["kill_chain_phases_ids"] if
+                                 "kill_chain_phases_ids" in extras else None),
+                objectOrganization=(stix_relation["x_opencti_granted_refs"]
+                                    if "x_opencti_granted_refs"
+                                    in stix_relation else None),
+                x_opencti_workflow_id=(stix_relation["x_opencti_workflow_id"]
+                                       if "x_opencti_workflow_id"
+                                       in stix_relation else None),
                 update=update,
             )
         else:

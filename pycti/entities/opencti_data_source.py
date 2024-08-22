@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 class DataSource:
     """ """
+
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -206,7 +207,9 @@ class DataSource:
         name = name.lower().strip()
         data = {"name": name}
         data = canonicalize(data, utf8=False)
-        id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
+        id = str(
+            uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"),
+                       data))
         return "data-source--" + id
 
     @staticmethod
@@ -247,22 +250,18 @@ class DataSource:
         if get_all:
             first = 100
 
-        self.opencti.app_logger.info(
-            "Listing Data-Sources with filters", {"filters": json.dumps(filters)}
-        )
+        self.opencti.app_logger.info("Listing Data-Sources with filters",
+                                     {"filters": json.dumps(filters)})
         query = (
             """
             query DataSources($filters: FilterGroup, $search: String, $first: Int, $after: ID, $orderBy: DataSourcesOrdering, $orderMode: OrderingMode) {
                 dataSources(filters: $filters, search: $search, first: $first, after: $after, orderBy: $orderBy, orderMode: $orderMode) {
                     edges {
                         node {
-                            """
-            + (
-                custom_attributes
-                if custom_attributes is not None
-                else (self.properties_with_files if with_files else self.properties)
-            )
-            + """
+                            """ +
+            (custom_attributes if custom_attributes is not None else
+             (self.properties_with_files if with_files else self.properties)) +
+            """
                         }
                     }
                     pageInfo {
@@ -274,8 +273,7 @@ class DataSource:
                     }
                 }
             }
-        """
-        )
+        """)
         result = self.opencti.query(
             query,
             {
@@ -293,7 +291,8 @@ class DataSource:
             final_data = final_data + data
             while result["data"]["dataSources"]["pageInfo"]["hasNextPage"]:
                 after = result["data"]["dataSources"]["pageInfo"]["endCursor"]
-                self.opencti.app_logger.info("Listing Data-Sources", {"after": after})
+                self.opencti.app_logger.info("Listing Data-Sources",
+                                             {"after": after})
                 result = self.opencti.query(
                     query,
                     {
@@ -305,13 +304,13 @@ class DataSource:
                         "orderMode": order_mode,
                     },
                 )
-                data = self.opencti.process_multiple(result["data"]["dataSources"])
+                data = self.opencti.process_multiple(
+                    result["data"]["dataSources"])
                 final_data = final_data + data
             return final_data
         else:
-            return self.opencti.process_multiple(
-                result["data"]["dataSources"], with_pagination
-            )
+            return self.opencti.process_multiple(result["data"]["dataSources"],
+                                                 with_pagination)
 
     """
         Read a Data-Source object
@@ -333,23 +332,19 @@ class DataSource:
         with_files = kwargs.get("withFiles", False)
         if id is not None:
             self.opencti.app_logger.info("Reading Data-Source", {"id": id})
-            query = (
-                """
+            query = ("""
                 query DataSource($id: String!) {
                     dataSource(id: $id) {
-                        """
-                + (
-                    custom_attributes
-                    if custom_attributes is not None
-                    else (self.properties_with_files if with_files else self.properties)
-                )
-                + """
+                        """ +
+                     (custom_attributes if custom_attributes is not None else
+                      (self.properties_with_files
+                       if with_files else self.properties)) + """
                     }
                 }
-             """
-            )
+             """)
             result = self.opencti.query(query, {"id": id})
-            return self.opencti.process_multiple_fields(result["data"]["dataSource"])
+            return self.opencti.process_multiple_fields(
+                result["data"]["dataSource"])
         elif filters is not None:
             result = self.list(filters=filters)
             if len(result) > 0:
@@ -358,8 +353,7 @@ class DataSource:
                 return None
         else:
             self.opencti.app_logger.error(
-                "[opencti_data_source] Missing parameters: id or filters"
-            )
+                "[opencti_data_source] Missing parameters: id or filters")
             return None
 
     """
@@ -395,8 +389,10 @@ class DataSource:
         update = kwargs.get("update", False)
 
         if name is not None:
-            self.opencti.app_logger.info("Creating Data Source", {"name": name})
-            self.opencti.app_logger.info("Creating Data Source", {"data": str(kwargs)})
+            self.opencti.app_logger.info("Creating Data Source",
+                                         {"name": name})
+            self.opencti.app_logger.info("Creating Data Source",
+                                         {"data": str(kwargs)})
             query = """
                 mutation DataSourceAdd($input: DataSourceAddInput!) {
                     dataSourceAdd(input: $input) {
@@ -432,7 +428,8 @@ class DataSource:
                     }
                 },
             )
-            return self.opencti.process_multiple_fields(result["data"]["dataSourceAdd"])
+            return self.opencti.process_multiple_fields(
+                result["data"]["dataSourceAdd"])
         else:
             self.opencti.app_logger.error(
                 "[opencti_data_source] Missing parameters: name and description"
@@ -457,82 +454,62 @@ class DataSource:
 
         if stix_object is not None:
             # Handle x-mitre-
-            if (
-                stix_object["type"] == "x-mitre-data-source"
-                and "x_mitre_collection_layers" in stix_object
-            ):
+            if (stix_object["type"] == "x-mitre-data-source"
+                    and "x_mitre_collection_layers" in stix_object):
                 stix_object["collection_layers"] = stix_object[
-                    "x_mitre_collection_layers"
-                ]
-            if (
-                stix_object["type"] == "x-mitre-data-source"
-                and "x_mitre_platforms" in stix_object
-            ):
+                    "x_mitre_collection_layers"]
+            if (stix_object["type"] == "x-mitre-data-source"
+                    and "x_mitre_platforms" in stix_object):
                 stix_object["platforms"] = stix_object["x_mitre_platforms"]
 
             # Search in extensions
             if "x_opencti_stix_ids" not in stix_object:
                 stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension("stix_ids", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "stix_ids", stix_object))
             if "x_opencti_granted_refs" not in stix_object:
                 stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension("granted_refs", stix_object)
-                )
+                    self.opencti.get_attribute_in_extension(
+                        "granted_refs", stix_object))
 
             return self.opencti.data_source.create(
                 stix_id=stix_object["id"],
-                createdBy=(
-                    extras["created_by_id"] if "created_by_id" in extras else None
-                ),
-                objectMarking=(
-                    extras["object_marking_ids"]
-                    if "object_marking_ids" in extras
-                    else None
-                ),
-                objectLabel=(
-                    extras["object_label_ids"] if "object_label_ids" in extras else None
-                ),
-                externalReferences=(
-                    extras["external_references_ids"]
-                    if "external_references_ids" in extras
-                    else None
-                ),
-                revoked=stix_object["revoked"] if "revoked" in stix_object else None,
-                confidence=(
-                    stix_object["confidence"] if "confidence" in stix_object else None
-                ),
+                createdBy=(extras["created_by_id"]
+                           if "created_by_id" in extras else None),
+                objectMarking=(extras["object_marking_ids"]
+                               if "object_marking_ids" in extras else None),
+                objectLabel=(extras["object_label_ids"]
+                             if "object_label_ids" in extras else None),
+                externalReferences=(extras["external_references_ids"]
+                                    if "external_references_ids" in extras else
+                                    None),
+                revoked=stix_object["revoked"]
+                if "revoked" in stix_object else None,
+                confidence=(stix_object["confidence"]
+                            if "confidence" in stix_object else None),
                 lang=stix_object["lang"] if "lang" in stix_object else None,
-                created=stix_object["created"] if "created" in stix_object else None,
-                modified=stix_object["modified"] if "modified" in stix_object else None,
+                created=stix_object["created"]
+                if "created" in stix_object else None,
+                modified=stix_object["modified"]
+                if "modified" in stix_object else None,
                 name=stix_object["name"],
-                description=(
-                    self.opencti.stix2.convert_markdown(stix_object["description"])
-                    if "description" in stix_object
-                    else None
-                ),
+                description=(self.opencti.stix2.convert_markdown(
+                    stix_object["description"])
+                             if "description" in stix_object else None),
                 aliases=self.opencti.stix2.pick_aliases(stix_object),
-                platforms=(
-                    stix_object["platforms"] if "platforms" in stix_object else None
-                ),
-                collection_layers=(
-                    stix_object["collection_layers"]
-                    if "collection_layers" in stix_object
-                    else None
-                ),
-                x_opencti_stix_ids=(
-                    stix_object["x_opencti_stix_ids"]
-                    if "x_opencti_stix_ids" in stix_object
-                    else None
-                ),
-                objectOrganization=(
-                    stix_object["x_opencti_granted_refs"]
-                    if "x_opencti_granted_refs" in stix_object
-                    else None
-                ),
+                platforms=(stix_object["platforms"]
+                           if "platforms" in stix_object else None),
+                collection_layers=(stix_object["collection_layers"]
+                                   if "collection_layers" in stix_object else
+                                   None),
+                x_opencti_stix_ids=(stix_object["x_opencti_stix_ids"]
+                                    if "x_opencti_stix_ids" in stix_object else
+                                    None),
+                objectOrganization=(stix_object["x_opencti_granted_refs"]
+                                    if "x_opencti_granted_refs" in stix_object
+                                    else None),
                 update=update,
             )
         else:
             self.opencti.app_logger.error(
-                "[opencti_data_source] Missing parameters: stixObject"
-            )
+                "[opencti_data_source] Missing parameters: stixObject")

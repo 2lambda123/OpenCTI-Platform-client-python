@@ -6,9 +6,10 @@ from pycti import OpenCTIStix2
 
 def get_cti_helper():
     """ """
-    client = OpenCTIApiClient(
-        "http://fake:4000", "fake", ssl_verify=False, perform_health_check=False
-    )
+    client = OpenCTIApiClient("http://fake:4000",
+                              "fake",
+                              ssl_verify=False,
+                              perform_health_check=False)
     return OpenCTIStix2(client)
 
 
@@ -118,14 +119,16 @@ def test_prepare_bundle_ids_keep_original():
     helper = get_cti_helper()
     bundle_data = load_test_file()
     malware_source = bundle_data["objects"][0]
-    assert malware_source["id"] == "malware--d650c5b9-4b43-5781-8576-ea52bd6c7ce5"
+    assert malware_source[
+        "id"] == "malware--d650c5b9-4b43-5781-8576-ea52bd6c7ce5"
     assert malware_source.get("x_opencti_stix_ids") is None
-    prepared_bundle = helper.prepare_bundle_ids(
-        bundle=bundle_data, use_json=False, keep_original_id=True
-    )
+    prepared_bundle = helper.prepare_bundle_ids(bundle=bundle_data,
+                                                use_json=False,
+                                                keep_original_id=True)
     print(json.dumps(prepared_bundle))
     malware_target = prepared_bundle["objects"][0]
-    assert malware_target["id"] == "malware--d650c5b9-4b43-5781-8576-ea52bd6c7ce0"
+    assert malware_target[
+        "id"] == "malware--d650c5b9-4b43-5781-8576-ea52bd6c7ce0"
     assert malware_target.get("x_opencti_stix_ids") == [
         "malware--d650c5b9-4b43-5781-8576-ea52bd6c7ce5"
     ]
@@ -136,12 +139,14 @@ def test_prepare_bundle_ids():
     helper = get_cti_helper()
     bundle_data = load_test_file()
     malware_source = bundle_data["objects"][0]
-    assert malware_source["id"] == "malware--d650c5b9-4b43-5781-8576-ea52bd6c7ce5"
+    assert malware_source[
+        "id"] == "malware--d650c5b9-4b43-5781-8576-ea52bd6c7ce5"
     assert malware_source.get("x_opencti_stix_ids") is None
-    prepared_bundle = helper.prepare_bundle_ids(
-        bundle=bundle_data, use_json=False, keep_original_id=False
-    )
+    prepared_bundle = helper.prepare_bundle_ids(bundle=bundle_data,
+                                                use_json=False,
+                                                keep_original_id=False)
     print(json.dumps(prepared_bundle))
     malware_target = prepared_bundle["objects"][0]
-    assert malware_target["id"] == "malware--d650c5b9-4b43-5781-8576-ea52bd6c7ce0"
+    assert malware_target[
+        "id"] == "malware--d650c5b9-4b43-5781-8576-ea52bd6c7ce0"
     assert malware_target.get("x_opencti_stix_ids") is None
