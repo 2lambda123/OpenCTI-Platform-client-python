@@ -202,8 +202,8 @@ class Location:
     def generate_id(name, x_opencti_location_type, latitude=None, longitude=None):
         """
 
-        :param name: 
-        :param x_opencti_location_type: 
+        :param name:
+        :param x_opencti_location_type:
         :param latitude:  (Default value = None)
         :param longitude:  (Default value = None)
 
@@ -230,7 +230,7 @@ class Location:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return Location.generate_id(
@@ -254,7 +254,7 @@ class Location:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         types = kwargs.get("types", None)
@@ -327,7 +327,7 @@ class Location:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -375,7 +375,7 @@ class Location:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         type = kwargs.get("type", None)
@@ -450,7 +450,7 @@ class Location:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)

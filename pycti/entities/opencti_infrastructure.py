@@ -235,7 +235,7 @@ class Infrastructure:
     def generate_id(name):
         """
 
-        :param name: 
+        :param name:
 
         """
         name = name.lower().strip()
@@ -248,14 +248,14 @@ class Infrastructure:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return Infrastructure.generate_id(data["name"])
 
     def list(self, **kwargs):
         """List Infrastructure objects
-        
+
         The list method accepts the following kwargs:
 
         :param list: filters: (optional) the filters to apply
@@ -268,7 +268,7 @@ class Infrastructure:
         :param list: customAttributes: (optional) list of attributes keys to return
         :param bool: getAll: (optional) switch to return all entries (be careful to use this without any other filters)
         :param bool: withPagination: (optional) switch to use pagination
-        :param **kwargs: 
+        :param **kwargs:
 
         """
 
@@ -356,17 +356,17 @@ class Infrastructure:
 
     def read(self, **kwargs):
         """Read an Infrastructure object
-        
+
         read can be either used with a known OpenCTI entity `id` or by using a
         valid filter to search and return a single Infrastructure entity or None.
-        
+
         The list method accepts the following kwargs.
-        
+
         Note: either `id` or `filters` is required.
 
         :param str: id: the id of the Threat-Actor-Group
         :param list: filters: the filters to apply if no id provided
-        :param **kwargs: 
+        :param **kwargs:
 
         """
 
@@ -417,7 +417,7 @@ class Infrastructure:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -499,7 +499,7 @@ class Infrastructure:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)

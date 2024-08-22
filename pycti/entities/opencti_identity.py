@@ -218,8 +218,8 @@ class Identity:
     def generate_id(name, identity_class):
         """
 
-        :param name: 
-        :param identity_class: 
+        :param name:
+        :param identity_class:
 
         """
         data = {"name": name.lower().strip(), "identity_class": identity_class.lower()}
@@ -231,7 +231,7 @@ class Identity:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return Identity.generate_id(data["name"], data["identity_class"])
@@ -250,7 +250,7 @@ class Identity:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         types = kwargs.get("types", None)
@@ -345,7 +345,7 @@ class Identity:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -393,7 +393,7 @@ class Identity:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         type = kwargs.get("type", None)
@@ -525,7 +525,7 @@ class Identity:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)

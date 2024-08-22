@@ -271,9 +271,9 @@ class StixSightingRelationship:
     ):
         """
 
-        :param relationship_type: 
-        :param sighting_of_ref: 
-        :param where_sighted_refs: 
+        :param relationship_type:
+        :param sighting_of_ref:
+        :param where_sighted_refs:
         :param first_seen:  (Default value = None)
         :param last_seen:  (Default value = None)
 
@@ -312,7 +312,7 @@ class StixSightingRelationship:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return StixSightingRelationship.generate_id(
@@ -340,7 +340,7 @@ class StixSightingRelationship:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         from_or_to_id = kwargs.get("fromOrToId", None)
@@ -468,7 +468,7 @@ class StixSightingRelationship:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -529,7 +529,7 @@ class StixSightingRelationship:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         from_id = kwargs.get("fromId", None)
@@ -602,7 +602,7 @@ class StixSightingRelationship:
     def update_field(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -645,7 +645,7 @@ class StixSightingRelationship:
     def add_marking_definition(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -717,7 +717,7 @@ class StixSightingRelationship:
     def remove_marking_definition(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -760,7 +760,7 @@ class StixSightingRelationship:
     def update_created_by(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -846,7 +846,7 @@ class StixSightingRelationship:
     def delete(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)

@@ -275,7 +275,7 @@ class Indicator:
     def generate_id(pattern):
         """
 
-        :param pattern: 
+        :param pattern:
 
         """
         data = {"pattern": pattern}
@@ -287,14 +287,14 @@ class Indicator:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return Indicator.generate_id(data["pattern"])
 
     def list(self, **kwargs):
         """List Indicator objects
-        
+
         The list method accepts the following kwargs:
 
         :param list: filters: (optional) the filters to apply
@@ -307,7 +307,7 @@ class Indicator:
         :param list: customAttributes: (optional) list of attributes keys to return
         :param bool: getAll: (optional) switch to return all entries (be careful to use this without any other filters)
         :param bool: withPagination: (optional) switch to use pagination
-        :param **kwargs: 
+        :param **kwargs:
         :returns: List of Indicators
         :rtype: list
 
@@ -394,17 +394,17 @@ class Indicator:
 
     def read(self, **kwargs):
         """Read an Indicator object
-        
+
         read can be either used with a known OpenCTI entity `id` or by using a
         valid filter to search and return a single Indicator entity or None.
-        
+
         The list method accepts the following kwargs.
-        
+
         Note: either `id` or `filters` is required.
 
         :param str: id: the id of the Threat-Actor-Group
         :param list: filters: the filters to apply if no id provided
-        :param **kwargs: 
+        :param **kwargs:
         :returns: Indicator object
         :rtype: Indicator
 
@@ -451,7 +451,7 @@ class Indicator:
         :param str: name: the name of the Indicator
         :param str: pattern: stix indicator pattern
         :param str: x_opencti_main_observable_type: type of the observable
-        :param **kwargs: 
+        :param **kwargs:
         :returns: Indicator object
         :rtype: Indicator
 
@@ -563,7 +563,7 @@ class Indicator:
         :param id: the id of the Indicator
         :param indicator: Indicator object
         :param stix_cyber_observable_id: the id of the Stix-Observable
-        :param **kwargs: 
+        :param **kwargs:
         :returns: Boolean True if there has been no import error
 
         """
@@ -616,7 +616,7 @@ class Indicator:
         :param stixObject: the Stix-Object Indicator
         :param extras: extra dict
         :param bool: update: set the update flag on import
-        :param **kwargs: 
+        :param **kwargs:
         :returns: Indicator object
         :rtype: Indicator
 

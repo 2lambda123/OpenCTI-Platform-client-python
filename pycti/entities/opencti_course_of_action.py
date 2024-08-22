@@ -198,7 +198,7 @@ class CourseOfAction:
     def generate_id(name, x_mitre_id=None):
         """
 
-        :param name: 
+        :param name:
         :param x_mitre_id:  (Default value = None)
 
         """
@@ -214,7 +214,7 @@ class CourseOfAction:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return CourseOfAction.generate_id(data.get("name"), data.get("x_mitre_id"))
@@ -232,7 +232,7 @@ class CourseOfAction:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         filters = kwargs.get("filters", None)
@@ -327,7 +327,7 @@ class CourseOfAction:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -377,7 +377,7 @@ class CourseOfAction:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -452,7 +452,7 @@ class CourseOfAction:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)

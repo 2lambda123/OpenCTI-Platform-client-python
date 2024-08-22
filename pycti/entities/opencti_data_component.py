@@ -242,7 +242,7 @@ class DataComponent:
     def generate_id(name):
         """
 
-        :param name: 
+        :param name:
 
         """
         name = name.lower().strip()
@@ -255,7 +255,7 @@ class DataComponent:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return DataComponent.generate_id(data["name"])
@@ -273,7 +273,7 @@ class DataComponent:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         filters = kwargs.get("filters", None)
@@ -368,7 +368,7 @@ class DataComponent:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -416,7 +416,7 @@ class DataComponent:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -494,7 +494,7 @@ class DataComponent:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)
@@ -579,7 +579,7 @@ class DataComponent:
     def process_multiple_fields(self, data):
         """
 
-        :param data: 
+        :param data:
 
         """
         if "dataSource" in data and data["dataSource"] is not None:

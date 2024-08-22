@@ -170,7 +170,7 @@ class Grouping:
                         }
                         ... on StixCyberObservable {
                             observable_value
-                        }                        
+                        }
                         ... on StixCoreRelationship {
                             standard_id
                             spec_version
@@ -362,7 +362,7 @@ class Grouping:
                         }
                         ... on StixCyberObservable {
                             observable_value
-                        }                        
+                        }
                         ... on StixCoreRelationship {
                             standard_id
                             spec_version
@@ -398,8 +398,8 @@ class Grouping:
     def generate_id(name, context):
         """
 
-        :param name: 
-        :param context: 
+        :param name:
+        :param context:
 
         """
         name = name.lower().strip()
@@ -413,7 +413,7 @@ class Grouping:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return Grouping.generate_id(data["name"], data["context"])
@@ -431,7 +431,7 @@ class Grouping:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         filters = kwargs.get("filters", None)
@@ -524,7 +524,7 @@ class Grouping:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -569,7 +569,7 @@ class Grouping:
     def get_by_stix_id_or_name(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -604,7 +604,7 @@ class Grouping:
     def contains_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -644,7 +644,7 @@ class Grouping:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -720,7 +720,7 @@ class Grouping:
     def add_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -767,7 +767,7 @@ class Grouping:
     def remove_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -811,7 +811,7 @@ class Grouping:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)

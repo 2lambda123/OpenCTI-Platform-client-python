@@ -145,8 +145,8 @@ class ThreatActor:
     def generate_id(name, opencti_type):
         """
 
-        :param name: 
-        :param opencti_type: 
+        :param name:
+        :param opencti_type:
 
         """
         data = {"name": name.lower().strip(), "opencti_type": opencti_type}
@@ -157,7 +157,7 @@ class ThreatActor:
     def generate_id_from_data(self, data):
         """
 
-        :param data: 
+        :param data:
 
         """
         data_type = "Threat-Actor-Group"
@@ -169,7 +169,7 @@ class ThreatActor:
 
     def list(self, **kwargs) -> dict:
         """List Threat-Actor objects
-        
+
         The list method accepts the following kwargs:
 
         :param list: filters: (optional) the filters to apply
@@ -181,7 +181,7 @@ class ThreatActor:
         :param bool: orderMode: (optional) either "`asc`" or "`desc`"
         :param bool: getAll: (optional) switch to return all entries (be careful to use this without any other filters)
         :param bool: withPagination: (optional) switch to use pagination
-        :param **kwargs: 
+        :param **kwargs:
 
         """
 
@@ -239,17 +239,17 @@ class ThreatActor:
 
     def read(self, **kwargs) -> Union[dict, None]:
         """Read a Threat-Actor object
-        
+
         read can be either used with a known OpenCTI entity `id` or by using a
         valid filter to search and return a single Threat-Actor entity or None.
-        
+
         The list method accepts the following kwargs.
-        
+
         Note: either `id` or `filters` is required.
 
         :param str: id: the id of the Threat-Actor
         :param list: filters: the filters to apply if no id provided
-        :param **kwargs: 
+        :param **kwargs:
 
         """
 
@@ -291,7 +291,7 @@ class ThreatActor:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         # For backward compatibility, please use threat_actor_group or threat_actor_individual
@@ -307,7 +307,7 @@ class ThreatActor:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)

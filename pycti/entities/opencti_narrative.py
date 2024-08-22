@@ -198,7 +198,7 @@ class Narrative:
     def generate_id(name):
         """
 
-        :param name: 
+        :param name:
 
         """
         name = name.lower().strip()
@@ -211,7 +211,7 @@ class Narrative:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return Narrative.generate_id(data["name"])
@@ -229,7 +229,7 @@ class Narrative:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         filters = kwargs.get("filters", None)
@@ -322,7 +322,7 @@ class Narrative:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -370,7 +370,7 @@ class Narrative:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -443,7 +443,7 @@ class Narrative:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)

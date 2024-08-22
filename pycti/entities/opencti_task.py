@@ -229,8 +229,8 @@ class Task:
     def generate_id(name, created):
         """
 
-        :param name: 
-        :param created: 
+        :param name:
+        :param created:
 
         """
         if isinstance(created, datetime.datetime):
@@ -244,14 +244,14 @@ class Task:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return Task.generate_id(data["name"], data["created"])
 
     """
         List Task objects
-        
+
         :param filters: the filters to apply
         :param search: the search keyword
         :param first: return the first n rows from the after ID (or the beginning if not set)
@@ -262,7 +262,7 @@ class Task:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         filters = kwargs.get("filters", None)
@@ -350,7 +350,7 @@ class Task:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -394,7 +394,7 @@ class Task:
     def get_by_stix_id_or_name(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -430,7 +430,7 @@ class Task:
     def contains_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -473,7 +473,7 @@ class Task:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         objects = kwargs.get("objects", None)
@@ -527,7 +527,7 @@ class Task:
     def update_field(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         self.opencti.app_logger.info("Updating Task", {"data": json.dumps(kwargs)})
@@ -564,7 +564,7 @@ class Task:
     def add_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -614,7 +614,7 @@ class Task:
     def remove_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -661,7 +661,7 @@ class Task:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)
@@ -735,7 +735,7 @@ class Task:
     def delete(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)

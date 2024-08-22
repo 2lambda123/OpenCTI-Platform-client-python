@@ -36,9 +36,9 @@ FALSY: List[str] = ["no", "false", "False"]
 def killProgramHook(etype, value, tb):
     """
 
-    :param etype: 
-    :param value: 
-    :param tb: 
+    :param etype:
+    :param value:
+    :param tb:
 
     """
     os.kill(os.getpid(), signal.SIGTERM)
@@ -47,7 +47,7 @@ def killProgramHook(etype, value, tb):
 def start_loop(loop):
     """
 
-    :param loop: 
+    :param loop:
 
     """
     asyncio.set_event_loop(loop)
@@ -69,8 +69,8 @@ def get_config_variable(
     :param config: client config dict, defaults to {}
     :param isNumber: specify if the variable is a number, defaults to False
     :param default: default value
-    :param env_var: str: 
-    :param yaml_path: List: 
+    :param env_var: str:
+    :param yaml_path: List:
     :param config: Dict:  (Default value = {})
     :param isNumber: Optional[bool]:  (Default value = False)
     :param required:  (Default value = False)
@@ -110,7 +110,7 @@ def get_config_variable(
 def is_memory_certificate(certificate):
     """
 
-    :param certificate: 
+    :param certificate:
 
     """
     return certificate.startswith("-----BEGIN")
@@ -119,8 +119,8 @@ def is_memory_certificate(certificate):
 def ssl_verify_locations(ssl_context, certdata):
     """
 
-    :param ssl_context: 
-    :param certdata: 
+    :param ssl_context:
+    :param certdata:
 
     """
     if certdata is None:
@@ -137,7 +137,7 @@ def ssl_verify_locations(ssl_context, certdata):
 def data_to_temp_file(data):
     """
 
-    :param data: 
+    :param data:
 
     """
     # The file is readable and writable only by the creating user ID.
@@ -154,10 +154,10 @@ def data_to_temp_file(data):
 def ssl_cert_chain(ssl_context, cert_data, key_data, passphrase):
     """
 
-    :param ssl_context: 
-    :param cert_data: 
-    :param key_data: 
-    :param passphrase: 
+    :param ssl_context:
+    :param cert_data:
+    :param key_data:
+    :param passphrase:
 
     """
     if cert_data is None:
@@ -188,7 +188,7 @@ def ssl_cert_chain(ssl_context, cert_data, key_data, passphrase):
 def create_mq_ssl_context(config) -> ssl.SSLContext:
     """
 
-    :param config: 
+    :param config:
 
     """
     use_ssl_ca = get_config_variable("MQ_USE_SSL_CA", ["mq", "use_ssl_ca"], config)
@@ -301,7 +301,7 @@ class ListenQueue(threading.Thread):
     def _data_handler(self, json_data) -> None:
         """
 
-        :param json_data: 
+        :param json_data:
 
         """
         # Execute the callback
@@ -1040,8 +1040,8 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
 
         :param message_callback: callback function to process messages
         :type message_callback: Callable[[Dict], str]
-        :param message_callback: Callable[[Dict]: 
-        :param str]: 
+        :param message_callback: Callable[[Dict]:
+        :param str]:
 
         """
 
@@ -1202,8 +1202,8 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         :type entities_types: list, optional
         :param update: whether to updated data in the database, defaults to False
         :type update: bool, optional
-        :param bundle: str: 
-        :param **kwargs: 
+        :param bundle: str:
+        :param **kwargs:
         :returns: list of bundles
         :rtype: list
         :raises ValueError: if the bundle is empty
@@ -1415,7 +1415,7 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         :type entities_types: list, optional
         :param update: whether to update data in the database, defaults to False
         :type update: bool, optional
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         work_id = kwargs.get("work_id", None)
@@ -1612,8 +1612,8 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         :type tlp: str
         :param max_tlp: the highest allowed TLP level
         :type max_tlp: str
-        :param tlp: str: 
-        :param max_tlp: str: 
+        :param tlp: str:
+        :param max_tlp: str:
         :returns: TLP level in allowed TLPs
         :rtype: bool
 
@@ -1650,8 +1650,8 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
     def get_attribute_in_extension(key, object) -> any:
         """
 
-        :param key: 
-        :param object: 
+        :param key:
+        :param object:
 
         """
         if (
@@ -1686,8 +1686,8 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
     def get_attribute_in_mitre_extension(key, object) -> any:
         """
 
-        :param key: 
-        :param object: 
+        :param key:
+        :param object:
 
         """
         if (
@@ -1707,9 +1707,9 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
     def get_data_from_enrichment(self, data, standard_id, opencti_entity):
         """
 
-        :param data: 
-        :param standard_id: 
-        :param opencti_entity: 
+        :param data:
+        :param standard_id:
+        :param opencti_entity:
 
         """
         bundle = data.get("bundle", None)

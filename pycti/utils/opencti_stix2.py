@@ -92,7 +92,7 @@ class OpenCTIStix2:
     def unknown_type(self, stix_object: Dict) -> None:
         """
 
-        :param stix_object: Dict: 
+        :param stix_object: Dict:
 
         """
         self.opencti.app_logger.error(
@@ -104,7 +104,7 @@ class OpenCTIStix2:
 
         :param text: input text
         :type text: str
-        :param text: str: 
+        :param text: str:
         :returns: sanitized text with markdown style code annotation
         :rtype: str
 
@@ -149,8 +149,8 @@ class OpenCTIStix2:
         :type uuids: list
         :param objects: list of objects to filter
         :type objects: list
-        :param uuids: List: 
-        :param objects: List: 
+        :param uuids: List:
+        :param objects: List:
         :returns: list of filtered objects
         :rtype: list
 
@@ -168,7 +168,7 @@ class OpenCTIStix2:
 
         :param stix_object: valid stix2 object
         :type stix_object: return: list of aliases
-        :param stix_object: Dict: 
+        :param stix_object: Dict:
         :returns: list of aliases
         :rtype: list
 
@@ -196,7 +196,7 @@ class OpenCTIStix2:
         :type update: bool, optional
         :param types: list of stix2 types, defaults to None
         :type types: list, optional
-        :param file_path: str: 
+        :param file_path: str:
         :param update: bool:  (Default value = False)
         :param types: List:  (Default value = None)
         :returns: list of imported stix2 objects
@@ -226,8 +226,8 @@ class OpenCTIStix2:
         :param types: list of stix2 types, defaults to None
         :type types: list, optional
         :param work_id: work_id: str, optional
-        :param json_data: Union[str: 
-        :param bytes]: 
+        :param json_data: Union[str:
+        :param bytes]:
         :param update: bool:  (Default value = False)
         :param types: List:  (Default value = None)
         :param work_id: str:  (Default value = None)
@@ -241,7 +241,7 @@ class OpenCTIStix2:
     def resolve_author(self, title: str) -> Optional[Identity]:
         """
 
-        :param title: str: 
+        :param title: str:
 
         """
         if "fireeye" in title.lower() or "mandiant" in title.lower():
@@ -287,7 +287,7 @@ class OpenCTIStix2:
     def get_author(self, name: str) -> Identity:
         """
 
-        :param name: str: 
+        :param name: str:
 
         """
         if name in self.mapping_cache:
@@ -310,7 +310,7 @@ class OpenCTIStix2:
         :type stix_object: param types: list of stix2 types, defaults to None
         :param types: list of stix2 types, defaults to None
         :type types: list, optional
-        :param stix_object: Dict: 
+        :param stix_object: Dict:
         :param types: List:  (Default value = None)
         :returns: embedded relationships as dict
         :rtype: dict
@@ -875,7 +875,7 @@ class OpenCTIStix2:
     def get_reader(self, entity_type: str):
         """
 
-        :param entity_type: str: 
+        :param entity_type: str:
 
         """
         # Map types
@@ -949,7 +949,7 @@ class OpenCTIStix2:
     def generate_standard_id_from_stix(self, data):
         """
 
-        :param data: 
+        :param data:
 
         """
         stix_helpers = self.get_stix_helper()
@@ -968,7 +968,7 @@ class OpenCTIStix2:
         :type update: bool, optional
         :param types: list of stix2 types, defaults to None
         :type types: list, optional
-        :param stix_object: Dict: 
+        :param stix_object: Dict:
         :param update: bool:  (Default value = False)
         :param types: List:  (Default value = None)
         :returns: list of imported stix2 objects
@@ -1084,7 +1084,7 @@ class OpenCTIStix2:
     ) -> None:
         """
 
-        :param stix_object: Dict: 
+        :param stix_object: Dict:
         :param update: bool:  (Default value = False)
         :param types: List:  (Default value = None)
 
@@ -1267,7 +1267,7 @@ class OpenCTIStix2:
     ) -> None:
         """
 
-        :param stix_relation: Dict: 
+        :param stix_relation: Dict:
         :param update: bool:  (Default value = False)
         :param types: List:  (Default value = None)
 
@@ -1371,9 +1371,9 @@ class OpenCTIStix2:
     ) -> None:
         """
 
-        :param stix_sighting: Dict: 
-        :param from_id: str: 
-        :param to_id: str: 
+        :param stix_sighting: Dict:
+        :param from_id: str:
+        :param to_id: str:
         :param update: bool:  (Default value = False)
         :param types: List:  (Default value = None)
 
@@ -1510,7 +1510,7 @@ class OpenCTIStix2:
     def generate_export(self, entity: Dict, no_custom_attributes: bool = False) -> Dict:
         """
 
-        :param entity: Dict: 
+        :param entity: Dict:
         :param no_custom_attributes: bool:  (Default value = False)
 
         """
@@ -1720,8 +1720,8 @@ class OpenCTIStix2:
     ) -> Dict:
         """
 
-        :param id: Union[str: 
-        :param List[str]]: 
+        :param id: Union[str:
+        :param List[str]]:
         :param access_filter: Dict:  (Default value = None)
 
         """
@@ -1765,7 +1765,7 @@ class OpenCTIStix2:
     ) -> List:
         """
 
-        :param entity: Dict: 
+        :param entity: Dict:
         :param mode: str:  (Default value = "simple")
         :param access_filter: Dict:  (Default value = None)
         :param no_custom_attributes: bool:  (Default value = False)
@@ -2233,7 +2233,7 @@ class OpenCTIStix2:
                 def find_relation_object_data(current_relation_object):
                     """
 
-                    :param current_relation_object: 
+                    :param current_relation_object:
 
                     """
                     return current_relation_object.id == relation_object["id"]
@@ -2316,8 +2316,8 @@ class OpenCTIStix2:
     ) -> Dict:
         """
 
-        :param entity_type: str: 
-        :param entity_id: str: 
+        :param entity_type: str:
+        :param entity_id: str:
         :param mode: str:  (Default value = "simple")
         :param access_filter: Dict:  (Default value = None)
         :param no_custom_attributes: bool:  (Default value = False)
@@ -2364,8 +2364,8 @@ class OpenCTIStix2:
     ) -> Dict:
         """
 
-        :param entity_type: str: 
-        :param entity_id: str: 
+        :param entity_type: str:
+        :param entity_id: str:
         :param mode: str:  (Default value = "simple")
         :param access_filter: Dict:  (Default value = None)
         :param no_custom_attributes: bool:  (Default value = False)
@@ -2392,7 +2392,7 @@ class OpenCTIStix2:
     ) -> [Dict]:
         """
 
-        :param entity_type: str: 
+        :param entity_type: str:
         :param search: Dict:  (Default value = None)
         :param filters: Dict:  (Default value = None)
         :param orderBy: str:  (Default value = None)
@@ -2476,7 +2476,7 @@ class OpenCTIStix2:
     ) -> Dict:
         """
 
-        :param entity_type: str: 
+        :param entity_type: str:
         :param search: Dict:  (Default value = None)
         :param filters: Dict:  (Default value = None)
         :param order_by: str:  (Default value = None)
@@ -2531,7 +2531,7 @@ class OpenCTIStix2:
     ) -> Dict:
         """
 
-        :param entities_list: [dict]: 
+        :param entities_list: [dict]:
         :param mode: str:  (Default value = "simple")
         :param access_filter: Dict:  (Default value = None)
 
@@ -2563,7 +2563,7 @@ class OpenCTIStix2:
     def prepare_bundle_ids(self, bundle, use_json=True, keep_original_id=False):
         """
 
-        :param bundle: 
+        :param bundle:
         :param use_json:  (Default value = True)
         :param keep_original_id:  (Default value = False)
 
@@ -2618,7 +2618,7 @@ class OpenCTIStix2:
     ):
         """
 
-        :param item: 
+        :param item:
         :param update: bool:  (Default value = False)
         :param types: List:  (Default value = None)
         :param processing_count: int:  (Default value = 0)
@@ -2849,7 +2849,7 @@ class OpenCTIStix2:
     ) -> List:
         """
 
-        :param stix_bundle: Dict: 
+        :param stix_bundle: Dict:
         :param update: bool:  (Default value = False)
         :param types: List:  (Default value = None)
         :param work_id: str:  (Default value = None)
@@ -2891,10 +2891,10 @@ class OpenCTIStix2:
     ) -> any:
         """
 
-        :param object: 
-        :param extension_id: 
-        :param key: 
-        :param value: 
+        :param object:
+        :param extension_id:
+        :param key:
+        :param value:
         :param multiple:  (Default value = False)
 
         """

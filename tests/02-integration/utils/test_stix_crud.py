@@ -10,7 +10,7 @@ from tests.cases.entities import EntityTestCases
 def entity_class(entity):
     """
 
-    :param entity: 
+    :param entity:
 
     """
     entity.setup()
@@ -21,9 +21,9 @@ def entity_class(entity):
 def test_entity_create(entity_class, api_stix, opencti_splitter):
     """
 
-    :param entity_class: 
-    :param api_stix: 
-    :param opencti_splitter: 
+    :param entity_class:
+    :param api_stix:
+    :param opencti_splitter:
 
     """
     class_data = entity_class.data()

@@ -27,8 +27,8 @@ class KillChainPhase:
     def generate_id(phase_name, kill_chain_name):
         """
 
-        :param phase_name: 
-        :param kill_chain_name: 
+        :param phase_name:
+        :param kill_chain_name:
 
         """
         data = {"phase_name": phase_name, "kill_chain_name": kill_chain_name}
@@ -40,7 +40,7 @@ class KillChainPhase:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return KillChainPhase.generate_id(data["phase_name"], data["kill_chain_name"])
@@ -57,7 +57,7 @@ class KillChainPhase:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         filters = kwargs.get("filters", None)
@@ -121,7 +121,7 @@ class KillChainPhase:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -165,7 +165,7 @@ class KillChainPhase:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -224,7 +224,7 @@ class KillChainPhase:
     def update_field(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -261,7 +261,7 @@ class KillChainPhase:
     def delete(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)

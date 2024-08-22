@@ -416,7 +416,7 @@ class Feedback:
     def generate_id(name):
         """
 
-        :param name: 
+        :param name:
 
         """
         name = name.lower().strip()
@@ -429,14 +429,14 @@ class Feedback:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return Feedback.generate_id(data["name"])
 
     """
         List Feedback objects
-        
+
         :param filters: the filters to apply
         :param search: the search keyword
         :param first: return the first n rows from the after ID (or the beginning if not set)
@@ -447,7 +447,7 @@ class Feedback:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         filters = kwargs.get("filters", None)
@@ -540,7 +540,7 @@ class Feedback:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -587,7 +587,7 @@ class Feedback:
     def get_by_stix_id_or_name(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -623,7 +623,7 @@ class Feedback:
     def contains_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -666,7 +666,7 @@ class Feedback:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -730,7 +730,7 @@ class Feedback:
     def update_field(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         self.opencti.app_logger.info("Updating Feedback", {"data": json.dumps(kwargs)})
@@ -744,7 +744,7 @@ class Feedback:
                                     id
                                     ... on Feedback {
                                         name
-                                        description 
+                                        description
                                     }
                                }
                            }
@@ -771,7 +771,7 @@ class Feedback:
     def add_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -823,7 +823,7 @@ class Feedback:
     def remove_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -872,7 +872,7 @@ class Feedback:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)
@@ -942,7 +942,7 @@ class Feedback:
     def delete(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)

@@ -28,8 +28,8 @@ class MarkingDefinition:
     def generate_id(definition, definition_type):
         """
 
-        :param definition: 
-        :param definition_type: 
+        :param definition:
+        :param definition_type:
 
         """
         data = {"definition": definition, "definition_type": definition_type}
@@ -41,7 +41,7 @@ class MarkingDefinition:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return MarkingDefinition.generate_id(
@@ -60,7 +60,7 @@ class MarkingDefinition:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         filters = kwargs.get("filters", None)
@@ -124,7 +124,7 @@ class MarkingDefinition:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -169,7 +169,7 @@ class MarkingDefinition:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -229,7 +229,7 @@ class MarkingDefinition:
     def update_field(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -273,7 +273,7 @@ class MarkingDefinition:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)
@@ -376,7 +376,7 @@ class MarkingDefinition:
     def delete(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)

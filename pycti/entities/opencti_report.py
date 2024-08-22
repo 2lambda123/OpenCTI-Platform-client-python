@@ -202,7 +202,7 @@ class Report:
                         }
                         ... on StixCyberObservable {
                             observable_value
-                        }                        
+                        }
                         ... on StixCoreRelationship {
                             standard_id
                             spec_version
@@ -424,7 +424,7 @@ class Report:
                         }
                         ... on StixCyberObservable {
                             observable_value
-                        }                        
+                        }
                         ... on StixCoreRelationship {
                             standard_id
                             spec_version
@@ -460,8 +460,8 @@ class Report:
     def generate_id(name, published):
         """
 
-        :param name: 
-        :param published: 
+        :param name:
+        :param published:
 
         """
         name = name.lower().strip()
@@ -476,7 +476,7 @@ class Report:
     def generate_fixed_fake_id(name, published=None):
         """
 
-        :param name: 
+        :param name:
         :param published:  (Default value = None)
 
         """
@@ -495,7 +495,7 @@ class Report:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return Report.generate_id(data["name"], data["published"])
@@ -513,7 +513,7 @@ class Report:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         filters = kwargs.get("filters", None)
@@ -606,7 +606,7 @@ class Report:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -651,7 +651,7 @@ class Report:
     def get_by_stix_id_or_name(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -687,7 +687,7 @@ class Report:
     def contains_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -730,7 +730,7 @@ class Report:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -813,7 +813,7 @@ class Report:
     def add_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -865,7 +865,7 @@ class Report:
     def remove_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -914,7 +914,7 @@ class Report:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)

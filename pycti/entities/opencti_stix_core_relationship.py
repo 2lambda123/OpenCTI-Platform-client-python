@@ -334,9 +334,9 @@ class StixCoreRelationship:
     ):
         """
 
-        :param relationship_type: 
-        :param source_ref: 
-        :param target_ref: 
+        :param relationship_type:
+        :param source_ref:
+        :param target_ref:
         :param start_time:  (Default value = None)
         :param stop_time:  (Default value = None)
 
@@ -390,7 +390,7 @@ class StixCoreRelationship:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return StixCoreRelationship.generate_id(
@@ -404,7 +404,7 @@ class StixCoreRelationship:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         from_or_to_id = kwargs.get("fromOrToId", None)
@@ -544,7 +544,7 @@ class StixCoreRelationship:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -607,7 +607,7 @@ class StixCoreRelationship:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         from_id = kwargs.get("fromId", None)
@@ -691,7 +691,7 @@ class StixCoreRelationship:
     def update_field(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -735,7 +735,7 @@ class StixCoreRelationship:
     def delete(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -766,7 +766,7 @@ class StixCoreRelationship:
     def add_marking_definition(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -838,7 +838,7 @@ class StixCoreRelationship:
     def remove_marking_definition(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -881,7 +881,7 @@ class StixCoreRelationship:
     def add_label(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -940,7 +940,7 @@ class StixCoreRelationship:
     def add_external_reference(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -987,7 +987,7 @@ class StixCoreRelationship:
     def remove_external_reference(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -1030,7 +1030,7 @@ class StixCoreRelationship:
     def add_kill_chain_phase(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -1077,7 +1077,7 @@ class StixCoreRelationship:
     def remove_kill_chain_phase(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -1122,7 +1122,7 @@ class StixCoreRelationship:
     def update_created_by(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -1208,7 +1208,7 @@ class StixCoreRelationship:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_relation = kwargs.get("stixRelation", None)

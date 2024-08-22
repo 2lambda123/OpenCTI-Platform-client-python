@@ -207,7 +207,7 @@ class CaseRft:
                         }
                         ... on StixCyberObservable {
                             observable_value
-                        }                        
+                        }
                         ... on StixCoreRelationship {
                             standard_id
                             spec_version
@@ -416,7 +416,7 @@ class CaseRft:
                             }
                             ... on StixCyberObservable {
                                 observable_value
-                            }                        
+                            }
                             ... on StixCoreRelationship {
                                 standard_id
                                 spec_version
@@ -452,8 +452,8 @@ class CaseRft:
     def generate_id(name, created):
         """
 
-        :param name: 
-        :param created: 
+        :param name:
+        :param created:
 
         """
         name = name.lower().strip()
@@ -468,14 +468,14 @@ class CaseRft:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return CaseRft.generate_id(data["name"], data["created"])
 
     """
         List Case Rft objects
-        
+
         :param filters: the filters to apply
         :param search: the search keyword
         :param first: return the first n rows from the after ID (or the beginning if not set)
@@ -486,7 +486,7 @@ class CaseRft:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         filters = kwargs.get("filters", None)
@@ -578,7 +578,7 @@ class CaseRft:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -623,7 +623,7 @@ class CaseRft:
     def get_by_stix_id_or_name(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -659,7 +659,7 @@ class CaseRft:
     def contains_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -702,7 +702,7 @@ class CaseRft:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -774,7 +774,7 @@ class CaseRft:
     def add_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -826,7 +826,7 @@ class CaseRft:
     def remove_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -875,7 +875,7 @@ class CaseRft:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)
@@ -949,7 +949,7 @@ class CaseRft:
     def delete(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)

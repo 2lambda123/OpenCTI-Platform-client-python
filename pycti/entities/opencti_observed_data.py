@@ -190,7 +190,7 @@ class ObservedData:
                         }
                         ... on StixCyberObservable {
                             observable_value
-                        }                               
+                        }
                         ... on StixCoreRelationship {
                             standard_id
                             spec_version
@@ -202,7 +202,7 @@ class ObservedData:
                             spec_version
                             created_at
                             updated_at
-                        }                        
+                        }
                     }
                 }
             }
@@ -401,7 +401,7 @@ class ObservedData:
                         }
                         ... on StixCyberObservable {
                             observable_value
-                        }                               
+                        }
                         ... on StixCoreRelationship {
                             standard_id
                             spec_version
@@ -413,7 +413,7 @@ class ObservedData:
                             spec_version
                             created_at
                             updated_at
-                        }                        
+                        }
                     }
                 }
             }
@@ -436,7 +436,7 @@ class ObservedData:
     def generate_id(object_ids):
         """
 
-        :param object_ids: 
+        :param object_ids:
 
         """
         data = {"objects": object_ids}
@@ -448,7 +448,7 @@ class ObservedData:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return ObservedData.generate_id(data["object_refs"])
@@ -466,7 +466,7 @@ class ObservedData:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         filters = kwargs.get("filters", None)
@@ -537,7 +537,7 @@ class ObservedData:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -579,7 +579,7 @@ class ObservedData:
     def contains_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -622,7 +622,7 @@ class ObservedData:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -703,7 +703,7 @@ class ObservedData:
     def add_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -761,7 +761,7 @@ class ObservedData:
     def remove_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -810,7 +810,7 @@ class ObservedData:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)

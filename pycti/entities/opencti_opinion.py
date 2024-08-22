@@ -181,7 +181,7 @@ class Opinion:
                         }
                         ... on StixCyberObservable {
                             observable_value
-                        }                               
+                        }
                         ... on StixCoreRelationship {
                             standard_id
                             spec_version
@@ -194,7 +194,7 @@ class Opinion:
                             spec_version
                             created_at
                             updated_at
-                        }                         
+                        }
                     }
                 }
             }
@@ -217,8 +217,8 @@ class Opinion:
     def generate_id(created, opinion):
         """
 
-        :param created: 
-        :param opinion: 
+        :param created:
+        :param opinion:
 
         """
         if opinion is None:
@@ -237,7 +237,7 @@ class Opinion:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return Opinion.generate_id(data.get("created"), data["opinion"])
@@ -255,7 +255,7 @@ class Opinion:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         filters = kwargs.get("filters", None)
@@ -343,7 +343,7 @@ class Opinion:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -384,7 +384,7 @@ class Opinion:
     def contains_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -427,7 +427,7 @@ class Opinion:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -501,7 +501,7 @@ class Opinion:
     def add_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -558,7 +558,7 @@ class Opinion:
     def remove_stix_object_or_stix_relationship(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -607,7 +607,7 @@ class Opinion:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)

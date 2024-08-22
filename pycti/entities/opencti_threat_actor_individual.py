@@ -141,7 +141,7 @@ class ThreatActorIndividual:
     def generate_id(name):
         """
 
-        :param name: 
+        :param name:
 
         """
         name = name.lower().strip()
@@ -154,14 +154,14 @@ class ThreatActorIndividual:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return ThreatActorIndividual.generate_id(data["name"])
 
     def list(self, **kwargs) -> dict:
         """List Threat-Actor-Individual objects
-        
+
         The list method accepts the following kwargs:
 
         :param list: filters: (optional) the filters to apply
@@ -173,7 +173,7 @@ class ThreatActorIndividual:
         :param bool: orderMode: (optional) either "`asc`" or "`desc`"
         :param bool: getAll: (optional) switch to return all entries (be careful to use this without any other filters)
         :param bool: withPagination: (optional) switch to use pagination
-        :param **kwargs: 
+        :param **kwargs:
 
         """
 
@@ -232,17 +232,17 @@ class ThreatActorIndividual:
 
     def read(self, **kwargs) -> Union[dict, None]:
         """Read a Threat-Actor-Individual object
-        
+
         read can be either used with a known OpenCTI entity `id` or by using a
         valid filter to search and return a single Threat-Actor-Group entity or None.
-        
+
         The list method accepts the following kwargs.
-        
+
         Note: either `id` or `filters` is required.
 
         :param str: id: the id of the Threat-Actor-Individual
         :param list: filters: the filters to apply if no id provided
-        :param **kwargs: 
+        :param **kwargs:
 
         """
 
@@ -284,13 +284,13 @@ class ThreatActorIndividual:
 
     def create(self, **kwargs):
         """Create a Threat-Actor-Individual object
-        
+
         The Threat-Actor-Individual entity will only be created if it doesn't exists
         By setting `update` to `True` it acts like an upsert and updates
         fields of an existing Threat-Actor-Individual entity.
-        
+
         The create method accepts the following kwargs.
-        
+
         Note: `name` and `description` or `stix_id` is required.
 
         :param str: stix_id: stix2 id reference for the Threat-Actor-Individual entity
@@ -317,7 +317,7 @@ class ThreatActorIndividual:
         :param list: secondary_motivations: (optional) describe the actors secondary_motivations in list of string
         :param list: personal_motivations: (optional) describe the actors personal_motivations in list of strings
         :param bool: update: (optional) choose to updated an existing Threat-Actor-Individual entity, default `False`
-        :param **kwargs: 
+        :param **kwargs:
 
         """
 
@@ -411,7 +411,7 @@ class ThreatActorIndividual:
     def import_from_stix2(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_object = kwargs.get("stixObject", None)

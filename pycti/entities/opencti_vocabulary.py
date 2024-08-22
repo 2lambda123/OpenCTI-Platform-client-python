@@ -23,8 +23,8 @@ class Vocabulary:
     def generate_id(name, category):
         """
 
-        :param name: 
-        :param category: 
+        :param name:
+        :param category:
 
         """
         name = name.lower().strip()
@@ -37,7 +37,7 @@ class Vocabulary:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return Vocabulary.generate_id(data["name"], data["category"])
@@ -45,7 +45,7 @@ class Vocabulary:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         filters = kwargs.get("filters", None)
@@ -78,7 +78,7 @@ class Vocabulary:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -113,9 +113,9 @@ class Vocabulary:
     def handle_vocab(self, vocab, cache, field):
         """
 
-        :param vocab: 
-        :param cache: 
-        :param field: 
+        :param vocab:
+        :param cache:
+        :param field:
 
         """
         if "vocab_" + vocab in cache:
@@ -133,7 +133,7 @@ class Vocabulary:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -186,7 +186,7 @@ class Vocabulary:
     def read_or_create_unchecked(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         value = kwargs.get("name", None)
@@ -207,7 +207,7 @@ class Vocabulary:
     def update_field(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -216,7 +216,7 @@ class Vocabulary:
             self.opencti.app_logger.info("Updating Vocabulary", {"id": id})
             query = """
                         mutation VocabularyEdit($id: ID!, $input: [EditInput!]!) {
-                            vocabularyFieldPatch(id: $id, input: $input) { 
+                            vocabularyFieldPatch(id: $id, input: $input) {
                                 id
                                 standard_id
                                 entity_type

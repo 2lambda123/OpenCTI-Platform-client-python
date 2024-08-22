@@ -79,7 +79,7 @@ class ExternalReference:
     def generate_id_from_data(data):
         """
 
-        :param data: 
+        :param data:
 
         """
         return ExternalReference.generate_id(
@@ -98,7 +98,7 @@ class ExternalReference:
     def list(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         filters = kwargs.get("filters", None)
@@ -192,7 +192,7 @@ class ExternalReference:
     def read(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -236,7 +236,7 @@ class ExternalReference:
     def create(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         stix_id = kwargs.get("stix_id", None)
@@ -300,7 +300,7 @@ class ExternalReference:
     def add_file(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -361,7 +361,7 @@ class ExternalReference:
     def update_field(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
@@ -390,7 +390,7 @@ class ExternalReference:
     def delete(self, id):
         """
 
-        :param id: 
+        :param id:
 
         """
         self.opencti.app_logger.info("Deleting External-Reference", {"id": id})
@@ -406,7 +406,7 @@ class ExternalReference:
     def list_files(self, **kwargs):
         """
 
-        :param **kwargs: 
+        :param **kwargs:
 
         """
         id = kwargs.get("id", None)
