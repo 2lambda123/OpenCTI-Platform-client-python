@@ -1,6 +1,7 @@
 import json
 
-from pycti import OpenCTIApiClient, OpenCTIStix2
+from pycti import OpenCTIApiClient
+from pycti import OpenCTIStix2
 
 
 def get_cti_helper():

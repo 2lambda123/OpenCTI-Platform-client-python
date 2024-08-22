@@ -1,5 +1,4 @@
 # coding: utf-8
-
 import base64
 import datetime
 import json
@@ -8,29 +7,30 @@ import random
 import time
 import traceback
 import uuid
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
 
 import datefinder
 import dateutil.parser
 import pytz
 from cachetools import LRUCache
 from opentelemetry import metrics
-from requests import RequestException, Timeout
+from requests import RequestException
+from requests import Timeout
 
 from pycti.entities.opencti_identity import Identity
-from pycti.utils.constants import (
-    IdentityTypes,
-    LocationTypes,
-    MultipleRefRelationship,
-    StixCyberObservableTypes,
-    ThreatActorTypes,
-)
+from pycti.utils.constants import IdentityTypes
+from pycti.utils.constants import LocationTypes
+from pycti.utils.constants import MultipleRefRelationship
+from pycti.utils.constants import StixCyberObservableTypes
+from pycti.utils.constants import ThreatActorTypes
 from pycti.utils.opencti_stix2_splitter import OpenCTIStix2Splitter
 from pycti.utils.opencti_stix2_update import OpenCTIStix2Update
-from pycti.utils.opencti_stix2_utils import (
-    OBSERVABLES_VALUE_INT,
-    STIX_CYBER_OBSERVABLE_MAPPING,
-)
+from pycti.utils.opencti_stix2_utils import OBSERVABLES_VALUE_INT
+from pycti.utils.opencti_stix2_utils import STIX_CYBER_OBSERVABLE_MAPPING
 
 datefinder.ValueError = ValueError, OverflowError
 utc = pytz.UTC

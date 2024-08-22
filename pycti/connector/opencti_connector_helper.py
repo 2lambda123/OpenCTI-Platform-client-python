@@ -13,11 +13,16 @@ import threading
 import time
 import uuid
 from queue import Queue
-from typing import Callable, Dict, List, Optional, Union
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
 
 import pika
 from filigran_sseclient import SSEClient
-from pika.exceptions import NackError, UnroutableError
+from pika.exceptions import NackError
+from pika.exceptions import UnroutableError
 
 from pycti.api.opencti_api_client import OpenCTIApiClient
 from pycti.connector.opencti_connector import OpenCTIConnector
