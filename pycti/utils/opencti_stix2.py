@@ -86,7 +86,7 @@ class OpenCTIStix2:
         self.mapping_cache = LRUCache(maxsize=50000)
         self.mapping_cache_permanent = {}
 
-    ######### UTILS
+    # UTILS
     # region utils
     def unknown_type(self, stix_object: Dict) -> None:
         self.opencti.app_logger.error(
@@ -1332,7 +1332,7 @@ class OpenCTIStix2:
 
         # Create the sighting
 
-        ### Get the FROM
+        # Get the FROM
         if from_id in self.mapping_cache:
             final_from_id = self.mapping_cache[from_id]["id"]
         else:
@@ -1347,7 +1347,7 @@ class OpenCTIStix2:
                 )
                 return None
 
-        ### Get the TO
+        # Get the TO
         final_to_id = None
         if to_id:
             if to_id in self.mapping_cache:
