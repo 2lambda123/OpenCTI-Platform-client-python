@@ -30,6 +30,10 @@ class KillChainPhase:
         id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
         return "kill-chain-phase--" + id
 
+    @staticmethod
+    def generate_id_from_data(data):
+        return KillChainPhase.generate_id(data["phase_name"], data["kill_chain_name"])
+
     """
         List Kill-Chain-Phase objects
 
