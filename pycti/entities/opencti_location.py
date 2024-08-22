@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 
 class Location:
+    """ """
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -200,6 +201,14 @@ class Location:
 
     @staticmethod
     def generate_id(name, x_opencti_location_type, latitude=None, longitude=None):
+        """
+
+        :param name: 
+        :param x_opencti_location_type: 
+        :param latitude:  (Default value = None)
+        :param longitude:  (Default value = None)
+
+        """
         if x_opencti_location_type == "Position":
             if latitude is not None and longitude is None:
                 data = {"latitude": latitude}
@@ -220,6 +229,11 @@ class Location:
 
     @staticmethod
     def generate_id_from_data(data):
+        """
+
+        :param data: 
+
+        """
         return Location.generate_id(
             data.get("name"),
             data.get("x_opencti_location_type"),
@@ -239,6 +253,11 @@ class Location:
     """
 
     def list(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         types = kwargs.get("types", None)
         filters = kwargs.get("filters", None)
         search = kwargs.get("search", None)
@@ -307,6 +326,11 @@ class Location:
     """
 
     def read(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         filters = kwargs.get("filters", None)
         custom_attributes = kwargs.get("customAttributes", None)
@@ -350,6 +374,11 @@ class Location:
     """
 
     def create(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         type = kwargs.get("type", None)
         stix_id = kwargs.get("stix_id", None)
         created_by = kwargs.get("createdBy", None)
@@ -420,6 +449,11 @@ class Location:
     """
 
     def import_from_stix2(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_object = kwargs.get("stixObject", None)
         extras = kwargs.get("extras", {})
         update = kwargs.get("update", False)

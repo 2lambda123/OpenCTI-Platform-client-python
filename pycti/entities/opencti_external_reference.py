@@ -9,6 +9,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 
 class ExternalReference:
+    """ """
     def __init__(self, opencti, file):
         self.opencti = opencti
         self.file = file
@@ -58,6 +59,13 @@ class ExternalReference:
 
     @staticmethod
     def generate_id(url=None, source_name=None, external_id=None):
+        """
+
+        :param url:  (Default value = None)
+        :param source_name:  (Default value = None)
+        :param external_id:  (Default value = None)
+
+        """
         if url is not None:
             data = {"url": url}
         elif source_name is not None and external_id is not None:
@@ -70,6 +78,11 @@ class ExternalReference:
 
     @staticmethod
     def generate_id_from_data(data):
+        """
+
+        :param data: 
+
+        """
         return ExternalReference.generate_id(
             data.get("url"), data.get("source_name"), data.get("external_id")
         )
@@ -84,6 +97,11 @@ class ExternalReference:
     """
 
     def list(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         filters = kwargs.get("filters", None)
         first = kwargs.get("first", 500)
         after = kwargs.get("after", None)
@@ -173,6 +191,11 @@ class ExternalReference:
     """
 
     def read(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         filters = kwargs.get("filters", None)
         if id is not None:
@@ -212,6 +235,11 @@ class ExternalReference:
     """
 
     def create(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_id = kwargs.get("stix_id", None)
         created = kwargs.get("created", None)
         modified = kwargs.get("modified", None)
@@ -271,6 +299,11 @@ class ExternalReference:
     """
 
     def add_file(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         file_name = kwargs.get("file_name", None)
         data = kwargs.get("data", None)
@@ -327,6 +360,11 @@ class ExternalReference:
     """
 
     def update_field(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         input = kwargs.get("input", None)
         if id is not None and input is not None:
@@ -351,6 +389,11 @@ class ExternalReference:
             return None
 
     def delete(self, id):
+        """
+
+        :param id: 
+
+        """
         self.opencti.app_logger.info("Deleting External-Reference", {"id": id})
         query = """
              mutation ExternalReferenceEdit($id: ID!) {
@@ -362,6 +405,11 @@ class ExternalReference:
         self.opencti.query(query, {"id": id})
 
     def list_files(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         self.opencti.app_logger.info("Listing files of External-Reference", {"id": id})
         query = """

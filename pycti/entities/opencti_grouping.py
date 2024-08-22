@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 
 class Grouping:
+    """ """
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -396,6 +397,12 @@ class Grouping:
 
     @staticmethod
     def generate_id(name, context):
+        """
+
+        :param name: 
+        :param context: 
+
+        """
         name = name.lower().strip()
         context = context.lower().strip()
         data = {"name": name, "context": context}
@@ -405,6 +412,11 @@ class Grouping:
 
     @staticmethod
     def generate_id_from_data(data):
+        """
+
+        :param data: 
+
+        """
         return Grouping.generate_id(data["name"], data["context"])
 
     """
@@ -418,6 +430,11 @@ class Grouping:
     """
 
     def list(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         filters = kwargs.get("filters", None)
         search = kwargs.get("search", None)
         first = kwargs.get("first", 100)
@@ -506,6 +523,11 @@ class Grouping:
     """
 
     def read(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         filters = kwargs.get("filters", None)
         custom_attributes = kwargs.get("customAttributes", None)
@@ -546,6 +568,11 @@ class Grouping:
     """
 
     def get_by_stix_id_or_name(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_id = kwargs.get("stix_id", None)
         name = kwargs.get("name", None)
         context = kwargs.get("context", None)
@@ -576,6 +603,11 @@ class Grouping:
     """
 
     def contains_stix_object_or_stix_relationship(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
             "stixObjectOrStixRelationshipId", None
@@ -611,6 +643,11 @@ class Grouping:
     """
 
     def create(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_id = kwargs.get("stix_id", None)
         created_by = kwargs.get("createdBy", None)
         objects = kwargs.get("objects", None)
@@ -682,6 +719,11 @@ class Grouping:
     """
 
     def add_stix_object_or_stix_relationship(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
             "stixObjectOrStixRelationshipId", None
@@ -724,6 +766,11 @@ class Grouping:
     """
 
     def remove_stix_object_or_stix_relationship(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
             "stixObjectOrStixRelationshipId", None
@@ -763,6 +810,11 @@ class Grouping:
     """
 
     def import_from_stix2(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_object = kwargs.get("stixObject", None)
         extras = kwargs.get("extras", {})
         update = kwargs.get("update", False)

@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 
 class ObservedData:
+    """ """
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -434,6 +435,11 @@ class ObservedData:
 
     @staticmethod
     def generate_id(object_ids):
+        """
+
+        :param object_ids: 
+
+        """
         data = {"objects": object_ids}
         data = canonicalize(data, utf8=False)
         id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
@@ -441,6 +447,11 @@ class ObservedData:
 
     @staticmethod
     def generate_id_from_data(data):
+        """
+
+        :param data: 
+
+        """
         return ObservedData.generate_id(data["object_refs"])
 
     """
@@ -454,6 +465,11 @@ class ObservedData:
     """
 
     def list(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         filters = kwargs.get("filters", None)
         search = kwargs.get("search", None)
         first = kwargs.get("first", 500)
@@ -520,6 +536,11 @@ class ObservedData:
     """
 
     def read(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         filters = kwargs.get("filters", None)
         custom_attributes = kwargs.get("customAttributes", None)
@@ -557,6 +578,11 @@ class ObservedData:
     """
 
     def contains_stix_object_or_stix_relationship(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
             "stixObjectOrStixRelationshipId", None
@@ -595,6 +621,11 @@ class ObservedData:
     """
 
     def create(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_id = kwargs.get("stix_id", None)
         created_by = kwargs.get("createdBy", None)
         objects = kwargs.get("objects", None)
@@ -671,6 +702,11 @@ class ObservedData:
     """
 
     def add_stix_object_or_stix_relationship(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
             "stixObjectOrStixRelationshipId", None
@@ -724,6 +760,11 @@ class ObservedData:
     """
 
     def remove_stix_object_or_stix_relationship(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
             "stixObjectOrStixRelationshipId", None
@@ -768,6 +809,11 @@ class ObservedData:
     """
 
     def import_from_stix2(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_object = kwargs.get("stixObject", None)
         extras = kwargs.get("extras", {})
         update = kwargs.get("update", False)

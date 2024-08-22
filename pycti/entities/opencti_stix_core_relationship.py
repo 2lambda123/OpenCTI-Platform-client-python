@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 
 class StixCoreRelationship:
+    """ """
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -332,6 +333,15 @@ class StixCoreRelationship:
     def generate_id(
         relationship_type, source_ref, target_ref, start_time=None, stop_time=None
     ):
+        """
+
+        :param relationship_type: 
+        :param source_ref: 
+        :param target_ref: 
+        :param start_time:  (Default value = None)
+        :param stop_time:  (Default value = None)
+
+        """
         if isinstance(start_time, datetime.datetime):
             start_time = start_time.isoformat()
         if isinstance(stop_time, datetime.datetime):
@@ -379,6 +389,11 @@ class StixCoreRelationship:
 
     @staticmethod
     def generate_id_from_data(data):
+        """
+
+        :param data: 
+
+        """
         return StixCoreRelationship.generate_id(
             data["relationship_type"],
             data["source_ref"],
@@ -388,6 +403,11 @@ class StixCoreRelationship:
         )
 
     def list(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         from_or_to_id = kwargs.get("fromOrToId", None)
         element_with_target_types = kwargs.get("elementWithTargetTypes", None)
         from_id = kwargs.get("fromId", None)
@@ -523,6 +543,11 @@ class StixCoreRelationship:
     """
 
     def read(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         from_or_to_id = kwargs.get("fromOrToId", None)
         from_id = kwargs.get("fromId", None)
@@ -581,6 +606,11 @@ class StixCoreRelationship:
     """
 
     def create(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         from_id = kwargs.get("fromId", None)
         to_id = kwargs.get("toId", None)
         stix_id = kwargs.get("stix_id", None)
@@ -660,6 +690,11 @@ class StixCoreRelationship:
     """
 
     def update_field(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         input = kwargs.get("input", None)
         if id is not None and input is not None:
@@ -699,6 +734,11 @@ class StixCoreRelationship:
     """
 
     def delete(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         if id is not None:
             self.opencti.app_logger.info("Deleting stix_core_relationship", {"id": id})
@@ -725,6 +765,11 @@ class StixCoreRelationship:
     """
 
     def add_marking_definition(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         marking_definition_id = kwargs.get("marking_definition_id", None)
         if id is not None and marking_definition_id is not None:
@@ -792,6 +837,11 @@ class StixCoreRelationship:
     """
 
     def remove_marking_definition(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         marking_definition_id = kwargs.get("marking_definition_id", None)
         if id is not None and marking_definition_id is not None:
@@ -830,6 +880,11 @@ class StixCoreRelationship:
     """
 
     def add_label(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         label_id = kwargs.get("label_id", None)
         label_name = kwargs.get("label_name", None)
@@ -884,6 +939,11 @@ class StixCoreRelationship:
     """
 
     def add_external_reference(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         external_reference_id = kwargs.get("external_reference_id", None)
         if id is not None and external_reference_id is not None:
@@ -926,6 +986,11 @@ class StixCoreRelationship:
     """
 
     def remove_external_reference(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         external_reference_id = kwargs.get("external_reference_id", None)
         if id is not None and external_reference_id is not None:
@@ -964,6 +1029,11 @@ class StixCoreRelationship:
     """
 
     def add_kill_chain_phase(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         kill_chain_phase_id = kwargs.get("kill_chain_phase_id", None)
         if id is not None and kill_chain_phase_id is not None:
@@ -1006,6 +1076,11 @@ class StixCoreRelationship:
     """
 
     def remove_kill_chain_phase(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         kill_chain_phase_id = kwargs.get("kill_chain_phase_id", None)
         if id is not None and kill_chain_phase_id is not None:
@@ -1046,6 +1121,11 @@ class StixCoreRelationship:
     """
 
     def update_created_by(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         identity_id = kwargs.get("identity_id", None)
         if id is not None:
@@ -1127,6 +1207,11 @@ class StixCoreRelationship:
     """
 
     def import_from_stix2(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_relation = kwargs.get("stixRelation", None)
         extras = kwargs.get("extras", {})
         update = kwargs.get("update", False)

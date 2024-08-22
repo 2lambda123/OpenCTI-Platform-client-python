@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 
 class KillChainPhase:
+    """ """
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -25,6 +26,12 @@ class KillChainPhase:
 
     @staticmethod
     def generate_id(phase_name, kill_chain_name):
+        """
+
+        :param phase_name: 
+        :param kill_chain_name: 
+
+        """
         data = {"phase_name": phase_name, "kill_chain_name": kill_chain_name}
         data = canonicalize(data, utf8=False)
         id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
@@ -32,6 +39,11 @@ class KillChainPhase:
 
     @staticmethod
     def generate_id_from_data(data):
+        """
+
+        :param data: 
+
+        """
         return KillChainPhase.generate_id(data["phase_name"], data["kill_chain_name"])
 
     """
@@ -44,6 +56,11 @@ class KillChainPhase:
     """
 
     def list(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         filters = kwargs.get("filters", None)
         first = kwargs.get("first", 500)
         after = kwargs.get("after", None)
@@ -103,6 +120,11 @@ class KillChainPhase:
     """
 
     def read(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         filters = kwargs.get("filters", None)
         if id is not None:
@@ -142,6 +164,11 @@ class KillChainPhase:
     """
 
     def create(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_id = kwargs.get("stix_id", None)
         created = kwargs.get("created", None)
         modified = kwargs.get("modified", None)
@@ -196,6 +223,11 @@ class KillChainPhase:
     """
 
     def update_field(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         input = kwargs.get("input", None)
         if id is not None and input is not None:
@@ -228,6 +260,11 @@ class KillChainPhase:
             return None
 
     def delete(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         if id is not None:
             self.opencti.app_logger.info("Deleting Kill-Chain-Phase", {"id": id})

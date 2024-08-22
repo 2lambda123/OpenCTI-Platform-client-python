@@ -6,6 +6,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 
 class Feedback:
+    """ """
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -413,6 +414,11 @@ class Feedback:
 
     @staticmethod
     def generate_id(name):
+        """
+
+        :param name: 
+
+        """
         name = name.lower().strip()
         data = {"name": name}
         data = canonicalize(data, utf8=False)
@@ -421,6 +427,11 @@ class Feedback:
 
     @staticmethod
     def generate_id_from_data(data):
+        """
+
+        :param data: 
+
+        """
         return Feedback.generate_id(data["name"])
 
     """
@@ -434,6 +445,11 @@ class Feedback:
     """
 
     def list(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         filters = kwargs.get("filters", None)
         search = kwargs.get("search", None)
         first = kwargs.get("first", 500)
@@ -522,6 +538,11 @@ class Feedback:
     """
 
     def read(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         filters = kwargs.get("filters", None)
         custom_attributes = kwargs.get("customAttributes", None)
@@ -564,6 +585,11 @@ class Feedback:
     """
 
     def get_by_stix_id_or_name(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_id = kwargs.get("stix_id", None)
         name = kwargs.get("name", None)
         created = kwargs.get("created", None)
@@ -595,6 +621,11 @@ class Feedback:
     """
 
     def contains_stix_object_or_stix_relationship(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
             "stixObjectOrStixRelationshipId", None
@@ -633,6 +664,11 @@ class Feedback:
     """
 
     def create(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_id = kwargs.get("stix_id", None)
         created_by = kwargs.get("createdBy", None)
         objects = kwargs.get("objects", None)
@@ -692,6 +728,11 @@ class Feedback:
             self.opencti.app_logger.error("[opencti_feedback] Missing parameters: name")
 
     def update_field(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         self.opencti.app_logger.info("Updating Feedback", {"data": json.dumps(kwargs)})
         id = kwargs.get("id", None)
         input = kwargs.get("input", None)
@@ -728,6 +769,11 @@ class Feedback:
     """
 
     def add_stix_object_or_stix_relationship(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
             "stixObjectOrStixRelationshipId", None
@@ -775,6 +821,11 @@ class Feedback:
     """
 
     def remove_stix_object_or_stix_relationship(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
             "stixObjectOrStixRelationshipId", None
@@ -819,6 +870,11 @@ class Feedback:
         """
 
     def import_from_stix2(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_object = kwargs.get("stixObject", None)
         extras = kwargs.get("extras", {})
         update = kwargs.get("update", False)
@@ -884,6 +940,11 @@ class Feedback:
             )
 
     def delete(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         if id is not None:
             self.opencti.app_logger.info("Deleting Feedback", {"id": id})

@@ -78,6 +78,7 @@ class OpenCTIStix2:
     """Python API for Stix2 in OpenCTI
 
     :param opencti: OpenCTI instance
+
     """
 
     def __init__(self, opencti):
@@ -89,6 +90,11 @@ class OpenCTIStix2:
     # UTILS
     # region utils
     def unknown_type(self, stix_object: Dict) -> None:
+        """
+
+        :param stix_object: Dict: 
+
+        """
         self.opencti.app_logger.error(
             "Unknown object type, doing nothing...", {"type": stix_object["type"]}
         )
@@ -98,8 +104,10 @@ class OpenCTIStix2:
 
         :param text: input text
         :type text: str
-        :return: sanitized text with markdown style code annotation
+        :param text: str: 
+        :returns: sanitized text with markdown style code annotation
         :rtype: str
+
         """
         if text is not None:
             return text.replace("<code>", "`").replace("</code>", "`")
@@ -111,8 +119,10 @@ class OpenCTIStix2:
 
         :param date: input date
         :type date: Any [datetime, date, str or none]
-        :return: OpenCTI style date
+        :param date: Any:  (Default value = None)
+        :returns: OpenCTI style date
         :rtype: string
+
         """
         if isinstance(date, datetime.datetime):
             date_value = date
@@ -139,8 +149,11 @@ class OpenCTIStix2:
         :type uuids: list
         :param objects: list of objects to filter
         :type objects: list
-        :return: list of filtered objects
+        :param uuids: List: 
+        :param objects: List: 
+        :returns: list of filtered objects
         :rtype: list
+
         """
 
         result = []
@@ -154,9 +167,11 @@ class OpenCTIStix2:
         """check stix2 object for multiple aliases and return a list
 
         :param stix_object: valid stix2 object
-        :type stix_object:
-        :return: list of aliases
+        :type stix_object: return: list of aliases
+        :param stix_object: Dict: 
+        :returns: list of aliases
         :rtype: list
+
         """
 
         # Add aliases
@@ -181,8 +196,12 @@ class OpenCTIStix2:
         :type update: bool, optional
         :param types: list of stix2 types, defaults to None
         :type types: list, optional
-        :return: list of imported stix2 objects
+        :param file_path: str: 
+        :param update: bool:  (Default value = False)
+        :param types: List:  (Default value = None)
+        :returns: list of imported stix2 objects
         :rtype: List
+
         """
         if not os.path.isfile(file_path):
             self.opencti.app_logger.error("The bundle file does not exists")
@@ -201,19 +220,30 @@ class OpenCTIStix2:
         """import a stix2 bundle from JSON data
 
         :param json_data: JSON data
-        :type json_data:
+        :type json_data: param update: whether to updated data in the database, defaults to False
         :param update: whether to updated data in the database, defaults to False
         :type update: bool, optional
         :param types: list of stix2 types, defaults to None
         :type types: list, optional
-        :param work_id work_id: str, optional
-        :return: list of imported stix2 objects
+        :param work_id: work_id: str, optional
+        :param json_data: Union[str: 
+        :param bytes]: 
+        :param update: bool:  (Default value = False)
+        :param types: List:  (Default value = None)
+        :param work_id: str:  (Default value = None)
+        :returns: list of imported stix2 objects
         :rtype: List
+
         """
         data = json.loads(json_data)
         return self.import_bundle(data, update, types, work_id)
 
     def resolve_author(self, title: str) -> Optional[Identity]:
+        """
+
+        :param title: str: 
+
+        """
         if "fireeye" in title.lower() or "mandiant" in title.lower():
             return self.get_author("FireEye")
         if "eset" in title.lower():
@@ -255,6 +285,11 @@ class OpenCTIStix2:
         return None
 
     def get_author(self, name: str) -> Identity:
+        """
+
+        :param name: str: 
+
+        """
         if name in self.mapping_cache:
             return self.mapping_cache[name]
         else:
@@ -272,11 +307,14 @@ class OpenCTIStix2:
         """extracts embedded relationship objects from a stix2 entity
 
         :param stix_object: valid stix2 object
-        :type stix_object:
+        :type stix_object: param types: list of stix2 types, defaults to None
         :param types: list of stix2 types, defaults to None
         :type types: list, optional
-        :return: embedded relationships as dict
+        :param stix_object: Dict: 
+        :param types: List:  (Default value = None)
+        :returns: embedded relationships as dict
         :rtype: dict
+
         """
 
         # Created By Ref
@@ -787,6 +825,7 @@ class OpenCTIStix2:
 
     # Please use get_reader instead of this definition
     def get_readers(self):
+        """ """
         return {
             "Attack-Pattern": self.opencti.attack_pattern.read,
             "Campaign": self.opencti.campaign.read,
@@ -834,6 +873,11 @@ class OpenCTIStix2:
         }
 
     def get_reader(self, entity_type: str):
+        """
+
+        :param entity_type: str: 
+
+        """
         # Map types
         if entity_type == "StixFile":
             entity_type = "File"
@@ -854,6 +898,7 @@ class OpenCTIStix2:
     # endregion
 
     def get_stix_helper(self):
+        """ """
         # Import
         return {
             # entities
@@ -902,6 +947,11 @@ class OpenCTIStix2:
         }
 
     def generate_standard_id_from_stix(self, data):
+        """
+
+        :param data: 
+
+        """
         stix_helpers = self.get_stix_helper()
         helper = stix_helpers.get(data["type"])
         return helper.generate_id_from_data(data)
@@ -913,13 +963,17 @@ class OpenCTIStix2:
         """import a stix2 object
 
         :param stix_object: valid stix2 object
-        :type stix_object:
+        :type stix_object: param update: whether to updated data in the database, defaults to False
         :param update: whether to updated data in the database, defaults to False
         :type update: bool, optional
         :param types: list of stix2 types, defaults to None
         :type types: list, optional
-        :return: list of imported stix2 objects
+        :param stix_object: Dict: 
+        :param update: bool:  (Default value = False)
+        :param types: List:  (Default value = None)
+        :returns: list of imported stix2 objects
         :rtype: list
+
         """
 
         self.opencti.app_logger.info(
@@ -1028,6 +1082,13 @@ class OpenCTIStix2:
     def import_observable(
         self, stix_object: Dict, update: bool = False, types: List = None
     ) -> None:
+        """
+
+        :param stix_object: Dict: 
+        :param update: bool:  (Default value = False)
+        :param types: List:  (Default value = None)
+
+        """
         # Extract
         embedded_relationships = self.extract_embedded_relationships(stix_object, types)
         created_by_id = embedded_relationships["created_by"]
@@ -1204,6 +1265,13 @@ class OpenCTIStix2:
     def import_relationship(
         self, stix_relation: Dict, update: bool = False, types: List = None
     ) -> None:
+        """
+
+        :param stix_relation: Dict: 
+        :param update: bool:  (Default value = False)
+        :param types: List:  (Default value = None)
+
+        """
         # Extract
         embedded_relationships = self.extract_embedded_relationships(
             stix_relation, types
@@ -1301,6 +1369,15 @@ class OpenCTIStix2:
         update: bool = False,
         types: List = None,
     ) -> None:
+        """
+
+        :param stix_sighting: Dict: 
+        :param from_id: str: 
+        :param to_id: str: 
+        :param update: bool:  (Default value = False)
+        :param types: List:  (Default value = None)
+
+        """
         # Extract
         embedded_relationships = self.extract_embedded_relationships(
             stix_sighting, types
@@ -1431,6 +1508,12 @@ class OpenCTIStix2:
 
     # region export
     def generate_export(self, entity: Dict, no_custom_attributes: bool = False) -> Dict:
+        """
+
+        :param entity: Dict: 
+        :param no_custom_attributes: bool:  (Default value = False)
+
+        """
         # Handle model deviation
         original_entity_type = entity["entity_type"]
 
@@ -1635,6 +1718,13 @@ class OpenCTIStix2:
     def prepare_id_filters_export(
         id: Union[str, List[str]], access_filter: Dict = None
     ) -> Dict:
+        """
+
+        :param id: Union[str: 
+        :param List[str]]: 
+        :param access_filter: Dict:  (Default value = None)
+
+        """
         if access_filter is not None:
             return {
                 "mode": "and",
@@ -1673,6 +1763,14 @@ class OpenCTIStix2:
         access_filter: Dict = None,
         no_custom_attributes: bool = False,
     ) -> List:
+        """
+
+        :param entity: Dict: 
+        :param mode: str:  (Default value = "simple")
+        :param access_filter: Dict:  (Default value = None)
+        :param no_custom_attributes: bool:  (Default value = False)
+
+        """
         result = []
         objects_to_get = []
         relations_to_get = []
@@ -2133,6 +2231,11 @@ class OpenCTIStix2:
             ) in relations_to_get:  # never appended after initialization
 
                 def find_relation_object_data(current_relation_object):
+                    """
+
+                    :param current_relation_object: 
+
+                    """
                     return current_relation_object.id == relation_object["id"]
 
                 relation_object_data = self.prepare_export(
@@ -2211,6 +2314,16 @@ class OpenCTIStix2:
         no_custom_attributes: bool = False,
         only_entity: bool = False,
     ) -> Dict:
+        """
+
+        :param entity_type: str: 
+        :param entity_id: str: 
+        :param mode: str:  (Default value = "simple")
+        :param access_filter: Dict:  (Default value = None)
+        :param no_custom_attributes: bool:  (Default value = False)
+        :param only_entity: bool:  (Default value = False)
+
+        """
         bundle = {
             "type": "bundle",
             "id": "bundle--" + str(uuid.uuid4()),
@@ -2249,6 +2362,16 @@ class OpenCTIStix2:
         no_custom_attributes: bool = False,
         only_entity: bool = False,
     ) -> Dict:
+        """
+
+        :param entity_type: str: 
+        :param entity_id: str: 
+        :param mode: str:  (Default value = "simple")
+        :param access_filter: Dict:  (Default value = None)
+        :param no_custom_attributes: bool:  (Default value = False)
+        :param only_entity: bool:  (Default value = False)
+
+        """
         return self.get_stix_bundle_or_object_from_entity_id(
             entity_type=entity_type,
             entity_id=entity_id,
@@ -2267,6 +2390,16 @@ class OpenCTIStix2:
         orderMode: str = None,
         getAll: bool = True,
     ) -> [Dict]:
+        """
+
+        :param entity_type: str: 
+        :param search: Dict:  (Default value = None)
+        :param filters: Dict:  (Default value = None)
+        :param orderBy: str:  (Default value = None)
+        :param orderMode: str:  (Default value = None)
+        :param getAll: bool:  (Default value = True)
+
+        """
         if IdentityTypes.has_value(entity_type):
             entity_type = "Identity"
 
@@ -2341,6 +2474,17 @@ class OpenCTIStix2:
         mode: str = "simple",
         access_filter: Dict = None,
     ) -> Dict:
+        """
+
+        :param entity_type: str: 
+        :param search: Dict:  (Default value = None)
+        :param filters: Dict:  (Default value = None)
+        :param order_by: str:  (Default value = None)
+        :param order_mode: str:  (Default value = None)
+        :param mode: str:  (Default value = "simple")
+        :param access_filter: Dict:  (Default value = None)
+
+        """
         bundle = {
             "type": "bundle",
             "id": "bundle--" + str(uuid.uuid4()),
@@ -2385,6 +2529,13 @@ class OpenCTIStix2:
         mode: str = "simple",
         access_filter: Dict = None,
     ) -> Dict:
+        """
+
+        :param entities_list: [dict]: 
+        :param mode: str:  (Default value = "simple")
+        :param access_filter: Dict:  (Default value = None)
+
+        """
 
         bundle = {
             "type": "bundle",
@@ -2410,6 +2561,13 @@ class OpenCTIStix2:
         return bundle
 
     def prepare_bundle_ids(self, bundle, use_json=True, keep_original_id=False):
+        """
+
+        :param bundle: 
+        :param use_json:  (Default value = True)
+        :param keep_original_id:  (Default value = False)
+
+        """
         if use_json:
             try:
                 bundle_data = json.loads(bundle)
@@ -2458,6 +2616,15 @@ class OpenCTIStix2:
         processing_count: int = 0,
         work_id: str = None,
     ):
+        """
+
+        :param item: 
+        :param update: bool:  (Default value = False)
+        :param types: List:  (Default value = None)
+        :param processing_count: int:  (Default value = 0)
+        :param work_id: str:  (Default value = None)
+
+        """
         worker_logger = self.opencti.logger_class("worker")
         try:
             self.opencti.set_retry_number(processing_count)
@@ -2680,6 +2847,14 @@ class OpenCTIStix2:
         types: List = None,
         work_id: str = None,
     ) -> List:
+        """
+
+        :param stix_bundle: Dict: 
+        :param update: bool:  (Default value = False)
+        :param types: List:  (Default value = None)
+        :param work_id: str:  (Default value = None)
+
+        """
         # Check if the bundle is correctly formatted
         if "type" not in stix_bundle or stix_bundle["type"] != "bundle":
             raise ValueError("JSON data type is not a STIX2 bundle")
@@ -2714,6 +2889,15 @@ class OpenCTIStix2:
     def put_attribute_in_extension(
         object, extension_id, key, value, multiple=False
     ) -> any:
+        """
+
+        :param object: 
+        :param extension_id: 
+        :param key: 
+        :param value: 
+        :param multiple:  (Default value = False)
+
+        """
         if ("x_opencti_" + key) in object:
             del object["x_opencti_" + key]
         if ("x_mitre_" + key) in object:

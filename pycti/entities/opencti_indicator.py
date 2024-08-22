@@ -10,6 +10,7 @@ class Indicator:
     """Main Indicator class for OpenCTI
 
     :param opencti: instance of :py:class:`~pycti.api.opencti_api_client.OpenCTIApiClient`
+
     """
 
     def __init__(self, opencti):
@@ -273,6 +274,11 @@ class Indicator:
 
     @staticmethod
     def generate_id(pattern):
+        """
+
+        :param pattern: 
+
+        """
         data = {"pattern": pattern}
         data = canonicalize(data, utf8=False)
         id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
@@ -280,26 +286,32 @@ class Indicator:
 
     @staticmethod
     def generate_id_from_data(data):
+        """
+
+        :param data: 
+
+        """
         return Indicator.generate_id(data["pattern"])
 
     def list(self, **kwargs):
         """List Indicator objects
-
+        
         The list method accepts the following kwargs:
 
-        :param list filters: (optional) the filters to apply
-        :param str search: (optional) a search keyword to apply for the listing
-        :param int first: (optional) return the first n rows from the `after` ID
+        :param list: filters: (optional) the filters to apply
+        :param str: search: (optional) a search keyword to apply for the listing
+        :param int: first: (optional) return the first n rows from the `after` ID
                             or the beginning if not set
-        :param str after: (optional) OpenCTI object ID of the first row for pagination
-        :param str orderBy: (optional) the field to order the response on
-        :param bool orderMode: (optional) either "`asc`" or "`desc`"
-        :param list customAttributes: (optional) list of attributes keys to return
-        :param bool getAll: (optional) switch to return all entries (be careful to use this without any other filters)
-        :param bool withPagination: (optional) switch to use pagination
-
-        :return: List of Indicators
+        :param str: after: (optional) OpenCTI object ID of the first row for pagination
+        :param str: orderBy: (optional) the field to order the response on
+        :param bool: orderMode: (optional) either "`asc`" or "`desc`"
+        :param list: customAttributes: (optional) list of attributes keys to return
+        :param bool: getAll: (optional) switch to return all entries (be careful to use this without any other filters)
+        :param bool: withPagination: (optional) switch to use pagination
+        :param **kwargs: 
+        :returns: List of Indicators
         :rtype: list
+
         """
 
         filters = kwargs.get("filters", None)
@@ -383,19 +395,20 @@ class Indicator:
 
     def read(self, **kwargs):
         """Read an Indicator object
-
+        
         read can be either used with a known OpenCTI entity `id` or by using a
         valid filter to search and return a single Indicator entity or None.
-
+        
         The list method accepts the following kwargs.
-
+        
         Note: either `id` or `filters` is required.
 
-        :param str id: the id of the Threat-Actor-Group
-        :param list filters: the filters to apply if no id provided
-
-        :return: Indicator object
+        :param str: id: the id of the Threat-Actor-Group
+        :param list: filters: the filters to apply if no id provided
+        :param **kwargs: 
+        :returns: Indicator object
         :rtype: Indicator
+
         """
 
         id = kwargs.get("id", None)
@@ -434,15 +447,15 @@ class Indicator:
             return None
 
     def create(self, **kwargs):
-        """
-        Create an Indicator object
+        """Create an Indicator object
 
-        :param str name: the name of the Indicator
-        :param str pattern: stix indicator pattern
-        :param str x_opencti_main_observable_type: type of the observable
-
-        :return: Indicator object
+        :param str: name: the name of the Indicator
+        :param str: pattern: stix indicator pattern
+        :param str: x_opencti_main_observable_type: type of the observable
+        :param **kwargs: 
+        :returns: Indicator object
         :rtype: Indicator
+
         """
         stix_id = kwargs.get("stix_id", None)
         created_by = kwargs.get("createdBy", None)
@@ -546,14 +559,14 @@ class Indicator:
             )
 
     def add_stix_cyber_observable(self, **kwargs):
-        """
-        Add a Stix-Cyber-Observable object to Indicator object (based-on)
+        """Add a Stix-Cyber-Observable object to Indicator object (based-on)
 
         :param id: the id of the Indicator
         :param indicator: Indicator object
         :param stix_cyber_observable_id: the id of the Stix-Observable
+        :param **kwargs: 
+        :returns: Boolean True if there has been no import error
 
-        :return: Boolean True if there has been no import error
         """
         id = kwargs.get("id", None)
         indicator = kwargs.get("indicator", None)
@@ -599,15 +612,15 @@ class Indicator:
             return False
 
     def import_from_stix2(self, **kwargs):
-        """
-        Import an Indicator object from a STIX2 object
+        """Import an Indicator object from a STIX2 object
 
         :param stixObject: the Stix-Object Indicator
         :param extras: extra dict
-        :param bool update: set the update flag on import
-
-        :return: Indicator object
+        :param bool: update: set the update flag on import
+        :param **kwargs: 
+        :returns: Indicator object
         :rtype: Indicator
+
         """
         stix_object = kwargs.get("stixObject", None)
         extras = kwargs.get("extras", {})

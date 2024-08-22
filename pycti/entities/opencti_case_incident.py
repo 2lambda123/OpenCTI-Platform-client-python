@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 
 class CaseIncident:
+    """ """
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -453,6 +454,12 @@ class CaseIncident:
 
     @staticmethod
     def generate_id(name, created):
+        """
+
+        :param name: 
+        :param created: 
+
+        """
         name = name.lower().strip()
         if isinstance(created, datetime.datetime):
             created = created.isoformat()
@@ -463,6 +470,11 @@ class CaseIncident:
 
     @staticmethod
     def generate_id_from_data(data):
+        """
+
+        :param data: 
+
+        """
         return CaseIncident.generate_id(data["name"], data["created"])
 
     """
@@ -476,6 +488,11 @@ class CaseIncident:
     """
 
     def list(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         filters = kwargs.get("filters", None)
         search = kwargs.get("search", None)
         first = kwargs.get("first", 500)
@@ -564,6 +581,11 @@ class CaseIncident:
     """
 
     def read(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         filters = kwargs.get("filters", None)
         custom_attributes = kwargs.get("customAttributes", None)
@@ -604,6 +626,11 @@ class CaseIncident:
     """
 
     def get_by_stix_id_or_name(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_id = kwargs.get("stix_id", None)
         name = kwargs.get("name", None)
         created = kwargs.get("created", None)
@@ -635,6 +662,11 @@ class CaseIncident:
     """
 
     def contains_stix_object_or_stix_relationship(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
             "stixObjectOrStixRelationshipId", None
@@ -673,6 +705,11 @@ class CaseIncident:
     """
 
     def create(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_id = kwargs.get("stix_id", None)
         created_by = kwargs.get("createdBy", None)
         objects = kwargs.get("objects", None)
@@ -752,6 +789,11 @@ class CaseIncident:
     """
 
     def add_stix_object_or_stix_relationship(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
             "stixObjectOrStixRelationshipId", None
@@ -800,6 +842,11 @@ class CaseIncident:
     """
 
     def remove_stix_object_or_stix_relationship(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
             "stixObjectOrStixRelationshipId", None
@@ -844,6 +891,11 @@ class CaseIncident:
     """
 
     def import_from_stix2(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_object = kwargs.get("stixObject", None)
         extras = kwargs.get("extras", {})
         update = kwargs.get("update", False)
@@ -933,6 +985,11 @@ class CaseIncident:
             )
 
     def delete(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         if id is not None:
             self.opencti.app_logger.info("Deleting Case Incident", {"id": id})

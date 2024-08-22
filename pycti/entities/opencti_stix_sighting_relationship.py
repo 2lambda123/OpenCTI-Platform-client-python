@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 
 class StixSightingRelationship:
+    """ """
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -269,6 +270,15 @@ class StixSightingRelationship:
         first_seen=None,
         last_seen=None,
     ):
+        """
+
+        :param relationship_type: 
+        :param sighting_of_ref: 
+        :param where_sighted_refs: 
+        :param first_seen:  (Default value = None)
+        :param last_seen:  (Default value = None)
+
+        """
         if isinstance(first_seen, datetime.datetime):
             first_seen = first_seen.isoformat()
         if isinstance(last_seen, datetime.datetime):
@@ -301,6 +311,11 @@ class StixSightingRelationship:
 
     @staticmethod
     def generate_id_from_data(data):
+        """
+
+        :param data: 
+
+        """
         return StixSightingRelationship.generate_id(
             data["type"],
             data["sighting_of_ref"],
@@ -324,6 +339,11 @@ class StixSightingRelationship:
     """
 
     def list(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         from_or_to_id = kwargs.get("fromOrToId", None)
         from_id = kwargs.get("fromId", None)
         from_types = kwargs.get("fromTypes", None)
@@ -447,6 +467,11 @@ class StixSightingRelationship:
     """
 
     def read(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         from_or_to_id = kwargs.get("fromOrToId", None)
         from_id = kwargs.get("fromId", None)
@@ -503,6 +528,11 @@ class StixSightingRelationship:
     """
 
     def create(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         from_id = kwargs.get("fromId", None)
         to_id = kwargs.get("toId", None)
         stix_id = kwargs.get("stix_id", None)
@@ -571,6 +601,11 @@ class StixSightingRelationship:
     """
 
     def update_field(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         input = kwargs.get("input", None)
         if id is not None and input is not None:
@@ -609,6 +644,11 @@ class StixSightingRelationship:
     """
 
     def add_marking_definition(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         marking_definition_id = kwargs.get("marking_definition_id", None)
         if id is not None and marking_definition_id is not None:
@@ -676,6 +716,11 @@ class StixSightingRelationship:
     """
 
     def remove_marking_definition(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         marking_definition_id = kwargs.get("marking_definition_id", None)
         if id is not None and marking_definition_id is not None:
@@ -714,6 +759,11 @@ class StixSightingRelationship:
     """
 
     def update_created_by(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         identity_id = kwargs.get("identity_id", None)
         if id is not None:
@@ -795,6 +845,11 @@ class StixSightingRelationship:
     """
 
     def delete(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         if id is not None:
             self.opencti.app_logger.info("Deleting stix_sighting", {"id": id})

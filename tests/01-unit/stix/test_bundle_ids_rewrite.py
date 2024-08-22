@@ -4,6 +4,7 @@ from pycti import OpenCTIApiClient, OpenCTIStix2
 
 
 def get_cti_helper():
+    """ """
     client = OpenCTIApiClient(
         "http://fake:4000", "fake", ssl_verify=False, perform_health_check=False
     )
@@ -11,6 +12,7 @@ def get_cti_helper():
 
 
 def load_test_file():
+    """ """
     with open("tests/data/bundle_ids_sample.json", "r") as content_file:
         content = content_file.read()
     bundle_data = json.loads(content)
@@ -20,6 +22,7 @@ def load_test_file():
 # !! WARNING !!, this need to be changed along with 01-unit/domain/identifier-test.js
 # fmt: off
 def test_ids_generation():
+    """ """
     gen_id = get_cti_helper().generate_standard_id_from_stix
     # attack-pattern
     assert gen_id({"type": "attack-pattern", "name": "attack"}) =='attack-pattern--25f21617-8de8-5d5e-8cd4-b7e88547ba76'
@@ -110,6 +113,7 @@ def test_ids_generation():
 
 
 def test_prepare_bundle_ids_keep_original():
+    """ """
     helper = get_cti_helper()
     bundle_data = load_test_file()
     malware_source = bundle_data["objects"][0]
@@ -127,6 +131,7 @@ def test_prepare_bundle_ids_keep_original():
 
 
 def test_prepare_bundle_ids():
+    """ """
     helper = get_cti_helper()
     bundle_data = load_test_file()
     malware_source = bundle_data["objects"][0]

@@ -7,12 +7,24 @@ from tests.cases.entities import EntityTestCases
 @fixture
 @parametrize_with_cases("entity", cases=EntityTestCases)
 def entity_class(entity):
+    """
+
+    :param entity: 
+
+    """
     entity.setup()
     yield entity
     entity.teardown()
 
 
 def test_entity_create(entity_class, api_stix, opencti_splitter):
+    """
+
+    :param entity_class: 
+    :param api_stix: 
+    :param opencti_splitter: 
+
+    """
     class_data = entity_class.data()
     stix_class = entity_class.stix_class()
     if stix_class is None:

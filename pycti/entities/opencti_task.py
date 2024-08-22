@@ -7,6 +7,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 
 class Task:
+    """ """
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -226,6 +227,12 @@ class Task:
 
     @staticmethod
     def generate_id(name, created):
+        """
+
+        :param name: 
+        :param created: 
+
+        """
         if isinstance(created, datetime.datetime):
             created = created.isoformat()
         data = {"name": name.lower().strip(), "created": created}
@@ -235,6 +242,11 @@ class Task:
 
     @staticmethod
     def generate_id_from_data(data):
+        """
+
+        :param data: 
+
+        """
         return Task.generate_id(data["name"], data["created"])
 
     """
@@ -248,6 +260,11 @@ class Task:
     """
 
     def list(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         filters = kwargs.get("filters", None)
         search = kwargs.get("search", None)
         first = kwargs.get("first", 500)
@@ -331,6 +348,11 @@ class Task:
     """
 
     def read(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         filters = kwargs.get("filters", None)
         custom_attributes = kwargs.get("customAttributes", None)
@@ -370,6 +392,11 @@ class Task:
     """
 
     def get_by_stix_id_or_name(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_id = kwargs.get("stix_id", None)
         name = kwargs.get("name", None)
         created = kwargs.get("created", None)
@@ -401,6 +428,11 @@ class Task:
     """
 
     def contains_stix_object_or_stix_relationship(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
             "stixObjectOrStixRelationshipId", None
@@ -439,6 +471,11 @@ class Task:
     """
 
     def create(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         objects = kwargs.get("objects", None)
         created = kwargs.get("created", None)
         name = kwargs.get("name", None)
@@ -488,6 +525,11 @@ class Task:
             self.opencti.app_logger.error("[opencti_task] Missing parameters: name")
 
     def update_field(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         self.opencti.app_logger.info("Updating Task", {"data": json.dumps(kwargs)})
         id = kwargs.get("id", None)
         input = kwargs.get("input", None)
@@ -520,6 +562,11 @@ class Task:
     """
 
     def add_stix_object_or_stix_relationship(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
             "stixObjectOrStixRelationshipId", None
@@ -565,6 +612,11 @@ class Task:
     """
 
     def remove_stix_object_or_stix_relationship(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         stix_object_or_stix_relationship_id = kwargs.get(
             "stixObjectOrStixRelationshipId", None
@@ -607,6 +659,11 @@ class Task:
     """
 
     def import_from_stix2(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_object = kwargs.get("stixObject", None)
         extras = kwargs.get("extras", {})
         update = kwargs.get("update", False)
@@ -676,6 +733,11 @@ class Task:
             )
 
     def delete(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         if id is not None:
             self.opencti.app_logger.info("Deleting Task", {"id": id})

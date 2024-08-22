@@ -9,6 +9,7 @@ from pycti.utils.constants import IdentityTypes
 
 
 class Identity:
+    """ """
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -216,6 +217,12 @@ class Identity:
 
     @staticmethod
     def generate_id(name, identity_class):
+        """
+
+        :param name: 
+        :param identity_class: 
+
+        """
         data = {"name": name.lower().strip(), "identity_class": identity_class.lower()}
         data = canonicalize(data, utf8=False)
         id = str(uuid.uuid5(uuid.UUID("00abedb4-aa42-466c-9c01-fed23315a9b7"), data))
@@ -223,6 +230,11 @@ class Identity:
 
     @staticmethod
     def generate_id_from_data(data):
+        """
+
+        :param data: 
+
+        """
         return Identity.generate_id(data["name"], data["identity_class"])
 
     """
@@ -237,6 +249,11 @@ class Identity:
     """
 
     def list(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         types = kwargs.get("types", None)
         filters = kwargs.get("filters", None)
         search = kwargs.get("search", None)
@@ -327,6 +344,11 @@ class Identity:
     """
 
     def read(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         filters = kwargs.get("filters", None)
         custom_attributes = kwargs.get("customAttributes", None)
@@ -370,6 +392,11 @@ class Identity:
     """
 
     def create(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         type = kwargs.get("type", None)
         stix_id = kwargs.get("stix_id", None)
         created_by = kwargs.get("createdBy", None)
@@ -497,6 +524,11 @@ class Identity:
     """
 
     def import_from_stix2(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_object = kwargs.get("stixObject", None)
         extras = kwargs.get("extras", {})
         update = kwargs.get("update", False)

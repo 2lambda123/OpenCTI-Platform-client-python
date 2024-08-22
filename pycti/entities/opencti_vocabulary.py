@@ -5,6 +5,7 @@ from stix2.canonicalization.Canonicalize import canonicalize
 
 
 class Vocabulary:
+    """ """
     def __init__(self, opencti):
         self.opencti = opencti
         self.properties = """
@@ -20,6 +21,12 @@ class Vocabulary:
 
     @staticmethod
     def generate_id(name, category):
+        """
+
+        :param name: 
+        :param category: 
+
+        """
         name = name.lower().strip()
         data = {"name": name, "category": category}
         data = canonicalize(data, utf8=False)
@@ -28,9 +35,19 @@ class Vocabulary:
 
     @staticmethod
     def generate_id_from_data(data):
+        """
+
+        :param data: 
+
+        """
         return Vocabulary.generate_id(data["name"], data["category"])
 
     def list(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         filters = kwargs.get("filters", None)
         self.opencti.app_logger.info(
             "Listing Vocabularies with filters", {"filters": json.dumps(filters)}
@@ -59,6 +76,11 @@ class Vocabulary:
         return self.opencti.process_multiple(result["data"]["vocabularies"])
 
     def read(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         filters = kwargs.get("filters", None)
         if id is not None:
@@ -89,6 +111,13 @@ class Vocabulary:
             return None
 
     def handle_vocab(self, vocab, cache, field):
+        """
+
+        :param vocab: 
+        :param cache: 
+        :param field: 
+
+        """
         if "vocab_" + vocab in cache:
             vocab_data = cache["vocab_" + vocab]
         else:
@@ -102,6 +131,11 @@ class Vocabulary:
         return vocab_data
 
     def create(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         stix_id = kwargs.get("stix_id", None)
         name = kwargs.get("name", None)
         category = kwargs.get("category", None)
@@ -150,6 +184,11 @@ class Vocabulary:
             )
 
     def read_or_create_unchecked(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         value = kwargs.get("name", None)
         vocab = self.read(
             filters={
@@ -166,6 +205,11 @@ class Vocabulary:
         return vocab
 
     def update_field(self, **kwargs):
+        """
+
+        :param **kwargs: 
+
+        """
         id = kwargs.get("id", None)
         input = kwargs.get("input", None)
         if id is not None and input is not None:

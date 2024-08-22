@@ -29,10 +29,22 @@ FALSY: List[str] = ["no", "false", "False"]
 
 
 def killProgramHook(etype, value, tb):
+    """
+
+    :param etype: 
+    :param value: 
+    :param tb: 
+
+    """
     os.kill(os.getpid(), signal.SIGTERM)
 
 
 def start_loop(loop):
+    """
+
+    :param loop: 
+
+    """
     asyncio.set_event_loop(loop)
     loop.run_forever()
 
@@ -52,6 +64,12 @@ def get_config_variable(
     :param config: client config dict, defaults to {}
     :param isNumber: specify if the variable is a number, defaults to False
     :param default: default value
+    :param env_var: str: 
+    :param yaml_path: List: 
+    :param config: Dict:  (Default value = {})
+    :param isNumber: Optional[bool]:  (Default value = False)
+    :param required:  (Default value = False)
+
     """
 
     if os.getenv(env_var) is not None:
@@ -85,10 +103,21 @@ def get_config_variable(
 
 
 def is_memory_certificate(certificate):
+    """
+
+    :param certificate: 
+
+    """
     return certificate.startswith("-----BEGIN")
 
 
 def ssl_verify_locations(ssl_context, certdata):
+    """
+
+    :param ssl_context: 
+    :param certdata: 
+
+    """
     if certdata is None:
         return
 
@@ -101,6 +130,11 @@ def ssl_verify_locations(ssl_context, certdata):
 # As cert must be written in files to be loaded in ssl context
 # Creates a temporary file in the most secure manner possible
 def data_to_temp_file(data):
+    """
+
+    :param data: 
+
+    """
     # The file is readable and writable only by the creating user ID.
     # If the operating system uses permission bits to indicate whether a
     # file is executable, the file is executable by no one. The file
@@ -113,6 +147,14 @@ def data_to_temp_file(data):
 
 
 def ssl_cert_chain(ssl_context, cert_data, key_data, passphrase):
+    """
+
+    :param ssl_context: 
+    :param cert_data: 
+    :param key_data: 
+    :param passphrase: 
+
+    """
     if cert_data is None:
         return
 
@@ -139,6 +181,11 @@ def ssl_cert_chain(ssl_context, cert_data, key_data, passphrase):
 
 
 def create_mq_ssl_context(config) -> ssl.SSLContext:
+    """
+
+    :param config: 
+
+    """
     use_ssl_ca = get_config_variable("MQ_USE_SSL_CA", ["mq", "use_ssl_ca"], config)
     use_ssl_cert = get_config_variable(
         "MQ_USE_SSL_CERT", ["mq", "use_ssl_cert"], config
@@ -175,6 +222,7 @@ class ListenQueue(threading.Thread):
     :type config: Dict
     :param callback: callback function to process queue
     :type callback: callable
+
     """
 
     def __init__(
@@ -216,6 +264,7 @@ class ListenQueue(threading.Thread):
         :type properties: str
         :param body: message body (data)
         :type body: str or bytes or bytearray
+
         """
         json_data = json.loads(body)
         # Message should be ack before processing as we don't own the processing
@@ -245,6 +294,11 @@ class ListenQueue(threading.Thread):
         )
 
     def _data_handler(self, json_data) -> None:
+        """
+
+        :param json_data: 
+
+        """
         # Execute the callback
         try:
             event_data = json_data["event"]
@@ -365,6 +419,7 @@ class ListenQueue(threading.Thread):
                     )
 
     def run(self) -> None:
+        """ """
         self.helper.connector_logger.info("Starting ListenQueue thread")
         while not self.exit_event.is_set():
             try:
@@ -410,6 +465,7 @@ class ListenQueue(threading.Thread):
                 time.sleep(10)
 
     def stop(self):
+        """ """
         self.helper.connector_logger.info("Preparing ListenQueue for clean shutdown")
         self.exit_event.set()
         self.pika_connection.close()
@@ -418,6 +474,7 @@ class ListenQueue(threading.Thread):
 
 
 class PingAlive(threading.Thread):
+    """ """
     def __init__(
         self, connector_logger, connector_id, api, get_state, set_state, metric
     ) -> None:
@@ -432,6 +489,7 @@ class PingAlive(threading.Thread):
         self.metric = metric
 
     def ping(self) -> None:
+        """ """
         while not self.exit_event.is_set():
             try:
                 self.connector_logger.debug("PingAlive running.")
@@ -460,15 +518,18 @@ class PingAlive(threading.Thread):
             self.exit_event.wait(40)
 
     def run(self) -> None:
+        """ """
         self.connector_logger.info("Starting PingAlive thread")
         self.ping()
 
     def stop(self) -> None:
+        """ """
         self.connector_logger.info("Preparing PingAlive for clean shutdown")
         self.exit_event.set()
 
 
 class StreamAlive(threading.Thread):
+    """ """
     def __init__(self, helper, q) -> None:
         threading.Thread.__init__(self)
         self.helper = helper
@@ -476,6 +537,7 @@ class StreamAlive(threading.Thread):
         self.exit_event = threading.Event()
 
     def run(self) -> None:
+        """ """
         try:
             self.helper.connector_logger.info("Starting StreamAlive thread")
             time_since_last_heartbeat = 0
@@ -503,11 +565,13 @@ class StreamAlive(threading.Thread):
             sys.excepthook(*sys.exc_info())
 
     def stop(self) -> None:
+        """ """
         self.helper.connector_logger.info("Preparing StreamAlive for clean shutdown")
         self.exit_event.set()
 
 
 class ListenStream(threading.Thread):
+    """ """
     def __init__(
         self,
         helper,
@@ -537,6 +601,7 @@ class ListenStream(threading.Thread):
         self.exit_event = threading.Event()
 
     def run(self) -> None:  # pylint: disable=too-many-branches
+        """ """
         try:
             self.helper.connector_logger.info("Starting ListenStream thread")
             current_state = self.helper.get_state()
@@ -642,6 +707,7 @@ class ListenStream(threading.Thread):
             sys.excepthook(*sys.exc_info())
 
     def stop(self):
+        """ """
         self.helper.connector_logger.info("Preparing ListenStream for clean shutdown")
         self.exit_event.set()
 
@@ -651,6 +717,7 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
 
     :param config: dict standard config
     :type config: Dict
+
     """
 
     def __init__(self, config: Dict, playbook_compatible=False) -> None:
@@ -861,6 +928,7 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         self.listen_queue = None
 
     def stop(self) -> None:
+        """ """
         self.connector_logger.info("Preparing connector for clean shutdown")
         if self.listen_queue:
             self.listen_queue.stop()
@@ -870,9 +938,11 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         self.api.connector.unregister(self.connector_id)
 
     def get_name(self) -> Optional[Union[bool, int, str]]:
+        """ """
         return self.connect_name
 
     def get_stream_collection(self):
+        """ """
         if self.connect_live_stream_id is not None:
             if self.connect_live_stream_id in ["live", "raw"]:
                 return {
@@ -900,12 +970,15 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
             raise ValueError("This connector is not connected to any stream")
 
     def get_only_contextual(self) -> Optional[Union[bool, int, str]]:
+        """ """
         return self.connect_only_contextual
 
     def get_run_and_terminate(self) -> Optional[Union[bool, int, str]]:
+        """ """
         return self.connect_run_and_terminate
 
     def get_validate_before_import(self) -> Optional[Union[bool, int, str]]:
+        """ """
         return self.connect_validate_before_import
 
     def set_state(self, state) -> None:
@@ -913,6 +986,7 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
 
         :param state: state object
         :type state: Dict or None
+
         """
         if isinstance(state, Dict):
             self.connector_state = json.dumps(state)
@@ -922,8 +996,9 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
     def get_state(self) -> Optional[Dict]:
         """get the connector state
 
-        :return: returns the current state of the connector if there is any
-        :rtype:
+
+        :returns: returns the current state of the connector if there is any
+
         """
 
         try:
@@ -936,6 +1011,7 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         return None
 
     def force_ping(self):
+        """ """
         try:
             initial_state = self.get_state()
             result = self.api.connector.ping(self.connector_id, initial_state)
@@ -959,6 +1035,9 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
 
         :param message_callback: callback function to process messages
         :type message_callback: Callable[[Dict], str]
+        :param message_callback: Callable[[Dict]: 
+        :param str]: 
+
         """
 
         self.listen_queue = ListenQueue(
@@ -986,6 +1065,16 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         """listen for messages and register callback function
 
         :param message_callback: callback function to process messages
+        :param url:  (Default value = None)
+        :param token:  (Default value = None)
+        :param verify_ssl:  (Default value = None)
+        :param start_timestamp:  (Default value = None)
+        :param live_stream_id:  (Default value = None)
+        :param listen_delete:  (Default value = None)
+        :param no_dependencies:  (Default value = None)
+        :param recover_iso_date:  (Default value = None)
+        :param with_inferences:  (Default value = None)
+
         """
         # URL
         if url is None:
@@ -1055,18 +1144,25 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         return self.listen_stream
 
     def get_opencti_url(self) -> Optional[Union[bool, int, str]]:
+        """ """
         return self.opencti_url
 
     def get_opencti_token(self) -> Optional[Union[bool, int, str]]:
+        """ """
         return self.opencti_token
 
     def get_connector(self) -> OpenCTIConnector:
+        """ """
         return self.connector
 
     def date_now(self) -> str:
         """get the current date (UTC)
-        :return: current datetime for utc
+
+
+        :returns: current datetime for utc
+
         :rtype: str
+
         """
         return (
             datetime.datetime.utcnow()
@@ -1076,8 +1172,12 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
 
     def date_now_z(self) -> str:
         """get the current date (UTC)
-        :return: current datetime for utc
+
+
+        :returns: current datetime for utc
+
         :rtype: str
+
         """
         return (
             datetime.datetime.utcnow()
@@ -1092,14 +1192,17 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
 
         :param work_id: a valid work id
         :param bundle: valid stix2 bundle
-        :type bundle:
+        :type bundle: param entities_types: list of entities, defaults to None
         :param entities_types: list of entities, defaults to None
         :type entities_types: list, optional
         :param update: whether to updated data in the database, defaults to False
         :type update: bool, optional
-        :raises ValueError: if the bundle is empty
-        :return: list of bundles
+        :param bundle: str: 
+        :param **kwargs: 
+        :returns: list of bundles
         :rtype: list
+        :raises ValueError: if the bundle is empty
+
         """
         work_id = kwargs.get("work_id", self.work_id)
         entities_types = kwargs.get("entities_types", None)
@@ -1302,11 +1405,13 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         :param channel: RabbitMQ channel
         :type channel: callable
         :param bundle: valid stix2 bundle
-        :type bundle:
+        :type bundle: param entities_types: list of entity types, defaults to None
         :param entities_types: list of entity types, defaults to None
         :type entities_types: list, optional
         :param update: whether to update data in the database, defaults to False
         :type update: bool, optional
+        :param **kwargs: 
+
         """
         work_id = kwargs.get("work_id", None)
         sequence = kwargs.get("sequence", 0)
@@ -1358,9 +1463,10 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         """gets created and marking refs for a stix2 item
 
         :param item: valid stix2 item
-        :type item:
-        :return: returns a dict of created_by of object_marking_refs
+        :type item: return: returns a dict of created_by of object_marking_refs
+        :returns: returns a dict of created_by of object_marking_refs
         :rtype: Dict
+
         """
         # Marking definitions
         object_marking_refs = []
@@ -1382,9 +1488,10 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         """process a stix2 entity
 
         :param entity: valid stix2 entity
-        :type entity:
-        :return: entity objects as list
+        :type entity: return: entity objects as list
+        :returns: entity objects as list
         :rtype: list
+
         """
 
         items = [entity]
@@ -1403,9 +1510,10 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         """get a list of relations for a stix2 relationship object
 
         :param relationship: valid stix2 relationship
-        :type relationship:
-        :return: list of relations objects
+        :type relationship: return: list of relations objects
+        :returns: list of relations objects
         :rtype: list
+
         """
 
         items = [relationship]
@@ -1432,9 +1540,10 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         """get a list of items for a stix2 report object
 
         :param report: valid stix2 report object
-        :type report:
-        :return: list of items for a stix2 report object
+        :type report: return: list of items for a stix2 report object
+        :returns: list of items for a stix2 report object
         :rtype: list
+
         """
 
         items = [report]
@@ -1453,9 +1562,10 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         """deduplicate stix2 items
 
         :param items: valid stix2 items
-        :type items:
-        :return: de-duplicated list of items
+        :type items: return: de-duplicated list of items
+        :returns: de-duplicated list of items
         :rtype: list
+
         """
 
         ids = []
@@ -1471,9 +1581,9 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         """create a stix2 bundle with items
 
         :param items: valid stix2 items
-        :type items:
-        :return: JSON of the stix2 bundle
-        :rtype:
+        :type items: return: JSON of the stix2 bundle
+        :returns: JSON of the stix2 bundle
+
         """
 
         # Check if item are native STIX 2 lib
@@ -1497,8 +1607,11 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         :type tlp: str
         :param max_tlp: the highest allowed TLP level
         :type max_tlp: str
-        :return: TLP level in allowed TLPs
+        :param tlp: str: 
+        :param max_tlp: str: 
+        :returns: TLP level in allowed TLPs
         :rtype: bool
+
         """
 
         if tlp is None or max_tlp is None:
@@ -1530,6 +1643,12 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
 
     @staticmethod
     def get_attribute_in_extension(key, object) -> any:
+        """
+
+        :param key: 
+        :param object: 
+
+        """
         if (
             "extensions" in object
             and "extension-definition--ea279b3e-5c71-4632-ac08-831c66a786ba"
@@ -1560,6 +1679,12 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
 
     @staticmethod
     def get_attribute_in_mitre_extension(key, object) -> any:
+        """
+
+        :param key: 
+        :param object: 
+
+        """
         if (
             "extensions" in object
             and "extension-definition--322b8f77-262a-4cb8-a915-1e441e00329b"
@@ -1575,6 +1700,13 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
         return None
 
     def get_data_from_enrichment(self, data, standard_id, opencti_entity):
+        """
+
+        :param data: 
+        :param standard_id: 
+        :param opencti_entity: 
+
+        """
         bundle = data.get("bundle", None)
         # Extract main entity from bundle in case of playbook
         if bundle is None:
