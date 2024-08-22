@@ -432,13 +432,13 @@ class Location:
         if stix_object is not None:
             # Search in extensions
             if "x_opencti_aliases" not in stix_object:
-                stix_object["x_opencti_aliases"] = (
-                    self.opencti.get_attribute_in_extension("aliases", stix_object)
-                )
+                stix_object[
+                    "x_opencti_aliases"
+                ] = self.opencti.get_attribute_in_extension("aliases", stix_object)
             if "x_opencti_stix_ids" not in stix_object:
-                stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension("stix_ids", stix_object)
-                )
+                stix_object[
+                    "x_opencti_stix_ids"
+                ] = self.opencti.get_attribute_in_extension("stix_ids", stix_object)
 
             return self.create(
                 type=type,
