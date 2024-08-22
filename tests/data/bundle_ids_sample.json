@@ -21,7 +21,9 @@
       "spec_version": "2.1",
       "name": "ANSSI",
       "identity_class": "organization",
-      "labels": ["identity"],
+      "labels": [
+        "identity"
+      ],
       "created": "2020-02-23T23:40:53.575Z",
       "modified": "2020-02-27T08:45:39.351Z",
       "x_opencti_organization_type": "CSIRT"
@@ -43,16 +45,22 @@
       "type": "report",
       "spec_version": "2.1",
       "name": "A demo report for testing purposes",
-      "labels": ["report"],
+      "labels": [
+        "report"
+      ],
       "description": "Report for testing purposes (random data).",
       "published": "2020-03-01T14:02:48.111Z",
       "created": "2020-03-01T14:02:55.327Z",
       "modified": "2020-03-01T14:09:48.078Z",
-      "report_types": ["threat-report"],
+      "report_types": [
+        "threat-report"
+      ],
       "x_opencti_report_status": 2,
       "confidence": 3,
       "created_by_ref": "identity--7b82b010-b1c0-4dae-981f-7756374a17da",
-      "object_marking_refs": ["marking-definition--78ca4366-f5b8-4764-83f7-34ce38198e27"],
+      "object_marking_refs": [
+        "marking-definition--78ca4366-f5b8-4764-83f7-34ce38198e27"
+      ],
       "object_refs": [
         "observed-data--7d258c31-9a26-4543-aecb-2abc5ed366be",
         "malware--d650c5b9-4b43-5781-8576-ea52bd6c7ce5"
@@ -70,7 +78,9 @@
       "start_time": "1900-01-01T00:00:00.000Z",
       "stop_time": "1900-01-01T00:00:00.000Z",
       "created_by_ref": "identity--7b82b010-b1c0-4dae-981f-7756374a17da",
-      "object_marking_refs": ["marking-definition--78ca4366-f5b8-4764-83f7-34ce38198e27"]
+      "object_marking_refs": [
+        "marking-definition--78ca4366-f5b8-4764-83f7-34ce38198e27"
+      ]
     },
     {
       "type": "sighting",
@@ -79,7 +89,9 @@
       "created": "2016-08-06T20:08:31.000Z",
       "modified": "2016-09-06T20:08:31.000Z",
       "sighting_of_ref": "malware--d650c5b9-4b43-5781-8576-ea52bd6c7ce5",
-      "where_sighted_refs": ["identity--7b82b010-b1c0-4dae-981f-7756374a17da"],
+      "where_sighted_refs": [
+        "identity--7b82b010-b1c0-4dae-981f-7756374a17da"
+      ],
       "first_seen": "2016-08-06T20:08:31.000Z",
       "last_seen": "2016-08-07T20:08:31.000Z",
       "count": 12,
