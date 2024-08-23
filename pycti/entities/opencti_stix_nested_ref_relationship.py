@@ -24,13 +24,13 @@ class StixNestedRefRelationship:
                     standard_id
                     entity_type
                     parent_types
-                } 
+                }
                 ... on StixSightingRelationship {
                     id
                     standard_id
                     entity_type
                     parent_types
-                }                 
+                }
                 ... on StixCyberObservable {
                     observable_value
                 }
@@ -47,13 +47,13 @@ class StixNestedRefRelationship:
                     standard_id
                     entity_type
                     parent_types
-                } 
+                }
                 ... on StixSightingRelationship {
                     id
                     standard_id
                     entity_type
                     parent_types
-                }                 
+                }
                 ... on StixCyberObservable {
                     observable_value
                 }

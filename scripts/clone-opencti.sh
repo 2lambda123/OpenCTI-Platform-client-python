@@ -53,7 +53,7 @@ clone_for_pr_build() {
             echo "[CLONE-DEPS] No PR found in opencti side, keeping opencti:master"
             # Repository already clone on master branch
         fi
-        
+
     else
         echo "[CLONE-DEPS] NOT multi repo, cloning opencti:master"
         gh repo clone https://github.com/OpenCTI-Platform/opencti ${OPENCTI_DIR}
