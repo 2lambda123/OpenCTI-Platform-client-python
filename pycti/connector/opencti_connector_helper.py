@@ -1607,9 +1607,9 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
                             )
                         )
                     else:
-                        octi_extensions["granted_refs"] = (
-                            self.enrichment_shared_organizations
-                        )
+                        octi_extensions[
+                            "granted_refs"
+                        ] = self.enrichment_shared_organizations
                 else:
                     if item.get("x_opencti_granted_refs") is not None:
                         item["x_opencti_granted_refs"] = list(
@@ -1619,9 +1619,9 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
                             )
                         )
                     else:
-                        item["x_opencti_granted_refs"] = (
-                            self.enrichment_shared_organizations
-                        )
+                        item[
+                            "x_opencti_granted_refs"
+                        ] = self.enrichment_shared_organizations
             bundle = json.dumps(bundle_data)
 
         # If execution in playbook, callback the api
@@ -1702,10 +1702,11 @@ class OpenCTIConnectorHelper:  # pylint: disable=too-many-public-methods
             expectations_number = len(json.loads(bundle)["objects"])
         else:
             stix2_splitter = OpenCTIStix2Splitter()
-            expectations_number, bundles = (
-                stix2_splitter.split_bundle_with_expectations(
-                    bundle, True, event_version
-                )
+            (
+                expectations_number,
+                bundles,
+            ) = stix2_splitter.split_bundle_with_expectations(
+                bundle, True, event_version
             )
 
         if len(bundles) == 0:

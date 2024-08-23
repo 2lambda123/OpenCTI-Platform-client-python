@@ -425,7 +425,7 @@ class Feedback:
 
     """
         List Feedback objects
-        
+
         :param filters: the filters to apply
         :param search: the search keyword
         :param first: return the first n rows from the after ID (or the beginning if not set)
@@ -705,7 +705,7 @@ class Feedback:
                                     id
                                     ... on Feedback {
                                         name
-                                        description 
+                                        description
                                     }
                                }
                            }
@@ -827,17 +827,17 @@ class Feedback:
         if stix_object is not None:
             # Search in extensions
             if "x_opencti_stix_ids" not in stix_object:
-                stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension("stix_ids", stix_object)
-                )
+                stix_object[
+                    "x_opencti_stix_ids"
+                ] = self.opencti.get_attribute_in_extension("stix_ids", stix_object)
             if "x_opencti_granted_refs" not in stix_object:
-                stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension("granted_refs", stix_object)
-                )
+                stix_object[
+                    "x_opencti_granted_refs"
+                ] = self.opencti.get_attribute_in_extension("granted_refs", stix_object)
             if "x_opencti_workflow_id" not in stix_object:
-                stix_object["x_opencti_workflow_id"] = (
-                    self.opencti.get_attribute_in_extension("workflow_id", stix_object)
-                )
+                stix_object[
+                    "x_opencti_workflow_id"
+                ] = self.opencti.get_attribute_in_extension("workflow_id", stix_object)
 
             return self.create(
                 stix_id=stix_object["id"],

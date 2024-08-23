@@ -438,9 +438,9 @@ class Identity:
                         }
                     }
                 """
-                input_variables["x_opencti_organization_type"] = (
-                    x_opencti_organization_type
-                )
+                input_variables[
+                    "x_opencti_organization_type"
+                ] = x_opencti_organization_type
                 input_variables["x_opencti_reliability"] = x_opencti_reliability
                 result_data_field = "organizationAdd"
             elif type == IdentityTypes.INDIVIDUAL.value:
@@ -525,45 +525,45 @@ class Identity:
 
             # Search in extensions
             if "x_opencti_aliases" not in stix_object:
-                stix_object["x_opencti_aliases"] = (
-                    self.opencti.get_attribute_in_extension("aliases", stix_object)
-                )
+                stix_object[
+                    "x_opencti_aliases"
+                ] = self.opencti.get_attribute_in_extension("aliases", stix_object)
             if "x_opencti_organization_type" not in stix_object:
-                stix_object["x_opencti_organization_type"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "organization_type", stix_object
-                    )
+                stix_object[
+                    "x_opencti_organization_type"
+                ] = self.opencti.get_attribute_in_extension(
+                    "organization_type", stix_object
                 )
             if "x_opencti_reliability" not in stix_object:
-                stix_object["x_opencti_reliability"] = (
-                    self.opencti.get_attribute_in_extension("reliability", stix_object)
-                )
+                stix_object[
+                    "x_opencti_reliability"
+                ] = self.opencti.get_attribute_in_extension("reliability", stix_object)
             if "x_opencti_organization_type" not in stix_object:
-                stix_object["x_opencti_organization_type"] = (
-                    self.opencti.get_attribute_in_extension(
-                        "organization_type", stix_object
-                    )
+                stix_object[
+                    "x_opencti_organization_type"
+                ] = self.opencti.get_attribute_in_extension(
+                    "organization_type", stix_object
                 )
             if "x_opencti_firstname" not in stix_object:
-                stix_object["x_opencti_firstname"] = (
-                    self.opencti.get_attribute_in_extension("firstname", stix_object)
-                )
+                stix_object[
+                    "x_opencti_firstname"
+                ] = self.opencti.get_attribute_in_extension("firstname", stix_object)
             if "x_opencti_lastname" not in stix_object:
-                stix_object["x_opencti_lastname"] = (
-                    self.opencti.get_attribute_in_extension("lastname", stix_object)
-                )
+                stix_object[
+                    "x_opencti_lastname"
+                ] = self.opencti.get_attribute_in_extension("lastname", stix_object)
             if "x_opencti_stix_ids" not in stix_object:
-                stix_object["x_opencti_stix_ids"] = (
-                    self.opencti.get_attribute_in_extension("stix_ids", stix_object)
-                )
+                stix_object[
+                    "x_opencti_stix_ids"
+                ] = self.opencti.get_attribute_in_extension("stix_ids", stix_object)
             if "x_opencti_granted_refs" not in stix_object:
-                stix_object["x_opencti_granted_refs"] = (
-                    self.opencti.get_attribute_in_extension("granted_refs", stix_object)
-                )
+                stix_object[
+                    "x_opencti_granted_refs"
+                ] = self.opencti.get_attribute_in_extension("granted_refs", stix_object)
             if "x_opencti_workflow_id" not in stix_object:
-                stix_object["x_opencti_workflow_id"] = (
-                    self.opencti.get_attribute_in_extension("workflow_id", stix_object)
-                )
+                stix_object[
+                    "x_opencti_workflow_id"
+                ] = self.opencti.get_attribute_in_extension("workflow_id", stix_object)
 
             return self.create(
                 type=type,
