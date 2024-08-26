@@ -342,13 +342,11 @@ class OpenCTIStix2:
                             )["name"]
                         )
                 else:
-                    object_open_vocabularies[
-                        f["key"]
-                    ] = self.opencti.vocabulary.handle_vocab(
-                        stix_object[f["key"]], self.mapping_cache_permanent, field=f
-                    )[
-                        "name"
-                    ]
+                    object_open_vocabularies[f["key"]] = (
+                        self.opencti.vocabulary.handle_vocab(
+                            stix_object[f["key"]], self.mapping_cache_permanent, field=f
+                        )["name"]
+                    )
 
         # Object Labels
         object_label_ids = []
@@ -428,10 +426,10 @@ class OpenCTIStix2:
                         )
                         is not None
                     ):
-                        kill_chain_phase[
-                            "x_opencti_order"
-                        ] = self.opencti.get_attribute_in_extension(
-                            "order", kill_chain_phase
+                        kill_chain_phase["x_opencti_order"] = (
+                            self.opencti.get_attribute_in_extension(
+                                "order", kill_chain_phase
+                            )
                         )
                     kill_chain_phase = self.opencti.kill_chain_phase.create(
                         kill_chain_name=kill_chain_phase["kill_chain_name"],
@@ -471,10 +469,10 @@ class OpenCTIStix2:
                         )
                         is not None
                     ):
-                        kill_chain_phase[
-                            "x_opencti_order"
-                        ] = self.opencti.get_attribute_in_extension(
-                            "order", kill_chain_phase
+                        kill_chain_phase["x_opencti_order"] = (
+                            self.opencti.get_attribute_in_extension(
+                                "order", kill_chain_phase
+                            )
                         )
                     kill_chain_phase = self.opencti.kill_chain_phase.create(
                         kill_chain_name=kill_chain_phase["kill_chain_name"],
@@ -510,10 +508,10 @@ class OpenCTIStix2:
             )
             is not None
         ):
-            stix_object[
-                "external_references"
-            ] = self.opencti.get_attribute_in_extension(
-                "external_references", stix_object
+            stix_object["external_references"] = (
+                self.opencti.get_attribute_in_extension(
+                    "external_references", stix_object
+                )
             )
         if "external_references" in stix_object:
             for external_reference in stix_object["external_references"]:
@@ -1364,13 +1362,13 @@ class OpenCTIStix2:
             and self.opencti.get_attribute_in_extension("negative", stix_sighting)
             is not None
         ):
-            stix_sighting[
-                "x_opencti_negative"
-            ] = self.opencti.get_attribute_in_extension("negative", stix_sighting)
+            stix_sighting["x_opencti_negative"] = (
+                self.opencti.get_attribute_in_extension("negative", stix_sighting)
+            )
         if "x_opencti_workflow_id" not in stix_sighting:
-            stix_sighting[
-                "x_opencti_workflow_id"
-            ] = self.opencti.get_attribute_in_extension("workflow_id", stix_sighting)
+            stix_sighting["x_opencti_workflow_id"] = (
+                self.opencti.get_attribute_in_extension("workflow_id", stix_sighting)
+            )
         stix_sighting_result = self.opencti.stix_sighting_relationship.create(
             fromId=final_from_id,
             toId=final_to_id,
